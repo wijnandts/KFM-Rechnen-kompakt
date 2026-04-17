@@ -15,6 +15,7 @@
             --prozent-light: #fab1a0; --prozent-dark: #e17055;
             --zinsen-light: #55efc4; --zinsen-dark: #00b894;
             --kalkulation-light: #ff7675; --kalkulation-dark: #d63031;
+            --kasse-light: #ffeaa7; --kasse-dark: #f1c40f; /* Gold-Gelb für Kasse */
         }
 
         body {
@@ -43,9 +44,10 @@
             font-size: 1.2rem; margin-bottom: 4px; box-shadow: 0 4px 0 #bdc3c7;
         }
 
+        /* Dashboard Grid - Optimiert für 6 Themen */
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 25px;
             max-width: 1200px;
             margin: 0 auto;
@@ -82,7 +84,7 @@
             box-shadow: 0 0 0 transparent !important;
         }
 
-        /* Spalten-Logik */
+        /* Spalten-Farben Logik */
         .col-1 .col-title { color: var(--dreisatz-dark); border-bottom: 4px solid var(--dreisatz-dark); }
         .col-1 .light { background: var(--dreisatz-light); box-shadow: 0 6px 0 #60a3bc; color: var(--dreisatz-dark); }
         .col-1 .dark { background: var(--dreisatz-dark); box-shadow: 0 6px 0 #072d48; }
@@ -103,7 +105,11 @@
         .col-5 .light { background: var(--kalkulation-light); box-shadow: 0 6px 0 #ff5252; color: var(--kalkulation-dark); }
         .col-5 .dark { background: var(--kalkulation-dark); box-shadow: 0 6px 0 #b33939; }
 
-        @media (max-width: 900px) { .dashboard { grid-template-columns: repeat(2, 1fr); } }
+        .col-6 .col-title { color: var(--kasse-dark); border-bottom: 4px solid var(--kasse-dark); }
+        .col-6 .light { background: var(--kasse-light); box-shadow: 0 6px 0 #d4ac0d; color: var(--text-dark); }
+        .col-6 .dark { background: var(--kasse-dark); box-shadow: 0 6px 0 #9a7d0a; }
+
+        @media (max-width: 600px) { .dashboard { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -131,7 +137,7 @@
 
     <div class="column col-3">
         <div class="col-title">Prozent</div>
-        <a href="prozent.html" class="btn-3d light">Erklärung</a>
+        <a href="prozentrechnung.html" class="btn-3d light">Erklärung</a>
         <a href="prozent_uebung.html" class="btn-3d dark">Übung</a>
     </div>
 
@@ -145,6 +151,12 @@
         <div class="col-title">Kalkulation</div>
         <a href="kalkulation_erklaerung.html" class="btn-3d light">Erklärung</a>
         <a href="kalkulation_uebung.html" class="btn-3d dark">Übung</a>
+    </div>
+
+    <div class="column col-6">
+        <div class="col-title">Kassenabrechnung</div>
+        <a href="kasse_erklaerung.html" class="btn-3d light">Erklärung</a>
+        <a href="kasse_uebung.html" class="btn-3d dark">Übung</a>
     </div>
 </div>
 
