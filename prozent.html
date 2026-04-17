@@ -1,0 +1,215 @@
+import os
+
+html_content = """
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prozentrechnung - Fachwissen</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e67e22;
+            --bg-color: #f4f7f6;
+            --box-bg: #ffffff;
+            --table-header: #34495e;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--box-bg);
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 30px;
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        .definition-box {
+            background-color: #fff9f1;
+            border: 1px solid #f39c12;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .example-box {
+            background-color: #f8f9fa;
+            border-left: 5px solid #2ecc71;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .formula-box {
+            background-color: #e8f4fd;
+            border: 1px solid #3498db;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .calculation-step {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fff;
+            padding: 15px;
+            border: 1px dashed #7f8c8d;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Prozentrechnung im Einzelhandel</h1>
+
+    <div class="definition-box">
+        <strong>DEFINITION:</strong> Bei der Prozentrechnung werden Zahlenangaben in Prozent angegeben. Das bedeutet, dass bestimmte Größenverhältnisse mithilfe der Bezugszahl 100 vergleichbar gemacht werden.
+    </div>
+
+    <p>Der Begriff Prozent kommt aus dem Lateinischen <em>per centum</em> ("vom Hundert"). In der Praxis des Einzelhandels ist dies essenziell für die Berechnung von Umsatzsteuer, Rabatten und Preisen.</p>
+
+    <h2>1. Grundlagen der Preisbildung</h2>
+    <p>Preise setzen sich oft wie folgt zusammen:</p>
+    <ul>
+        <li>Nettopreis + Umsatzsteuer = Bruttopreis</li>
+        <li>100% + 19% (Regelsatz) = 119%</li>
+        <li>100% + 7% (Lebensmittel) = 107%</li>
+    </ul>
+
+    <h2>2. Rechenweg mit Bedingungs- und Fragesatz</h2>
+    <p>Diese Methode nutzt den proportionalen Dreisatz, um gesuchte Werte (x) zu ermitteln.</p>
+    
+    <div class="example-box">
+        <strong>Beispiel: Vermehrter Grundwert (Bruttopreis ermitteln)</strong>
+        <p>Die LEMI AG verkauft Paprika für 3,49 €/kg (Brutto). Die Umsatzsteuer beträgt 7%.</p>
+        <div class="calculation-step">
+            <div>Bedingungssatz: 107% ≙ 3,49 €</div>
+            <div>Fragesatz: 7% ≙ x €</div>
+        </div>
+        <div class="formula-box">
+            x = (3,49 € · 7%) / 107% = 0,23 €
+        </div>
+    </div>
+
+    <h2>3. Der Prozentfaktor</h2>
+    <p>Zur Vereinfachung nutzt man den Prozentfaktor, um direkt zwischen Netto- und Bruttobeträgen zu kalkulieren.</p>
+    
+    <div class="formula-box">
+        Prozentfaktor = Prozentsatz / 100
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Bezeichnung</th>
+                <th>Betrag (€)</th>
+                <th>Prozent (%)</th>
+                <th>Prozentfaktor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bruttoverkaufspreis</td>
+                <td>3,49 €</td>
+                <td>107 %</td>
+                <td>1,07</td>
+            </tr>
+            <tr>
+                <td>Umsatzsteuer</td>
+                <td>0,23 €</td>
+                <td>7 %</td>
+                <td>0,07</td>
+            </tr>
+            <tr>
+                <td>Nettoverkaufspreis</td>
+                <td>3,26 €</td>
+                <td>100 %</td>
+                <td>1,00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Schnelle Kalkulation (Shortcuts)</h2>
+    <div class="example-box">
+        <strong>Vom Brutto zum Netto:</strong><br>
+        Beträgt der Bruttowert 34,98 € (inkl. 19% MwSt.), teilt man durch den Faktor 1,19:<br>
+        <span class="highlight">34,98 € / 1,19 = 29,39 € (Netto)</span>
+    </div>
+
+    <div class="example-box">
+        <strong>Vom Netto zum Brutto:</strong><br>
+        Ist der Nettowert 29,39 € bekannt, multipliziert man mit dem Faktor 1,19:<br>
+        <span class="highlight">29,39 € · 1,19 = 34,98 € (Brutto)</span>
+    </div>
+
+    <h2>5. Rabattrechnung (Verminderter Grundwert)</h2>
+    <p>Wird ein Rabatt gewährt, verringert sich der Grundwert (100%).</p>
+    <div class="example-box">
+        <strong>Beispiel:</strong> 8% Rabatt auf 3,26 €.<br>
+        Neuer Wert = 92% (100% - 8%).<br>
+        <span class="highlight">3,26 € · 0,92 = 3,00 € (Reduzierter Preis)</span>
+    </div>
+
+</div>
+
+</body>
+</html>
+"""
+
+with open("prozentrechnung.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
