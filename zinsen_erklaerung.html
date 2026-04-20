@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master-Guide: Kaufmännische Zinsrechnung & Finanzierung</title>
+    <title>Master-Guide: Kaufmännische Zinsrechnung Komplett</title>
     <style>
         :root {
             --bg: #f4f7f6;
@@ -15,8 +15,8 @@
             --border: #e2e8f0;
             --highlight: #fff9db;
             --accent: #e67e22;
-            --loss: #d63031;
             --profit: #27ae60;
+            --loss: #d63031;
         }
 
         body {
@@ -43,9 +43,9 @@
             padding-bottom: 20px;
         }
 
-        h1 { font-size: 2.5rem; color: var(--zins-dark); margin: 0; }
-        h2 { font-size: 1.8rem; color: var(--zins-main); margin-top: 50px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        h3 { color: var(--zins-dark); background: var(--step-bg); padding: 10px; border-radius: 5px; margin-top: 30px; }
+        h1 { font-size: 2.2rem; color: var(--zins-dark); margin: 0; }
+        h2 { font-size: 1.6rem; color: var(--zins-main); margin-top: 45px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: var(--zins-dark); background: var(--step-bg); padding: 10px; border-radius: 5px; margin-top: 25px; }
 
         .back-link { text-decoration: none; color: var(--text); font-weight: bold; margin-bottom: 20px; display: inline-block; }
 
@@ -63,7 +63,7 @@
             padding: 20px;
             margin: 20px 0;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             text-align: center;
         }
 
@@ -75,14 +75,15 @@
             margin: 20px 0;
         }
 
-        .comparison-box {
+        .grid-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            margin: 20px 0;
+            margin-top: 20px;
         }
 
-        .comp-item {
+        .grid-item {
+            background: #f8fafc;
             padding: 15px;
             border-radius: 10px;
             border: 1px solid var(--border);
@@ -99,70 +100,92 @@
     <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
     
     <header>
-        <h1>Finanzmathematik & Zinsrechnung</h1>
-        <p>Von den Grundlagen bis zur Ermittlung des Finanzierungserfolgs bei Skontonutzung.</p>
+        <h1>Kaufmännische Zinsrechnung: Das Kompendium</h1>
+        <p>Sämtliche Verfahren, Formeln und wirtschaftliche Kalkulationen in der Übersicht.</p>
     </header>
 
-    <h2>1. Zinszahl, Zinsteiler und Grundregeln</h2>
+    <h2>1. Grundlagen und Zinstage-Regelung</h2>
     <div class="detail-section">
-        <p>Für die kaufmännische Zinsrechnung (30/360) nutzen Sie zur Vereinfachung folgende Komponenten:</p>
+        <p>In der kaufmännischen Zinsrechnung (Methode 30/360) gelten spezifische Konventionen zur Zeitberechnung:</p>
         <ul>
-            <li><strong>Zinszahl (ZZ):</strong> (Kapital * Tage) / 100</li>
-            <li><strong>Zinsteiler (ZT):</strong> 360 / Zinssatz</li>
-            <li><strong>Gesetzliche Tage:</strong> Erster Tag zinsfrei, letzter Tag zählt voll.</li>
+            <li><strong>Das Zinsjahr:</strong> Wird pauschal mit 360 Tagen berechnet.</li>
+            <li><strong>Der Zinsmonat:</strong> Jeder Monat wird einheitlich mit 30 Tagen berechnet.</li>
+            <li><strong>Die Zinstage-Regel:</strong> Der Tag der Kapitalüberlassung (Anfangstag) bleibt zinsfrei. Der Tag der Rückzahlung (Endtag) wird hingegen voll mitverzinst.</li>
         </ul>
-        <div class="formula-card">Zinsen = Zinszahl / Zinsteiler</div>
-    </div>
-
-    <h2>2. Finanzierungsgewinn und Finanzierungsverlust</h2>
-    <div class="detail-section">
-        <p>Häufig stellt sich die Frage: Sollten Sie eine Rechnung unter Inanspruchnahme eines Bankkredits vorzeitig mit Skonto bezahlen oder das Zahlungsziel voll ausnutzen? Der Vergleich der <strong>Skontoersparnis</strong> mit den <strong>Kreditzinsen</strong> ergibt den Finanzierungserfolg.</p>
-
-        <h3>Ermittlung des Ergebnisses:</h3>
-        <div class="formula-card">
-            Finanzierungserfolg = Skontobetrag (€) - Kreditzinsen (€)
-        </div>
-
-        <div class="comparison-box">
-            <div class="comp-item">
-                <h4 class="profit-text">Finanzierungsgewinn</h4>
-                <p>Wenn der Skontobetrag in Euro <strong>höher</strong> ist als die Zinsen, die Sie der Bank für den Kredit im gleichen Zeitraum zahlen müssen.</p>
-            </div>
-            <div class="comp-item">
-                <h4 class="loss-text">Finanzierungsverlust</h4>
-                <p>Wenn die Bankzinsen für den Zeitraum <strong>höher</strong> sind als die Ersparnis durch das Skonto (sehr selten bei üblichen Marktzinsen).</p>
-            </div>
-        </div>
-
         <div class="important-box">
-            <strong>Beispielrechnung:</strong><br>
-            Rechnungsbetrag: 10.000 € | Skonto: 3% (300 €) | Kredit-Zins: 12% p.a. | Zeitvorteil: 20 Tage<br><br>
-            1. Skontoersparnis: <span class="profit-text">300,00 €</span><br>
-            2. Bankzinsen für 9.700 € (Nettobetrag): (9.700 * 12 * 20) / 36.000 = <span class="loss-text">64,67 €</span><br>
-            3. Finanzierungserfolg: 300,00 € - 64,67 € = <span class="profit-text">+ 235,33 € (Gewinn)</span>
+            <strong>Beispiel:</strong> Eine Anlage vom 10. Februar bis 15. April.<br>
+            Februar: 20 Tage (30 - 10) | März: 30 Tage | April: 15 Tage<br>
+            <strong>Gesamt: 65 Zinstage (t)</strong>
         </div>
     </div>
 
-    <h2>3. Effektiver Zinssatz (Vergleichswert)</h2>
+    <h2>2. Die Basisformeln der Zinsrechnung</h2>
+    <div class="grid-container">
+        <div class="grid-item">
+            <span class="highlight-text">Jahreszinsen:</span><br>
+            Z = (K * p) / 100
+        </div>
+        <div class="grid-item">
+            <span class="highlight-text">Monatszinsen:</span><br>
+            Z = (K * p * m) / (100 * 12)
+        </div>
+        <div class="grid-item" style="grid-column: span 2;">
+            <span class="highlight-text">Tageszinsen (Standardformel):</span><br>
+            Z = (K * p * t) / (100 * 360) = <strong>(K * p * t) / 36.000</strong>
+        </div>
+    </div>
+
+    <h2>3. Zinszahl und Zinsteiler (Zinsdivisor)</h2>
     <div class="detail-section">
-        <p>Um ohne Euro-Beträge sofort zu entscheiden, berechnen Sie den effektiven Jahreszins des Lieferantenkredits:</p>
+        <p>Dieses Verfahren vereinfacht die Berechnung bei mehreren Kapitalbeträgen und einem konstanten Zinssatz (z. B. Kontokorrent):</p>
+        <div class="grid-container">
+            <div class="grid-item">
+                <strong>Zinszahl (ZZ):</strong><br>
+                ZZ = (K * t) / 100
+            </div>
+            <div class="grid-item">
+                <strong>Zinsteiler (ZT):</strong><br>
+                ZT = 360 / p
+            </div>
+        </div>
+        <div class="formula-card">Zinsen = Summe aller Zinszahlen / Zinsteiler</div>
+    </div>
+
+    <h2>4. Kapitalvariationen</h2>
+    <div class="detail-section">
+        <h3>A) Vermehrtes Kapital (K<sub>v</sub>)</h3>
+        <p>Ermittlung des Endbetrags inklusive der Zinsen (Grundwert + Zinsen).</p>
+        <div class="formula-card">K<sub>v</sub> = (K * (36.000 + p * t)) / 36.000</div>
+        
+        <h3>B) Vermindertes Kapital (K<sub>m</sub>)</h3>
+        <p>Ermittlung des Kapitals abzüglich der Zinsen (Grundwert - Zinsen).</p>
+        <div class="formula-card">K<sub>m</sub> = (K * (36.000 - p * t)) / 36.000</div>
+    </div>
+
+    <h2>5. Wirtschaftlichkeitsprüfung: Skonto vs. Kredit</h2>
+    <div class="detail-section">
+        <p>Hierbei prüfen Sie, ob die Ersparnis durch Skonto höher ist als die Kosten eines Bankkredits.</p>
+        
+        <h3>A) Finanzierungsgewinn / -verlust</h3>
+        <p>Sie vergleichen den Skontobetrag in Euro mit den anfallenden Bankzinsen für den Zeitraum des Zeitvorteils.</p>
+        <div class="formula-card">Finanzierungsergebnis = Skontobetrag (€) - Kreditzinsen (€)</div>
+        
+        <div class="important-box">
+            <strong>Beispiel:</strong> Rechnungsbetrag 5.000 € | 2% Skonto (100 €) | Bankzins 12% | Zeitvorteil 20 Tage.<br>
+            Kreditzinsen = (4.900 € * 12 * 20) / 36.000 = 32,67 €.<br>
+            Ergebnis: 100,00 € - 32,67 € = <span class="profit-text">67,33 € Finanzierungsgewinn.</span>
+        </div>
+
+        <h3>B) Effektiver Jahreszinssatz (p<sub>eff</sub>)</h3>
+        <p>Um den Lieferantenkredit direkt mit dem Bankzinssatz zu vergleichen:</p>
         <div class="formula-card">p<sub>eff</sub> = (Skontosatz * 360) / (Zahlungsziel - Skontofrist)</div>
-        <p>Liegt dieser Wert über dem Zinssatz Ihrer Bank, erzielen Sie durch die Skontonutzung immer einen <strong>Finanzierungsgewinn</strong>.</p>
     </div>
 
-    <h2>4. Vermehrtes und vermindertes Kapital</h2>
-    <div class="detail-section">
-        <p>Zur direkten Berechnung von Endbeträgen (Kapital inklusive oder exklusive Zinsen) verwenden Sie:</p>
-        <div class="comparison-box">
-            <div class="comp-item">
-                <strong>Vermehrtes Kapital (K<sub>v</sub>)</strong><br>
-                Berechnung des Kapitals zuzüglich Zinsen (z.B. Kreditrückzahlung).
-            </div>
-            <div class="comp-item">
-                <strong>Vermindertes Kapital (K<sub>m</sub>)</strong><br>
-                Berechnung des Kapitals abzüglich Zinsen (z.B. Auszahlungssumme bei Vorauszahlung).
-            </div>
-        </div>
+    <h2>6. Formelumstellungen (Tageszinsen)</h2>
+    <div class="grid-container">
+        <div class="grid-item"><strong>Kapital (K):</strong><br>(Z * 36.000) / (p * t)</div>
+        <div class="grid-item"><strong>Zinssatz (p):</strong><br>(Z * 36.000) / (K * t)</div>
+        <div class="grid-item"><strong>Zeit (t):</strong><br>(Z * 36.000) / (K * p)</div>
     </div>
 </div>
 
