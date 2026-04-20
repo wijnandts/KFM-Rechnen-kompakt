@@ -2,27 +2,229 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Übung: Durchschnitt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Durchschnitts-Master Pro</title>
     <style>
-        :root { --main: #4834d4; --light: #a29bfe; }
-        body { font-family: sans-serif; background: #ecf0f1; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
-        .question { margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--main); background: #f9f9f9; }
-        input { padding: 8px; width: 120px; }
-        button { background: var(--main); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        :root {
+            --main: #4834d4;
+            --main-hover: #3c2bb3;
+            --light: #a29bfe;
+            --bg: #f0f2f5;
+            --text: #2d3436;
+            --white: #ffffff;
+            --grey: #636e72;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-link {
+            align-self: flex-start;
+            text-decoration: none;
+            color: var(--grey);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+        }
+
+        .subtitle {
+            color: #95a5a6;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f1f1f1;
+            padding-bottom: 20px;
+        }
+
+        .question-box {
+            background: #fdfdfd;
+            border: 1px solid #edf2f7;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .warning-text {
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #edf2f7;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--main);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary { background: var(--main); color: white; }
+        .btn-primary:hover { background: var(--main-hover); }
+        .btn-secondary { background: #f1f2f6; color: var(--text); }
+        .btn-secondary:hover { background: #dfe4ea; }
+
+        /* Rechner Style */
+        .calc-container {
+            background: #2d3436;
+            border-radius: 15px;
+            padding: 20px;
+            height: fit-content;
+            color: white;
+        }
+
+        .calc-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        #calc-display {
+            background: #636e72;
+            padding: 15px;
+            text-align: right;
+            font-size: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            background: #4b5456;
+            border: none;
+            padding: 15px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .calc-btn.op { background: #4834d4; }
+        .calc-btn.clear { background: #e17055; }
+        .calc-btn.equal { background: #27ae60; grid-column: span 3; }
+
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        @media (max-width: 850px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .calc-container { order: -1; }
+        }
     </style>
 </head>
+<body>
 
-    <div class="container">
     <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
 
-<body>
-    <div class="card">
-        <h1>Übung: Durchschnitt / Mittelwerte</h1>
-        <p>Berechne die Mittelwerte. Achte auf Gewichtung!</p>
-        <div id="quiz-container"></div>
-        <button onclick="checkAnswers()">Prüfen</button>
-        <button onclick="location.reload()" style="background:#7f8c8d">Neue Fragen</button>
+    <div class="main-layout">
+        <div class="card">
+            <h1>Durchschnitts-Master Pro</h1>
+            <p class="subtitle">Übungsmodul für Mittelwerte und gewichtete Kalkulationen</p>
+
+            <div id="quiz-area">
+                <div class="question-box" id="question-text">Lade Aufgabe...</div>
+                
+                <p class="warning-text">⚠️ Bitte runden Sie Ihr Ergebnis auf 2 Dezimalstellen!</p>
+                
+                <input type="number" id="user-answer" placeholder="Ihr Ergebnis" step="0.01">
+                <div id="feedback"></div>
+
+                <button class="btn btn-primary" onclick="checkCurrentAnswer()">Eingabe prüfen</button>
+                <button class="btn btn-secondary" onclick="nextQuestion()">Nächste Aufgabe</button>
+            </div>
+        </div>
+
+        <div class="calc-container">
+            <div class="calc-header">RECHNER</div>
+            <div id="calc-display">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+                <button class="calc-btn op" onclick="calcOp('*')">×</button>
+                <button class="calc-btn op" onclick="calcOp('-')">-</button>
+                
+                <button class="calc-btn" onclick="addNum('7')">7</button>
+                <button class="calc-btn" onclick="addNum('8')">8</button>
+                <button class="calc-btn" onclick="addNum('9')">9</button>
+                <button class="calc-btn op" onclick="calcOp('+')">+</button>
+                
+                <button class="calc-btn" onclick="addNum('4')">4</button>
+                <button class="calc-btn" onclick="addNum('5')">5</button>
+                <button class="calc-btn" onclick="addNum('6')">6</button>
+                <button class="calc-btn" onclick="addNum('.')">,</button>
+                
+                <button class="calc-btn" onclick="addNum('1')">1</button>
+                <button class="calc-btn" onclick="addNum('2')">2</button>
+                <button class="calc-btn" onclick="addNum('3')">3</button>
+                <button class="calc-btn" onclick="addNum('0')">0</button>
+                
+                <button class="calc-btn equal" onclick="calculateResult()">=</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -34,26 +236,56 @@
             { q: "Keksmischung: 8kg à 2.30€, 12kg à 0.90€, 5kg à 3.05€, 6kg à 0.42€. Preis pro kg Mischung?", a: 1.50 }
         ];
 
-        // 30 Aufgaben durch Randomisierung
-        for(let i=0; i<25; i++) {
-            pool.push({ q: `Einfacher Durchschnitt von: ${i*10}€, ${i*20}€ und ${i*30}€?`, a: (i*20).toFixed(2) });
+        let currentTask;
+
+        function nextQuestion() {
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            currentTask = pool[randomIndex];
+            document.getElementById('question-text').innerText = currentTask.q;
+            document.getElementById('user-answer').value = '';
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('user-answer').style.borderColor = '#edf2f7';
         }
 
-        const selected = pool.sort(() => 0.5 - Math.random()).slice(0, 5);
-        const container = document.getElementById('quiz-container');
+        function checkCurrentAnswer() {
+            const userVal = parseFloat(document.getElementById('user-answer').value);
+            const feedback = document.getElementById('feedback');
+            const input = document.getElementById('user-answer');
 
-        selected.forEach((item, index) => {
-            container.innerHTML += `<div class="question"><p>${item.q}</p><input type="number" step="0.01" id="q${index}"> <div id="f${index}"></div></div>`;
-        });
+            if(isNaN(userVal)) return;
 
-        function checkAnswers() {
-            selected.forEach((item, index) => {
-                const val = parseFloat(document.getElementById(`q${index}`).value);
-                const f = document.getElementById(`f${index}`);
-                if(Math.abs(val - item.a) < 0.5) { f.innerHTML = "✅"; f.style.color="green"; }
-                else { f.innerHTML = "❌ Korrekt: " + item.a; f.style.color="red"; }
-            });
+            if(Math.abs(userVal - currentTask.a) < 0.02) {
+                feedback.innerHTML = "✅ Richtig!";
+                feedback.style.color = "green";
+                input.style.borderColor = "green";
+            } else {
+                feedback.innerHTML = "❌ Falsch. Korrekt: " + currentTask.a.toFixed(2);
+                feedback.style.color = "red";
+                input.style.borderColor = "red";
+            }
         }
+
+        // Rechner Logik
+        let calcExpression = "";
+        function addNum(n) { calcExpression += n; updateDisplay(); }
+        function calcOp(op) { calcExpression += op; updateDisplay(); }
+        function clearCalc() { calcExpression = ""; updateDisplay(); }
+        function updateDisplay() { 
+            document.getElementById('calc-display').innerText = calcExpression || "0"; 
+        }
+        function calculateResult() {
+            try {
+                calcExpression = eval(calcExpression).toString();
+                updateDisplay();
+            } catch {
+                calcExpression = "Error";
+                updateDisplay();
+                setTimeout(clearCalc, 1000);
+            }
+        }
+
+        // Initialisierung
+        nextQuestion();
     </script>
 </body>
 </html>
