@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kalkulations-Master Pro [V3.6]</title>
+    <title>Kalkulations-Master Pro [V3.7]</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
@@ -63,8 +63,10 @@
             cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.75rem;
             border-radius: 8px; color: #64748b; transition: all 0.2s;
         }
-        .btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .btn-level.active { background: #2f3640; color: #fff; border-color: #2f3640; }
+        
+        /* Aktive Zustände für Level und Modi */
+        .btn.active { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; }
+        .btn-level.active { background: #2f3640 !important; color: #fff !important; border-color: #2f3640 !important; }
 
         .task-info {
             background: #f9f9f9; border: 1px solid var(--border-color); padding: 20px;
@@ -89,9 +91,6 @@
         .footer-actions { display: flex; gap: 15px; margin-top: 30px; }
         .btn-check { background: var(--primary); color: white; flex: 2; padding: 15px; border: none; font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase;}
         .btn-next { background: #f1f5f9; color: #475569; flex: 1; padding: 15px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; text-transform: uppercase;}
-
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
-        .modal-content { background: #fff; margin: 10% auto; padding: 30px; border-radius: 15px; width: 85%; max-width: 450px; }
     </style>
 </head>
 <body>
@@ -138,11 +137,11 @@
     </div>
 
     <div class="top-bar">
-        <button class="btn active" onclick="setMode('bezug')" id="m-bezug">Bezugspreis</button>
-        <button class="btn" onclick="setMode('vorwaerts')" id="m-vorwaerts">Vorwärts</button>
-        <button class="btn" onclick="setMode('rueckwaerts')" id="m-rueckwaerts">Rückwärts</button>
-        <button class="btn" onclick="setMode('differenz')" id="m-differenz">Differenz</button>
-        <button class="btn" onclick="setMode('zus-abs')" id="m-zus-abs">Zuschlag/Abschlag</button>
+        <button class="btn mode-btn active" onclick="setMode('bezug')" id="m-bezug">Bezugspreis</button>
+        <button class="btn mode-btn" onclick="setMode('vorwaerts')" id="m-vorwaerts">Vorwärts</button>
+        <button class="btn mode-btn" onclick="setMode('rueckwaerts')" id="m-rueckwaerts">Rückwärts</button>
+        <button class="btn mode-btn" onclick="setMode('differenz')" id="m-differenz">Differenz</button>
+        <button class="btn mode-btn" onclick="setMode('zus-abs')" id="m-zus-abs">Zuschlag/Abschlag</button>
     </div>
 
     <div id="taskDescription" class="task-info">Wählen Sie einen Aufgabenbereich aus.</div>
@@ -192,6 +191,16 @@
     function setLevel(l) { 
         currentLevel = l; 
         document.querySelectorAll('.btn-level').forEach((b,i)=>b.classList.toggle('active', i+1===l)); 
+        loadNewTask(); 
+    }
+
+    function setMode(m) { 
+        currentMode = m; 
+        // Korrigierte CSS-Klassen-Umschaltung
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById('m-' + m).classList.add('active');
         loadNewTask(); 
     }
 
@@ -275,7 +284,6 @@
         });
     }
 
-    function setMode(m) { currentMode = m; document.querySelectorAll('.tabs .btn').forEach(b=>b.classList.toggle('active', b.id==='m-'+m)); loadNewTask(); }
     function toggleCalc() { let w = document.getElementById('calc-widget'); w.style.display = w.style.display==='block'?'none':'block'; }
     function appendToCalc(v) { let d = document.getElementById('display'); d.value = d.value === "0" ? v : d.value + v; }
     function clearCalc() { document.getElementById('display').value = "0"; }
