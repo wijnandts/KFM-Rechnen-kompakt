@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master-Guide: Zinsrechnung</title>
+    <title>Master-Guide: Kaufmännische Zinsrechnung</title>
     <style>
         :root {
             --bg: #f4f7f6;
@@ -14,6 +14,7 @@
             --step-bg: #f4f9fd;
             --border: #e2e8f0;
             --highlight: #fff9db;
+            --accent: #e67e22;
         }
 
         body {
@@ -47,7 +48,7 @@
         .back-link { text-decoration: none; color: var(--text); font-weight: bold; margin-bottom: 20px; display: inline-block; }
 
         .detail-section {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding: 20px;
             border: 1px solid #eee;
             border-radius: 15px;
@@ -83,28 +84,13 @@
             text-transform: uppercase;
         }
 
-        .grid-3 {
+        .formula-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
         }
 
-        .grid-item {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .rule-card {
-            border: 2px solid var(--zins-main);
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
+        .highlight-text { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -113,73 +99,68 @@
     <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
     
     <header>
-        <h1>Zinsrechnung</h1>
-        <p>Systematische Erläuterung der kaufmännischen Zinsberechnung unter Berücksichtigung der gesetzlichen Zinstage-Regelung.</p>
+        <h1>Kaufmännische Zinsrechnung</h1>
+        <p>Spezielle Rechenverfahren für Zinszahl, Zinsteiler sowie Kapitalvariationen und Effektivzinsvergleiche.</p>
     </header>
 
-    <div class="important-box">
-        <strong>Definition:</strong> Zinsen sind das Entgelt für die zeitweilige Überlassung von Kapital. Sie hängen von der Höhe des Kapitals (K), dem Zinssatz (p) und der Laufzeit (t) ab.
-    </div>
-
-    <h2>1. Die kaufmännische Zinsmethode (30/360)</h2>
+    <h2>1. Zinszahl und Zinsteiler (Zinsdivisor)</h2>
     <div class="detail-section">
-        <p>Um Berechnungen zu vereinfachen, nutzt man im kaufmännischen Bereich standardisierte Werte:</p>
-        <div class="grid-3">
-            <div class="grid-item"><strong>Zinsjahr</strong><br>360 Tage</div>
-            <div class="grid-item"><strong>Zinsmonat</strong><br>30 Tage</div>
-            <div class="grid-item"><strong>Gesetzliche Regelung</strong><br>1. Tag frei, letzter Tag zählt</div>
+        <p>Um bei häufig wechselnden Kapitalbeträgen (z. B. im Kontokorrentverkehr) Zeit zu sparen, zerlegt man die Zinsformel in zwei konstante Komponenten.</p>
+        
+        <div class="formula-grid">
+            <div class="formula-card">
+                <strong>Zinszahl (ZZ)</strong><br>
+                ZZ = (K * t) / 100
+            </div>
+            <div class="formula-card">
+                <strong>Zinsteiler (ZT)</strong><br>
+                ZT = 360 / p
+            </div>
         </div>
+
+        <div class="important-box">
+            <strong>Die kombinierte Formel lautet:</strong> Zinsen = Zinszahl / Zinsteiler
+        </div>
+        <p>Dies ist besonders nützlich, wenn Sie die Zinsen für mehrere Posten mit dem gleichen Zinssatz berechnen müssen: Sie addieren alle Zinszahlen und teilen die Summe erst am Ende durch den Zinsteiler.</p>
     </div>
 
-    <div class="rule-card">
-        <span class="badge" style="background: #e67e22;">Wichtig: Die Zinstage-Regel</span>
-        <p>Bei der Ermittlung der Laufzeit gilt der Grundsatz: <strong>Der erste Tag (Einzahlungstag) wird nicht mitverzinst, der letzte Tag (Rückzahlungstag) hingegen schon.</strong></p>
-        <p><em>Beispiel:</em> Eine Anlage vom 01. bis zum 10. eines Monats ergibt genau <strong>9 Zinstage</strong>.</p>
-    </div>
-
-    <h2>2. Zeitabhängige Zinsformeln</h2>
-
+    <h2>2. Vermehrtes und vermindertes Kapital</h2>
     <div class="detail-section">
-        <span class="badge">Jährlich</span>
-        <h3>A) Jahreszinsen</h3>
-        <p>Anwendung bei vollen Jahren.</p>
-        <div class="formula-card">Z = (K * p) / 100</div>
+        <p>Diese Berechnungen nutzen Sie, wenn Sie direkt das Endkapital inklusive (vermehrt) oder exklusive (vermindert) Zinsen ermitteln möchten.</p>
+        
+        <h3>A) Vermehrtes Kapital (K<sub>v</sub>)</h3>
+        <p>Das Kapital wird inklusive der Zinsen betrachtet (Grundwert + Zinsen).<br>
+        Formel: K<sub>v</sub> = (K * (100 + p * t / 360)) / 100</p>
+        
+        <h3>B) Vermindertes Kapital (K<sub>m</sub>)</h3>
+        <p>Vom Kapital werden die Zinsen abgezogen (Grundwert - Zinsen).<br>
+        Formel: K<sub>m</sub> = (K * (100 - p * t / 360)) / 100</p>
     </div>
 
+    <h2>3. Effektiver Zinssatz beim Skontovergleich</h2>
     <div class="detail-section">
-        <span class="badge">Monatlich</span>
-        <h3>B) Monatszinsen</h3>
-        <p>Anwendung bei monatlicher Laufzeit (m).</p>
-        <div class="formula-card">Z = (K * p * m) / (100 * 12)</div>
+        <p>Wenn Sie auf Skonto verzichten, nutzen Sie einen Lieferantenkredit. Die Kosten dieses Kredits lassen sich in einen jährlichen Zinssatz (p<sub>eff</sub>) umrechnen, um sie mit Bankkrediten zu vergleichen.</p>
+        
+        <div class="formula-card">
+            p<sub>eff</sub> = (Skontosatz * 360) / (Zahlungsziel - Skontofrist)
+        </div>
+
+        <div class="important-box">
+            <strong>Beispiel:</strong> 2 % Skonto bei Zahlung innerhalb 10 Tagen, sonst 30 Tage netto.<br>
+            t = 30 Tage - 10 Tage = 20 Tage.<br>
+            p<sub>eff</sub> = (2 * 360) / 20 = <span class="highlight-text">36 % p.a.</span>
+        </div>
+        <p>Da 36 % weit über den üblichen Kontokorrentzinsen der Banken liegen, ist es für Sie fast immer vorteilhaft, Skonto zu ziehen.</p>
     </div>
 
+    <h2>4. Zusammenfassung der Zinstage-Regelung</h2>
     <div class="detail-section">
-        <span class="badge">Täglich</span>
-        <h3>C) Tageszinsen</h3>
-        <p>Anwendung bei tageweiser Laufzeit (t). Hierbei wird das kaufmännische Jahr mit 360 Tagen als Basis genutzt.</p>
-        <div class="formula-card">Z = (K * p * t) / (100 * 360)</div>
-    </div>
-
-    <h2>3. Praxisbeispiel zur Zinstage-Berechnung</h2>
-    <div class="detail-section">
-        <p>Berechnung vom 15. Mai bis 20. August nach der kaufmännischen Methode (30 Tage pro Monat):</p>
         <ul>
-            <li><strong>Mai:</strong> 15 Tage (30 Tage - 15 Tage des ersten Monats)</li>
-            <li><strong>Juni:</strong> 30 Tage (voller Monat)</li>
-            <li><strong>Juli:</strong> 30 Tage (voller Monat)</li>
-            <li><strong>August:</strong> 20 Tage (der letzte Tag wird voll mitgezählt)</li>
+            <li><strong>Anfangstag:</strong> Wird nicht mitgezählt (zinsfrei).</li>
+            <li><strong>Endtag:</strong> Wird voll mitgezählt.</li>
+            <li><strong>Monate:</strong> Werden kaufmännisch mit 30 Tagen berechnet.</li>
+            <li><strong>Jahr:</strong> Wird mit 360 Tagen berechnet.</li>
         </ul>
-        <div class="important-box" style="text-align: center;"><strong>Gesamt: 15 + 30 + 30 + 20 = 95 Zinstage</strong></div>
-    </div>
-
-    <h2>4. Umstellung der Formeln (Tageszinsen)</h2>
-    <div class="detail-section">
-        <p>Sie können die Formel nach der gesuchten Größe auflösen:</p>
-        <div class="grid-3">
-            <div class="grid-item"><strong>Kapital (K)</strong><br>(Z * 100 * 360) / (p * t)</div>
-            <div class="grid-item"><strong>Zinssatz (p)</strong><br>(Z * 100 * 360) / (K * t)</div>
-            <div class="grid-item"><strong>Tage (t)</strong><br>(Z * 100 * 360) / (K * p)</div>
-        </div>
     </div>
 </div>
 
