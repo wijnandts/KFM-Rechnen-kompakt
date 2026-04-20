@@ -2,60 +2,263 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Übung: Prozentrechnung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaufmännische Prozentrechnung - Training</title>
     <style>
-        :root { --main: #e17055; --light: #fab1a0; }
-        body { font-family: sans-serif; background: #ecf0f1; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
-        .question { margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--main); background: #f9f9f9; }
-        input { padding: 8px; width: 120px; }
-        button { background: var(--main); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-        .feedback { font-weight: bold; margin-top: 5px; }
-        .correct { color: green; } .wrong { color: red; }
+        :root {
+            --bg: #ffffff;
+            --border-dark: #1a1a1a;
+            --text-main: #2d3436;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* Haupt-Rahmen entsprechend dem Sketch */
+        .sketch-container {
+            background: var(--bg);
+            border: 2px solid var(--border-dark);
+            width: 100%;
+            max-width: 850px;
+            padding: 25px;
+            border-radius: 4px;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.05);
+        }
+
+        /* Header Bereich */
+        .header-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--text-main);
+            margin-right: auto;
+        }
+
+        .main-title {
+            border: 2px solid var(--border-dark);
+            border-radius: 15px;
+            padding: 5px 30px;
+            font-weight: bold;
+            background: #fff;
+        }
+
+        /* Themen & Stufen (Buttons mit Pfeil links oben) */
+        .grid-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sketch-button {
+            border: 2px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 8px 20px;
+            background: white;
+            position: relative;
+            cursor: pointer;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .sketch-button::before {
+            content: '⬑';
+            position: absolute;
+            top: -5px;
+            left: 5px;
+            font-size: 0.8rem;
+        }
+
+        .sketch-button.active {
+            background: #eee;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Aufgaben-Box */
+        .box-large {
+            border: 2px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 180px;
+            position: relative;
+        }
+
+        .box-large::before {
+            content: '⬑';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .box-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Eingabe-Bereich */
+        .input-box {
+            border: 2px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box::before {
+            content: '⬑';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .input-box label {
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        .input-box input {
+            border: none;
+            border-bottom: 1px dashed #333;
+            width: 100%;
+            font-size: 1.1rem;
+            padding: 5px;
+            outline: none;
+        }
+
+        /* Untere Button-Reihe (Rückmeldung & Nächste) */
+        .bottom-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-box {
+            flex: 1;
+            border: 2px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            background: white;
+            transition: background 0.2s;
+        }
+
+        .action-box:hover { background: #f9f9f9; }
+
+        .action-box::before {
+            content: '⬑';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        #feedback-text {
+            display: block;
+            min-height: 1.2em;
+        }
+
+        .correct { color: #27ae60; }
+        .wrong { color: #d63031; }
+
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Übung: Prozentrechnung</h1>
-        <p>Berechne die gesuchten Werte (USt meist 19% oder 7%).</p>
-        <div id="quiz-container"></div>
-        <button onclick="checkAnswers()">Prüfen</button>
-        <button onclick="location.reload()" style="background:#7f8c8d">Neue Fragen</button>
+
+    <div class="sketch-container">
+        <div class="header-row">
+            <a href="#" class="back-btn">← zurück zum Dashboard</a>
+            <div class="main-title">Hauptthema</div>
+        </div>
+
+        <div class="grid-row">
+            <div class="sketch-button active">Thema 1</div>
+            <div class="sketch-button">Thema 2</div>
+            <div class="sketch-button">Thema 3</div>
+            <div class="sketch-button">Thema 4</div>
+        </div>
+
+        <div class="grid-row" style="border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+            <div class="sketch-button">Stufe 1</div>
+            <div class="sketch-button">Stufe 2</div>
+            <div class="sketch-button">Stufe 3</div>
+        </div>
+
+        <div class="box-large">
+            <span class="box-title">Aufgabe:</span>
+            <p id="task-text">Lade kaufmännische Aufgabe...</p>
+        </div>
+
+        <div class="input-box">
+            <label>Lösung:</label>
+            <input type="number" id="user-input" placeholder="Ergebnis eingeben..." step="0.01">
+        </div>
+
+        <div class="bottom-actions">
+            <div class="action-box" onclick="checkResult()">
+                <span id="feedback-text">Rückmeldung</span>
+            </div>
+            <div class="action-box" onclick="nextTask()">
+                Nächste Aufgabe
+            </div>
+        </div>
     </div>
 
     <script>
-        const pool = [
+        const tasks = [
             { q: "Ein Sakko kostet 99,00€ brutto. Wie viel Euro beträgt der Rabatt bei 10% Nachlass?", a: 9.90 },
             { q: "Bareinnahmen brutto: 2.259,70€. Steuersatz 19%. Berechne den Nettowert.", a: 1898.91 },
             { q: "Ein Anorak kostet nach 5% Rabatt noch 118,75€. Wie hoch war der ursprüngliche Preis?", a: 125.00 },
             { q: "Bluse: Ursprünglich 21,00€, jetzt 16,80€. Wie viel Prozent Rabatt wurden gewährt?", a: 20 },
             { q: "Bruttopreis 34,98€, USt 19%. Wie hoch ist der Netto-Verkaufspreis?", a: 29.39 },
-            { q: "Lederkostüm 170€, Rabatt 22,10€. Wie viel Prozent sind das?", a: 13 },
-            { q: "Oberhemd 30€, Rabatt 4,05€. Wie viel Prozent sind das?", a: 13.5 },
             { q: "Ein Händler erhöht den Preis von 845,12€ auf 914,84€. Wie viel % Steigerung?", a: 8.25 }
         ];
 
-        // Pool auf 30 auffüllen
-        for(let i=0; i<22; i++) {
-            let base = Math.floor(Math.random() * 500) + 50;
-            pool.push({ q: `Berechne 19% Umsatzsteuer von ${base}€ Netto.`, a: (base * 0.19).toFixed(2) });
+        let current = null;
+
+        function nextTask() {
+            current = tasks[Math.floor(Math.random() * tasks.length)];
+            document.getElementById('task-text').innerText = current.q;
+            document.getElementById('feedback-text').innerText = "Rückmeldung";
+            document.getElementById('feedback-text').className = "";
+            document.getElementById('user-input').value = "";
+            document.getElementById('user-input').focus();
         }
 
-        const selected = pool.sort(() => 0.5 - Math.random()).slice(0, 5);
-        const container = document.getElementById('quiz-container');
-
-        selected.forEach((item, index) => {
-            container.innerHTML += `<div class="question"><p>${item.q}</p><input type="number" step="0.01" id="q${index}"> <div id="f${index}" class="feedback"></div></div>`;
-        });
-
-        function checkAnswers() {
-            selected.forEach((item, index) => {
-                const val = parseFloat(document.getElementById(`q${index}`).value);
-                const f = document.getElementById(`f${index}`);
-                if(Math.abs(val - item.a) < 0.15) { f.innerHTML = "Korrekt!"; f.className="feedback correct"; }
-                else { f.innerHTML = "Falsch. Korrekt: " + item.a; f.className="feedback wrong"; }
-            });
+        function checkResult() {
+            if (!current) return;
+            const val = parseFloat(document.getElementById('user-input').value);
+            const feedback = document.getElementById('feedback-text');
+            
+            if (Math.abs(val - current.a) < 0.05) {
+                feedback.innerText = "Richtig!";
+                feedback.className = "correct";
+            } else {
+                feedback.innerText = "Falsch! (Lösung: " + current.a.toFixed(2) + ")";
+                feedback.className = "wrong";
+            }
         }
+
+        // Start
+        nextTask();
     </script>
 </body>
 </html>
