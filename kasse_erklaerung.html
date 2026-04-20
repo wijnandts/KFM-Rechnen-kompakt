@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erklärung: Kassenabrechnung & Kassenbericht</title>
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --text: #2c3e50;
+            --kasse-main: #27ae60;
+            --kasse-dark: #1e8449;
+            --white: #ffffff;
+            --step-bg: #f1f9f5;
+            --border: #e2e8f0;
+            --highlight: #fff9db;
+            --error: #d63031;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        header {
+            border-bottom: 5px solid var(--kasse-main);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 2.2rem; color: var(--kasse-dark); margin: 0; }
+        h2 { font-size: 1.6rem; color: var(--kasse-main); margin-top: 45px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+
+        .detail-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            background: #fff;
+        }
+
+        .schema-box {
+            background: #f8fafc;
+            border: 2px solid var(--kasse-main);
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.2rem;
+            border-radius: 10px;
+        }
+
+        .operator {
+            color: var(--kasse-main);
+            font-weight: bold;
+            width: 30px;
+            display: inline-block;
+        }
+
+        .important-box {
+            background: var(--highlight);
+            border: 1px solid #e1dbb7;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .difference-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .diff-item {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .back-link { text-decoration: none; color: var(--text); font-weight: bold; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
+    
+    <header>
+        <h1>Die Kassenabrechnung</h1>
+        <p>Leitfaden zur täglichen Ermittlung der Einnahmen und zur Dokumentation im Kassenbericht.</p>
+    </header>
+
+    <h2>1. Der Kassenbericht</h2>
+    <div class="detail-section">
+        <p>Der Kassenbericht dient der täglichen Kontrolle des Bargeldbestands. Er ist für Unternehmen mit hohem Barzahlungsanteil (z. B. im Einzelhandel) zwingend erforderlich, um die Kassensturzfähigkeit jederzeit zu gewährleisten.</p>
+        <p>Man unterscheidet hierbei zwischen dem <strong>Ist-Bestand</strong> (tatsächlich gezähltes Geld) und dem <strong>Soll-Bestand</strong> (rechnerischer Wert laut Buchführung).</p>
+    </div>
+
+    <h2>2. Ermittlung der Tageseinnahmen (Tageslosung)</h2>
+    <div class="detail-section">
+        <p>Um die täglichen Bareinnahmen korrekt zu ermitteln, wird vom gezählten Endbestand ausgegangen und rückwärts gerechnet. Bitte verwenden Sie folgendes Schema:</p>
+        
+        <div class="schema-box">
+            &nbsp;&nbsp; Kassendifferenz-Endbestand (Ist-Bestand)<br>
+            <span class="operator">-</span> Kassen-Anfangsbestand (Wechselgeld)<br>
+            <span class="operator">+</span> Ausgaben (z. B. Porto, Reinigung, Einkäufe)<br>
+            <span class="operator">+</span> Privatentnahmen<br>
+            <span class="operator">-</span> Privateinlagen<br>
+            <hr>
+            <span class="operator">=</span> <strong>Tageseinnahmen (Tageslosung)</strong>
+        </div>
+
+        <div class="important-box">
+            <strong>Hinweis:</strong> Ausgaben und Privatentnahmen erhöhen rechnerisch die Tageseinnahmen, da dieses Geld ursprünglich eingenommen, aber bereits wieder aus der Kasse entnommen wurde.
+        </div>
+    </div>
+
+    <h2>3. Kassendifferenzen</h2>
+    <div class="detail-section">
+        <p>Stimmt der gezählte Ist-Bestand nicht mit dem rechnerischen Soll-Bestand überein, liegt eine Kassendifferenz vor. Diese müssen Sie dokumentieren und auf speziellen Konten verbuchen.</p>
+        
+        <div class="difference-grid">
+            <div class="diff-item" style="border-left: 5px solid var(--error);">
+                <strong>Kassenmanko (Unterschuss)</strong>
+                <p>Ist-Bestand &lt; Soll-Bestand</p>
+                <p><em>Mögliche Ursachen:</em> Rechenfehler beim Herausgeben von Wechselgeld, Diebstahl oder vergessene Belege für Ausgaben.</p>
+            </div>
+            <div class="diff-item" style="border-left: 5px solid var(--kasse-main);">
+                <strong>Kassenüberschuss</strong>
+                <p>Ist-Bestand &gt; Soll-Bestand</p>
+                <p><em>Mögliche Ursachen:</em> Zu wenig Wechselgeld herausgegeben oder Trinkgelder, die nicht separat gebucht wurden.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>4. Gesetzliche Anforderungen</h2>
+    <div class="detail-section">
+        <p>Beachten Sie für eine ordnungsgemäße Buchführung folgende Grundsätze:</p>
+        <ul>
+            <li><strong>Täglichkeit:</strong> Die Kassenabrechnung muss zeitnah (in der Regel täglich) erstellt werden.</li>
+            <li><strong>Belegpflicht:</strong> Keine Buchung ohne Beleg. Für jede Entnahme oder Ausgabe muss ein Nachweis vorliegen.</li>
+            <li><strong>Unveränderbarkeit:</strong> Nachträgliche Änderungen müssen als solche erkennbar bleiben.</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
