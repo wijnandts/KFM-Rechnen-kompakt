@@ -1,0 +1,203 @@
+import os
+
+html_content = """
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master-Guide: Zinsrechnung</title>
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --text: #2c3e50;
+            --zins-main: #2980b9;
+            --zins-dark: #1a5276;
+            --white: #ffffff;
+            --step-bg: #f4f9fd;
+            --border: #e2e8f0;
+            --highlight: #fff9db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        header {
+            border-bottom: 5px solid var(--zins-main);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        h1 { font-size: 2.5rem; color: var(--zins-dark); margin: 0; }
+        h2 { font-size: 1.8rem; color: var(--zins-main); margin-top: 50px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h3 { color: var(--zins-dark); background: var(--step-bg); padding: 10px; border-radius: 5px; margin-top: 30px; }
+
+        .back-link { text-decoration: none; color: var(--text); font-weight: bold; margin-bottom: 20px; display: inline-block; }
+
+        .detail-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            background: #fff;
+        }
+
+        .formula-card {
+            background: #f0f7fc;
+            border-left: 5px solid var(--zins-main);
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .important-box {
+            background: var(--highlight);
+            border: 1px solid #e1dbb7;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--zins-main);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        strong { color: var(--zins-dark); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
+    
+    <header>
+        <h1>Zinsrechnung</h1>
+        <p>Systematische Erläuterung der kaufmännischen Zinsberechnung für verschiedene Zeiträume.</p>
+    </header>
+
+    <div class="important-box">
+        <strong>Definition:</strong> Zinsen sind das Entgelt, das für das Überlassen von Kapital über einen bestimmten Zeitraum gezahlt wird. Die Berechnung basiert auf dem Kapital (K), dem Zinssatz (p) und der Zeit (t).
+    </div>
+
+    <h2>1. Die kaufmännische Zinsmethode (30/360)</h2>
+    <div class="detail-section">
+        <p>In der kaufmännischen Praxis wird die Berechnung durch vereinfachte Annahmen standardisiert, um eine einheitliche Grundlage zu schaffen:</p>
+        <div class="grid-3">
+            <div class="grid-item"><strong>Das Jahr</strong><br>wird mit 360 Tagen gerechnet.</div>
+            <div class="grid-item"><strong>Der Monat</strong><br>wird mit 30 Tagen gerechnet.</div>
+            <div class="grid-item"><strong>Der Zinstag</strong><br>wird ab dem ersten Tag berechnet (der Rückzahltag zählt nicht mit).</div>
+        </div>
+    </div>
+
+    <h2>2. Die drei Basisberechnungen</h2>
+
+    <div class="detail-section">
+        <span class="badge">Jährlich</span>
+        <h3>A) Jahreszinsen</h3>
+        <p>Diese Formel wird angewendet, wenn das Kapital für genau ein Jahr oder mehrere volle Jahre angelegt wird.</p>
+        <div class="formula-card">
+            Z = (K * p) / 100
+        </div>
+        <p><strong>Erklärung der Variablen:</strong><br>
+        <strong>Z:</strong> Zinsbetrag in Euro<br>
+        <strong>K:</strong> Kapital (Ausgangsbetrag)<br>
+        <strong>p:</strong> Zinssatz (Prozentsatz pro Jahr)
+        </p>
+    </div>
+
+    <div class="detail-section">
+        <span class="badge">Monatlich</span>
+        <h3>B) Monatszinsen</h3>
+        <p>Wird das Kapital nur für eine bestimmte Anzahl von Monaten angelegt, muss die Zeitkomponente (m) in die Formel integriert werden. Da ein Jahr 12 Monate hat, wird die Basisformel durch 12 geteilt.</p>
+        <div class="formula-card">
+            Z = (K * p * m) / (100 * 12)
+        </div>
+        <p><strong>Zusätzliche Variable:</strong><br>
+        <strong>m:</strong> Anzahl der Monate
+        </p>
+    </div>
+
+    <div class="detail-section">
+        <span class="badge">Täglich</span>
+        <h3>C) Tageszinsen</h3>
+        <p>Dies ist die präziseste kaufmännische Berechnung für Zeiträume unter einem Jahr. Hierbei wird die Anzahl der Tage (t) berücksichtigt. Basierend auf dem kaufmännischen Jahr wird durch 360 geteilt.</p>
+        <div class="formula-card">
+            Z = (K * p * t) / (100 * 360)
+        </div>
+        <p><strong>Zusätzliche Variable:</strong><br>
+        <strong>t:</strong> Anzahl der Tage (Zinstage)
+        </p>
+    </div>
+
+    <h2>3. Berechnung der Zinstage (Praxis)</h2>
+    <div class="detail-section">
+        <p>Um die Zinstage (t) korrekt zu ermitteln, beachten Sie bitte folgende Regeln der 30/360-Methode:</p>
+        <ul>
+            <li>Jeder volle Monat wird mit <strong>30 Tagen</strong> berechnet, unabhängig davon, ob er tatsächlich 28, 29 oder 31 Tage hat.</li>
+            <li><strong>Beispiel:</strong> Eine Anlage vom 10. März bis zum 10. Juni.<br>
+                März: 20 Tage (30 - 10)<br>
+                April: 30 Tage<br>
+                Mai: 30 Tage<br>
+                Juni: 10 Tage<br>
+                <strong>Gesamt: 90 Zinstage</strong>
+            </li>
+        </ul>
+    </div>
+
+    <h2>4. Umstellen der Formel</h2>
+    <div class="detail-section">
+        <p>Je nachdem, welche Information Sie suchen, muss die Formel (hier am Beispiel der Tageszinsen) umgestellt werden:</p>
+        <ul>
+            <li><strong>Suche Kapital (K):</strong> K = (Z * 100 * 360) / (p * t)</li>
+            <li><strong>Suche Zinssatz (p):</strong> p = (Z * 100 * 360) / (K * t)</li>
+            <li><strong>Suche Zeit (t):</strong> t = (Z * 100 * 360) / (K * p)</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
+"""
+
+with open("zinsen_erklaerung.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
