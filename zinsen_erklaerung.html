@@ -15,6 +15,8 @@
             --border: #e2e8f0;
             --highlight: #fff9db;
             --accent: #e67e22;
+            --profit: #27ae60;
+            --loss: #d63031;
         }
 
         body {
@@ -61,7 +63,7 @@
             padding: 25px;
             margin: 20px 0;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             text-align: center;
         }
 
@@ -80,14 +82,11 @@
         }
 
         .highlight-text { color: var(--accent); font-weight: bold; }
+        .profit-box { border-left: 5px solid var(--profit); background-color: #fafff9; padding: 15px; margin: 15px 0; }
+        .loss-box { border-left: 5px solid var(--loss); background-color: #fff9f9; padding: 15px; margin: 15px 0; }
         
-        .explanation-text {
-            margin-top: 15px;
-            font-size: 0.95rem;
-            color: #4a5568;
-        }
-
-        ul li { margin-bottom: 10px; }
+        .step-list { padding-left: 20px; }
+        .step-list li { margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -96,85 +95,93 @@
     <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
     
     <header>
-        <h1>Zinsrechnung für Kaufleute</h1>
-        <p>Umfassende Erläuterung aller finanzmathematischen Verfahren nach kaufmännischen Standards.</p>
+        <h1>Kaufmännische Zinsrechnung: Experten-Guide</h1>
+        <p>Vollständige Dokumentation aller Formeln, Zeitrechnungen und Wirtschaftlichkeitsanalysen.</p>
     </header>
 
-    <h2>1. Die Zeitrechnung (Zinstage-Methode)</h2>
+    <h2>1. Die kaufmännische Zeitrechnung (30/360)</h2>
     <div class="detail-section">
-        <p>In der kaufmännischen Praxis wird die <strong>30/360-Methode</strong> angewendet, um eine einfache und gleichmäßige Berechnung zu ermöglichen:</p>
-        <ul>
-            <li><strong>Standardisierung:</strong> Das Zinsjahr wird mit 360 Tagen und jeder Monat pauschal mit 30 Tagen berechnet. Dies gilt auch für den Februar oder Monate mit 31 Tagen.</li>
-            <li><strong>Gesetzliche Zählung:</strong> Gemäß BGB wird der Tag der Bereitstellung (Anfangstag) nicht verzinst. Die Verzinsung beginnt am Folgetag und endet mit dem Tag der Rückzahlung (Endtag), welcher voll mitzählt.</li>
+        <p>In der kaufmännischen Zinsrechnung wird die Laufzeit eines Kapitals nach standardisierten Regeln ermittelt:</p>
+        <ul class="step-list">
+            <li><strong>Monate und Jahre:</strong> Jeder Monat wird pauschal mit <strong>30 Tagen</strong> angesetzt, das Jahr mit <strong>360 Tagen</strong>. Dies glättet Unterschiede zwischen kurzen und langen Monaten.</li>
+            <li><strong>Zinstage-Ermittlung:</strong> Der Tag der Bereitstellung (Anfangstag) wird gesetzlich nicht verzinst. Der Tag der Rückzahlung (Endtag) zählt hingegen als voller Zinstag mit.</li>
+            <li><strong>Beispiel:</strong> Anlage vom 10.03. bis 15.05. ergibt: (30-10) Tage im März + 30 Tage im April + 15 Tage im Mai = <strong>65 Zinstage (t)</strong>.</li>
         </ul>
     </div>
 
-    <h2>2. Systematik der Zinsformeln</h2>
+    <h2>2. Die Basisformeln</h2>
     <div class="detail-section">
-        <p>Die Berechnung richtet sich nach dem jeweiligen Zeitraum der Kapitalüberlassung:</p>
+        <p>Die Formelwahl richtet sich nach der Zeiteinheit der Kapitalüberlassung:</p>
         <div class="grid-container">
             <div class="grid-item">
                 <span class="highlight-text">Jahreszinsen:</span><br>
                 Z = (K * p) / 100
-                <p class="explanation-text">Grundformel für die Verzinsung über genau ein oder mehrere volle Jahre.</p>
             </div>
             <div class="grid-item">
                 <span class="highlight-text">Monatszinsen:</span><br>
                 Z = (K * p * m) / 1.200
-                <p class="explanation-text">Erweiterung um die Monate (m). Der Divisor 1.200 ergibt sich aus 100 * 12 Monate.</p>
             </div>
             <div class="grid-item" style="grid-column: span 2;">
                 <span class="highlight-text">Tageszinsen:</span><br>
                 Z = (K * p * t) / 36.000
-                <p class="explanation-text">Präzise Berechnung für Tage (t). Der Divisor 36.000 ergibt sich aus 100 * 360 Tage (kaufmännisches Jahr).</p>
             </div>
         </div>
     </div>
 
-    <h2>3. Zinszahl und Zinsteiler (Rechenvereinfachung)</h2>
+    <h2>3. Kapitalvariationen (Vermehrtes & Vermindertes Kapital)</h2>
     <div class="detail-section">
-        <p>Dieses Verfahren dient der effizienten Bearbeitung von Kontokorrentkonten mit vielen Bewegungen bei gleichbleibendem Zinssatz:</p>
-        <ul>
-            <li><strong>Zinszahl (ZZ):</strong> Multiplikation von Kapital und Tagen, geteilt durch 100. Sie bündelt die variablen Werte.</li>
-            <li><strong>Zinsteiler (ZT):</strong> Fixer Wert aus Zinsjahr geteilt durch Zinssatz. Er bildet die konstante Komponente.</li>
-        </ul>
-        <div class="formula-card">Zinsen = Summe aller Zinszahlen / Zinsteiler</div>
-        <p class="explanation-text">Durch die Addition aller Zinszahlen müssen Sie den (oft krummen) Zinsteiler nur ein einziges Mal am Ende der Abrechnungsperiode anwenden.</p>
-    </div>
-
-    <h2>4. Kapitalvariationen (Vermehrtes & Vermindertes Kapital)</h2>
-    <div class="detail-section">
-        <p>Diese spezialisierten Formeln ermöglichen es Ihnen, das ursprüngliche Kapital (K) zu isolieren, wenn Ihnen lediglich ein Endbetrag vorliegt, in dem die Zinsen bereits enthalten oder bereits abgezogen sind.</p>
+        <p>Diese spezialisierten Formeln dienen dazu, den ursprünglichen Kapitalwert (K) zu errechnen, wenn Ihnen lediglich ein Endbetrag vorliegt, der die Zinsen bereits berücksichtigt.</p>
         
-        <h3>A) Zinsrechnung "im Hundert" (Vermehrtes Kapital)</h3>
-        <p>Anwendung: Ihnen ist das Endkapital (K<sub>vi</sub>) bekannt, welches das Grundkapital (100%) plus die Zinsen für den Zeitraum beinhaltet. Sie rechnen also <strong>im</strong> Hundert (Basis = 100 + p*t/360).</p>
+        <h3>A) Vermehrtes Kapital (Zinsrechnen im Hundert)</h3>
+        <p>Wird angewendet, wenn das Kapital inklusive Zinsen (K<sub>vi</sub>) gegeben ist. Sie rechnen den Grundwert (100) aus einer Basis heraus, die bereits über 100 liegt.</p>
         <div class="formula-card">
-            K = K<sub>vi</sub> * 100 / (100 + (p * t / 360))
+            K = K<sub>me</sub> * 100 / (100 + (p * t / 360))
         </div>
         
-        <h3>B) Zinsrechnung "auf Hundert" (Vermindertes Kapital)</h3>
-        <p>Anwendung: Ihnen ist das Restkapital (K<sub>mi</sub>) bekannt, von dem die Zinsen bereits abgezogen wurden (z.B. ein Auszahlungsbetrag nach Zinsvorabzug). Sie rechnen <strong>auf</strong> Hundert (Basis = 100 - p*t/360).</p>
+        <h3>B) Vermindertes Kapital (Zinsrechnen auf Hundert)</h3>
+        <p>Wird angewendet, wenn das Kapital nach Abzug von Zinsen (K<sub>mi</sub>) gegeben ist. Sie rechnen den Grundwert (100) aus einer Basis heraus, die unter 100 liegt.</p>
         <div class="formula-card">
             K = K<sub>mi</sub> * 100 / (100 - (p * t / 360))
         </div>
     </div>
 
-    <h2>5. Wirtschaftlichkeit: Finanzierungsgewinn durch Skonto</h2>
+    <h2>4. Wirtschaftlichkeitsprüfung (Finanzierungserfolg)</h2>
     <div class="detail-section">
-        <p>Die wichtigste Entscheidungshilfe im Einkauf: Lohnt sich die Nutzung von Skonto mittels Bankkredit?</p>
-        <ul>
-            <li><strong>Effektiver Jahreszins (p<sub>eff</sub>):</strong> Rechnet den kurzfristigen Skontovorteil auf ein Jahr hoch. Liegt dieser über dem Bankzinssatz, ist Skonto immer rentabel.</li>
-            <li><strong>Finanzierungsergebnis:</strong> Direkte Gegenüberstellung des Skontovorteils in Euro und der Kreditzinsen für die Zeitüberbrückung.</li>
+        <p>Diese Analyse ist entscheidend für die Frage, ob eine Skontonutzung durch Kreditaufnahme vorteilhaft ist.</p>
+        
+        <ul class="step-list">
+            <li><strong>Schritt 1: Skontoersparnis</strong><br>
+                Ermitteln Sie den Skontobetrag in Euro: <em>Rechnungsbetrag * Skontosatz / 100</em>.</li>
+            <li><strong>Schritt 2: Kreditzinsen</strong><br>
+                Berechnen Sie die Bankzinsen für den Zeitraum, den Sie durch die vorzeitige Zahlung überbrücken (Zinstage = Nettoziel - Skontofrist). Basis ist der Überweisungsbetrag (Rechnung - Skonto).<br>
+                <em>Z = (Überweisungsbetrag * Bankzinssatz * Tage) / 36.000</em></li>
+            <li><strong>Schritt 3: Differenzrechnung</strong><br>
+                Subtrahieren Sie die Kreditzinsen von der Skontoersparnis.</li>
         </ul>
-        <div class="formula-card">Erfolg = Skontobetrag (€) - Kreditzinsen (€)</div>
-        <p class="explanation-text">Ein positiver Wert signalisiert einen <strong>Finanzierungsgewinn</strong>. In der Praxis liegt der Effektivzins von Skonto oft bei 30-50%, weshalb Skontonutzung fast immer wirtschaftlich ist.</p>
+
+        <div class="formula-card">Finanzierungserfolg = Skontobetrag (€) - Kreditzinsen (€)</div>
+
+        <div class="profit-box">
+            <strong>Finanzierungsgewinn:</strong> Ein positives Ergebnis zeigt, dass die Skontoersparnis die Zinskosten übersteigt. Die Skontonutzung ist rentabel.
+        </div>
+        <div class="loss-box">
+            <strong>Finanzierungsverlust:</strong> Ein negatives Ergebnis zeigt, dass der Bankkredit teurer ist als der Skontovorteil.
+        </div>
     </div>
 
-    <h2>6. Mathematische Umstellungen</h2>
+    <h2>5. Effektiver Zinssatz (p<sub>eff</sub>)</h2>
+    <div class="detail-section">
+        <p>Um die Kosten des Lieferantenkredits direkt mit dem Zinssatz Ihrer Hausbank zu vergleichen, wird der Skontovorteil auf das Jahr hochgerechnet:</p>
+        <div class="formula-card">
+            p<sub>eff</sub> = (Skontosatz * 360) / (Zahlungsziel - Skontofrist)
+        </div>
+    </div>
+
+    <h2>6. Mathematische Umstellungen (Tageszinsen)</h2>
     <div class="grid-container">
-        <div class="grid-item"><strong>Suche Kapital (K):</strong><br>(Z * 100 * 360) / (p * t)</div>
-        <div class="grid-item"><strong>Suche Zinssatz (p):</strong><br>(Z * 100 * 360) / (K * t)</div>
-        <div class="grid-item"><strong>Suche Zeit (t):</strong><br>(Z * 100 * 360) / (K * p)</div>
+        <div class="grid-item"><strong>Kapital (K) gesucht:</strong><br>(Z * 36.000) / (p * t)</div>
+        <div class="grid-item"><strong>Zinssatz (p) gesucht:</strong><br>(Z * 36.000) / (K * t)</div>
+        <div class="grid-item"><strong>Zeit (t) gesucht:</strong><br>(Z * 36.000) / (K * p)</div>
     </div>
 </div>
 
