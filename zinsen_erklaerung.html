@@ -151,15 +151,17 @@
         <div class="formula-card">Zinsen = Summe aller Zinszahlen / Zinsteiler</div>
     </div>
 
-    <h2>4. Kapitalvariationen</h2>
+    <h2>4. Kapitalvariationen (Vermehrtes & Vermindertes Kapital)</h2>
     <div class="detail-section">
+        <p>Diese Berechnungen werden angewendet, wenn das Kapital inklusive oder exklusive Zinsen bekannt ist und auf das Grundkapital (K) geschlossen werden soll.</p>
+        
         <h3>A) Vermehrtes Kapital (K<sub>v</sub>)</h3>
-        <p>Ermittlung des Endbetrags inklusive der Zinsen (Grundwert + Zinsen).</p>
-        <div class="formula-card">K<sub>v</sub> = (K * (36.000 + p * t)) / 36.000</div>
+        <p>Ermittlung des Grundkapitals (K), wenn das Endkapital inklusive Zinsen gegeben ist (Zinsrechnung "im Hundert").</p>
+        <div class="formula-card">K = (K<sub>v</sub> * 36.000) / (36.000 + (p * t))</div>
         
         <h3>B) Vermindertes Kapital (K<sub>m</sub>)</h3>
-        <p>Ermittlung des Kapitals abzüglich der Zinsen (Grundwert - Zinsen).</p>
-        <div class="formula-card">K<sub>m</sub> = (K * (36.000 - p * t)) / 36.000</div>
+        <p>Ermittlung des Grundkapitals (K), wenn das Kapital nach Abzug von Zinsen gegeben ist (Zinsrechnung "auf Hundert").</p>
+        <div class="formula-card">K = (K<sub>m</sub> * 36.000) / (36.000 - (p * t))</div>
     </div>
 
     <h2>5. Wirtschaftlichkeitsprüfung: Skonto vs. Kredit</h2>
