@@ -2,295 +2,60 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Durchschnitts-Master Pro</title>
+    <title>Übung: Prozentrechnung</title>
     <style>
-        :root {
-            --primary: #3f3db5;
-            --accent: #e17055;
-            --bg: #f4f7f6;
-            --text: #2d3436;
-            --sidebar: #2c3e50;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--text);
-        }
-
-        .app-container {
-            display: flex;
-            width: 95%;
-            max-width: 1100px;
-            gap: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        /* Hauptbereich */
-        .exercise-space {
-            flex: 2;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h1 { font-size: 26px; margin: 0 0 5px 0; color: var(--text); }
-        .subtitle { color: #95a5a6; font-size: 14px; margin-bottom: 30px; }
-
-        .task-box {
-            background: #f9f9f9;
-            border-left: 6px solid var(--primary);
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            min-height: 100px;
-        }
-
-        .task-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--primary);
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        #task-text { font-size: 17px; line-height: 1.6; color: #34495e; }
-
-        .warning-box {
-            background: #fff5f0;
-            color: var(--accent);
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            border: 1px solid rgba(225, 112, 85, 0.2);
-        }
-
-        input#user-result {
-            width: 100%;
-            padding: 18px;
-            border: 2px solid #edeff2;
-            border-radius: 12px;
-            font-size: 20px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input#user-result:focus { border-color: var(--primary); }
-
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            padding: 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-sub {
-            background: #dfe6e9;
-            color: #636e72;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            margin-top: 10px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-main:hover, .btn-sub:hover { opacity: 0.9; }
-
-        /* Sidebar / Rechner */
-        .sidebar {
-            flex: 1;
-            background: var(--sidebar);
-            border-radius: 15px;
-            padding: 25px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .calc-header { font-size: 10px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 15px; }
-
-        .display {
-            background: #1e272e;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: right;
-            margin-bottom: 20px;
-            min-height: 60px;
-        }
-
-        #calc-screen { font-family: monospace; font-size: 28px; color: #2ecc71; display: block; }
-        #status-msg { font-size: 12px; opacity: 0.7; }
-
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .keypad button {
-            background: #34495e;
-            border: none;
-            padding: 15px;
-            color: white;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .keypad button.op { background: var(--primary); }
-        .keypad button.clr { background: var(--accent); }
-        .keypad button:hover { background: #45627d; }
+        :root { --main: #e17055; --light: #fab1a0; }
+        body { font-family: sans-serif; background: #ecf0f1; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        .question { margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--main); background: #f9f9f9; }
+        input { padding: 8px; width: 120px; }
+        button { background: var(--main); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .feedback { font-weight: bold; margin-top: 5px; }
+        .correct { color: green; } .wrong { color: red; }
     </style>
 </head>
 <body>
+    <div class="card">
+        <h1>Übung: Prozentrechnung</h1>
+        <p>Berechne die gesuchten Werte (USt meist 19% oder 7%).</p>
+        <div id="quiz-container"></div>
+        <button onclick="checkAnswers()">Prüfen</button>
+        <button onclick="location.reload()" style="background:#7f8c8d">Neue Fragen</button>
+    </div>
 
-<div class="app-container">
-    <section class="exercise-space">
-        <h1>Durchschnitts-Master Pro</h1>
-        <p class="subtitle">Übungsmodul für Mittelwerte und kaufmännische Kalkulationen</p>
+    <script>
+        const pool = [
+            { q: "Ein Sakko kostet 99,00€ brutto. Wie viel Euro beträgt der Rabatt bei 10% Nachlass?", a: 9.90 },
+            { q: "Bareinnahmen brutto: 2.259,70€. Steuersatz 19%. Berechne den Nettowert.", a: 1898.91 },
+            { q: "Ein Anorak kostet nach 5% Rabatt noch 118,75€. Wie hoch war der ursprüngliche Preis?", a: 125.00 },
+            { q: "Bluse: Ursprünglich 21,00€, jetzt 16,80€. Wie viel Prozent Rabatt wurden gewährt?", a: 20 },
+            { q: "Bruttopreis 34,98€, USt 19%. Wie hoch ist der Netto-Verkaufspreis?", a: 29.39 },
+            { q: "Lederkostüm 170€, Rabatt 22,10€. Wie viel Prozent sind das?", a: 13 },
+            { q: "Oberhemd 30€, Rabatt 4,05€. Wie viel Prozent sind das?", a: 13.5 },
+            { q: "Ein Händler erhöht den Preis von 845,12€ auf 914,84€. Wie viel % Steigerung?", a: 8.25 }
+        ];
 
-        <div class="task-box">
-            <span class="task-label" id="category-label">Kalkulation</span>
-            <div id="task-text">Lade Aufgabe...</div>
-        </div>
-
-        <div class="warning-box">
-            ! Info: Bitte runden Sie Ihr Ergebnis kaufmännisch auf 2 Stellen!
-        </div>
-
-        <input type="text" id="user-result" placeholder="Ihr Ergebnis eingeben" readonly>
-        
-        <button class="btn-main" onclick="validate()">Antwort prüfen</button>
-        <button class="btn-sub" onclick="loadTask()">Nächste Aufgabe</button>
-    </section>
-
-    <aside class="sidebar">
-        <div class="calc-header">RECHNER / STATUS</div>
-        <div class="display">
-            <span id="calc-screen">0</span>
-            <span id="status-msg">System bereit</span>
-        </div>
-
-        <div class="keypad">
-            <button onclick="num('7')">7</button><button onclick="num('8')">8</button><button onclick="num('9')">9</button><button class="op" onclick="num('/')">÷</button>
-            <button onclick="num('4')">4</button><button onclick="num('5')">5</button><button onclick="num('6')">6</button><button class="op" onclick="num('*')">×</button>
-            <button onclick="num('1')">1</button><button onclick="num('2')">2</button><button onclick="num('3')">3</button><button class="op" onclick="num('-')">-</button>
-            <button class="clr" onclick="num('C')">C</button><button onclick="num('0')">0</button><button onclick="num('.')">,</button><button class="op" onclick="num('+')">+</button>
-            <button class="op" style="grid-column: span 4;" onclick="calculate()">=</button>
-        </div>
-    </aside>
-</div>
-
-<script>
-    const taskPool = [
-        {
-            cat: "Mischungsrechnen",
-            q: "Für eine Hausmischung werden 24 kg Kaffee der Sorte A (3,06 €/kg) mit 19 kg der Sorte B (3,90 €/kg) gemischt. Berechnen Sie den Durchschnittspreis pro Kilo.",
-            a: 3.43
-        },
-        {
-            cat: "Handelskalkulation",
-            q: "Ein Sakko hat einen Bruttoverkaufspreis von 99,00 €. Der Händler gewährt Ihnen einen saisonalen Nachlass von 10%. Wie hoch ist der Rabattbetrag in Euro?",
-            a: 9.90
-        },
-        {
-            cat: "Umsatzsteuer",
-            q: "Ihre Bareinnahmen belaufen sich auf 2.259,70 € brutto (inkl. 19% USt). Ermitteln Sie den Nettowert dieser Einnahmen.",
-            a: 1898.91
-        },
-        {
-            cat: "Rückwärtsrechnung",
-            q: "Nach Abzug von 5% Rabatt kostet ein Anorak noch 118,75 €. Welchen Preis hatte der Artikel ursprünglich?",
-            a: 125.00
-        },
-        {
-            cat: "Preiskalkulation",
-            q: "Der Bruttopreis einer Ware liegt bei 34,98 €. Berechnen Sie den Netto-Verkaufspreis bei einem Steuersatz von 19%.",
-            a: 29.39
-        },
-        {
-            cat: "Prozentrechnen",
-            q: "Ein Lederkostüm kostet 170,00 €. Sie erhalten einen Rabatt von 22,10 €. Wie viel Prozent entspricht dieser Preisnachlass?",
-            a: 13.00
+        // Pool auf 30 auffüllen
+        for(let i=0; i<22; i++) {
+            let base = Math.floor(Math.random() * 500) + 50;
+            pool.push({ q: `Berechne 19% Umsatzsteuer von ${base}€ Netto.`, a: (base * 0.19).toFixed(2) });
         }
-    ];
 
-    let currentTask;
-    let inputBuffer = "";
+        const selected = pool.sort(() => 0.5 - Math.random()).slice(0, 5);
+        const container = document.getElementById('quiz-container');
 
-    function loadTask() {
-        currentTask = taskPool[Math.floor(Math.random() * taskPool.length)];
-        document.getElementById('category-label').innerText = currentTask.cat;
-        document.getElementById('task-text').innerText = currentTask.q;
-        document.getElementById('user-result').value = "";
-        document.getElementById('calc-screen').innerText = "0";
-        document.getElementById('status-msg').innerText = "Aufgabe geladen";
-        document.getElementById('status-msg').style.color = "white";
-        inputBuffer = "";
-    }
+        selected.forEach((item, index) => {
+            container.innerHTML += `<div class="question"><p>${item.q}</p><input type="number" step="0.01" id="q${index}"> <div id="f${index}" class="feedback"></div></div>`;
+        });
 
-    function num(char) {
-        const screen = document.getElementById('calc-screen');
-        if(char === 'C') {
-            inputBuffer = "";
-            screen.innerText = "0";
-        } else {
-            inputBuffer += char;
-            screen.innerText = inputBuffer;
+        function checkAnswers() {
+            selected.forEach((item, index) => {
+                const val = parseFloat(document.getElementById(`q${index}`).value);
+                const f = document.getElementById(`f${index}`);
+                if(Math.abs(val - item.a) < 0.15) { f.innerHTML = "Korrekt!"; f.className="feedback correct"; }
+                else { f.innerHTML = "Falsch. Korrekt: " + item.a; f.className="feedback wrong"; }
+            });
         }
-    }
-
-    function calculate() {
-        try {
-            const result = eval(inputBuffer.replace(',', '.'));
-            inputBuffer = result.toString();
-            document.getElementById('calc-screen').innerText = result.toFixed(2).replace('.', ',');
-            document.getElementById('user-result').value = result.toFixed(2).replace('.', ',');
-        } catch(e) {
-            document.getElementById('calc-screen').innerText = "Error";
-            inputBuffer = "";
-        }
-    }
-
-    function validate() {
-        const userVal = parseFloat(document.getElementById('user-result').value.replace(',', '.'));
-        const status = document.getElementById('status-msg');
-        const screen = document.getElementById('calc-screen');
-
-        if(Math.abs(userVal - currentTask.a) < 0.015) {
-            status.innerText = "KORREKT";
-            status.style.color = "#2ecc71";
-            screen.innerText = "✓";
-        } else {
-            status.innerText = "FALSCH (Korrekt: " + currentTask.a.toFixed(2) + ")";
-            status.style.color = "#e17055";
-            screen.innerText = "X";
-        }
-    }
-
-    // Initialisierung
-    loadTask();
-</script>
+    </script>
 </body>
 </html>
