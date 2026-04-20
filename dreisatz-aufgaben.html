@@ -6,75 +6,64 @@
     <title>Dreisatz-Master Pro</title>
     <style>
         :root {
-            --bg: #f3f4f6;
+            --bg: #f4f7f6;
             --card: #ffffff;
-            --primary: #4f46e5;
-            --secondary: #10b981;
+            --primary: #3498db;
+            --secondary: #27ae60;
             --accent: #f59e0b;
-            --text: #111827;
-            --text-light: #6b7280;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-color: #dcdde1;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .container { width: 100%; max-width: 500px; }
+        .container { width: 100%; max-width: 600px; }
 
-        /* Zurück-Button Styling */
-        .header-nav {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .btn-back {
-            background: #ffffff;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 8px 16px;
-            font-weight: bold;
-            text-decoration: none;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            box-shadow: 0 4px 0 #e5e7eb;
-            transition: all 0.1s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-back:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #e5e7eb;
+        /* Zurück-Button Styling (Einheitlich) */
+        .back-link { 
+            text-decoration: none; 
+            color: var(--text-light); 
+            font-weight: bold; 
+            display: block; 
+            margin-bottom: 20px; 
+            align-self: flex-start;
         }
 
         .card {
             background: var(--card);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        h1 { font-size: 1.4rem; color: var(--primary); text-align: center; margin-bottom: 20px; font-weight: 800; }
+        header { 
+            border-bottom: 3px solid var(--primary); 
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            text-align: center;
+        }
 
-        .nav { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        h1 { font-size: 1.8rem; color: var(--text); margin: 0; font-weight: 800; }
+
+        .nav { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         
         .nav button {
             padding: 14px;
-            border-radius: 14px;
-            border: 2px solid #f3f4f6;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
             background: #f9fafb;
             font-weight: 600;
             cursor: pointer;
@@ -85,17 +74,17 @@
         
         .nav button.active { 
             border-color: var(--primary); 
-            color: var(--primary); 
-            background: #eef2ff; 
+            color: white; 
+            background: var(--primary); 
         }
 
         .display {
             background: #f8fafc;
             padding: 20px;
-            border-radius: 18px;
+            border-radius: 15px;
             font-size: 1.1rem;
             line-height: 1.6;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             margin-bottom: 16px;
             min-height: 120px;
             text-align: left;
@@ -114,92 +103,95 @@
         input {
             width: 100%;
             padding: 16px;
-            border-radius: 14px;
-            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
             font-size: 1.3rem;
             text-align: center;
-            appearance: none;
             outline: none;
         }
         
         input:focus { border-color: var(--primary); }
 
         .btn-check {
-            background: var(--secondary);
-            color: white;
-            padding: 16px;
-            border-radius: 14px;
-            border: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-
-        .btn-next {
             background: var(--primary);
             color: white;
             padding: 16px;
-            border-radius: 14px;
+            border-radius: 10px;
             border: none;
             font-weight: 700;
             font-size: 1.1rem;
             cursor: pointer;
+            text-transform: uppercase;
         }
 
-        #res { display: none; padding: 16px; border-radius: 14px; text-align: center; font-weight: bold; margin-top: 16px; }
+        .btn-next {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
 
+        #res { display: none; padding: 16px; border-radius: 10px; text-align: center; font-weight: bold; margin-top: 16px; }
+
+        /* Taschenrechner Styling */
         .calc-toggle {
-            background: #374151;
+            background: #2f3640;
             color: white;
             width: 100%;
             padding: 12px;
-            border-radius: 14px;
-            margin-top: 12px;
+            border-radius: 10px;
+            margin-top: 20px;
             border: none;
             font-weight: 600;
-            font-size: 0.9rem;
+            cursor: pointer;
         }
 
         #mini-calc {
             display: none;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
-            background: #1f2937;
+            background: #2f3640;
             padding: 16px;
-            border-radius: 18px;
+            border-radius: 15px;
             margin-top: 12px;
         }
 
         #mini-calc button {
             padding: 15px 5px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: none;
-            background: #4b5563;
+            background: #7f8c8d;
             color: white;
             font-weight: bold;
             font-size: 1.1rem;
+            cursor: pointer;
         }
 
         #calc-screen {
             grid-column: span 4;
-            background: #111827;
-            color: #10b981;
+            background: #f5f6fa;
+            color: #2f3640;
             padding: 12px;
             text-align: right;
-            font-family: 'Courier New', monospace;
-            font-size: 1.4rem;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            overflow: hidden;
+            font-family: monospace;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
         footer { 
             text-align: center; 
             margin-top: 24px; 
             padding: 20px; 
-            border-top: 1px solid #e5e7eb; 
+            border-top: 1px solid var(--border-color); 
             width: 100%;
             font-size: 0.9rem;
+            color: var(--text-light);
         }
         
         .contact { color: var(--primary); text-decoration: none; font-weight: bold; }
@@ -209,10 +201,12 @@
 
 <div class="container">
     <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
-    </div>
 
     <div class="card">
-        <h1>Dreisatz-Master</h1>
+        <header>
+            <h1>Dreisatz-Master</h1>
+            <p style="color: var(--text-light); margin-top: 5px;">Übungsmodul für kaufmännische Rechnungen</p>
+        </header>
         
         <div class="nav">
             <button onclick="changeMode('prop', this)" class="active">Proportional (gerade)</button>
@@ -222,11 +216,11 @@
 
         <div id="quest" class="display">Aufgabe wird erstellt...</div>
 
-        <div class="hint">⚠️ Bitte auf 2 Dezimalstellen runden!</div>
+        <div class="hint">⚠️ Bitte runden Sie Ihr Ergebnis auf 2 Dezimalstellen!</div>
 
         <div class="input-area">
             <input type="number" id="val" placeholder="0,00" step="0.01">
-            <button class="btn-check" onclick="verify()">Ergebnis prüfen</button>
+            <button class="btn-check" onclick="verify()">Eingabe prüfen</button>
             <button class="btn-next" onclick="next()">Nächste Aufgabe</button>
         </div>
 
@@ -238,13 +232,13 @@
             <button onclick="calcIn('7')">7</button><button onclick="calcIn('8')">8</button><button onclick="calcIn('9')">9</button><button onclick="calcIn('/')">÷</button>
             <button onclick="calcIn('4')">4</button><button onclick="calcIn('5')">5</button><button onclick="calcIn('6')">6</button><button onclick="calcIn('*')">×</button>
             <button onclick="calcIn('1')">1</button><button onclick="calcIn('2')">2</button><button onclick="calcIn('3')">3</button><button onclick="calcIn('-')">-</button>
-            <button onclick="calcIn('0')">0</button><button onclick="calcIn('.')">,</button><button onclick="calcClear()" style="background: #991b1b">C</button><button onclick="calcIn('+')">+</button>
+            <button onclick="calcIn('0')">0</button><button onclick="calcIn('.')">,</button><button onclick="calcClear()" style="background: var(--error)">C</button><button onclick="calcIn('+')">+</button>
             <button onclick="calcEval()" style="grid-column: span 4; background: var(--secondary);">=</button>
         </div>
     </div>
 
     <footer>
-        <p>Probleme oder Fragen? Bitte schreiben Sie eine kurze E-Mail, am besten mit Screenshot und kurzer Fehlerbeschreibung.<br>
+        <p>Haben Sie Fragen oder bemerken Sie einen Fehler? Bitte kontaktieren Sie uns per E-Mail.<br>
         <a href="mailto:wijnandts@bk-erkelenz.de" class="contact">Kontakt aufnehmen</a></p>
     </footer>
 </div>
@@ -307,17 +301,18 @@
     }
 
     function verify() {
-        const user = parseFloat(document.getElementById('val').value.replace(',', '.'));
+        const userValue = document.getElementById('val').value.replace(',', '.');
+        const user = parseFloat(userValue);
         const r = document.getElementById('res');
         r.style.display = 'block';
         const rounded = Math.round(targetValue * 100) / 100;
         
         if(!isNaN(user) && Math.abs(user - rounded) < 0.015) {
             r.style.background = "#d1fae5"; r.style.color = "#065f46"; 
-            r.innerHTML = "<b>Richtig!</b><br>Das Ergebnis ist " + rounded.toLocaleString('de-DE', {minimumFractionDigits: 2}) + ".";
+            r.innerHTML = "<b>Richtig!</b><br>Das Ergebnis lautet " + rounded.toLocaleString('de-DE', {minimumFractionDigits: 2}) + ".";
         } else {
             r.style.background = "#fee2e2"; r.style.color = "#991b1b"; 
-            r.innerHTML = "<b>Leider falsch.</b><br>Die richtige Lösung ist " + rounded.toLocaleString('de-DE', {minimumFractionDigits: 2}) + ".";
+            r.innerHTML = "<b>Leider nicht korrekt.</b><br>Die richtige Lösung lautet " + rounded.toLocaleString('de-DE', {minimumFractionDigits: 2}) + ".";
         }
     }
 
