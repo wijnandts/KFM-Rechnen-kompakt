@@ -15,7 +15,7 @@
             --prozent-light: #fab1a0; --prozent-dark: #e17055;
             --zinsen-light: #55efc4; --zinsen-dark: #00b894;
             --kalkulation-light: #ff7675; --kalkulation-dark: #d63031;
-            --kasse-light: #ffeaa7; --kasse-dark: #f1c40f; /* Gold-Gelb für Kasse */
+            --kasse-light: #ffeaa7; --kasse-dark: #f1c40f; 
         }
 
         body {
@@ -34,20 +34,34 @@
             margin: 0 auto 50px auto;
         }
 
-        h1 { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
+        h1 { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; margin: 0; }
 
         .header-icons { display: flex; gap: 15px; }
-        .icon-box { text-align: center; font-weight: bold; font-size: 0.7rem; }
+        
+        .icon-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .icon-box { text-align: center; font-weight: bold; font-size: 0.7rem; cursor: pointer; }
+        
         .sq { 
             width: 45px; height: 45px; background: white; border: 2px solid #bdc3c7; 
             border-radius: 8px; display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem; margin-bottom: 4px; box-shadow: 0 4px 0 #bdc3c7;
+            transition: transform 0.1s;
         }
 
-        /* Dashboard Grid - Optimiert für 6 Themen */
+        .icon-link:active .sq {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #bdc3c7;
+        }
+
+        /* Dashboard Grid */
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 25px;
             max-width: 1200px;
             margin: 0 auto;
@@ -117,8 +131,9 @@
 <header>
     <h1>Kaufmännisches Rechnen</h1>
     <div class="header-icons">
-        <div class="icon-box"><div class="sq">✉</div>Kontakt</div>
-        <div class="icon-box"><div class="sq">▦</div>Rechner</div>
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="icon-link">
+            <div class="icon-box"><div class="sq">✉</div>Kontakt</div>
+        </a>
     </div>
 </header>
 
