@@ -15,8 +15,6 @@
             --border: #e2e8f0;
             --highlight: #fff9db;
             --accent: #e67e22;
-            --profit: #27ae60;
-            --loss: #d63031;
         }
 
         body {
@@ -45,9 +43,6 @@
 
         h1 { font-size: 2.2rem; color: var(--zins-dark); margin: 0; }
         h2 { font-size: 1.6rem; color: var(--zins-main); margin-top: 45px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
-        h3 { color: var(--zins-dark); background: var(--step-bg); padding: 10px; border-radius: 5px; margin-top: 25px; }
-
-        .back-link { text-decoration: none; color: var(--text); font-weight: bold; margin-bottom: 20px; display: inline-block; }
 
         .detail-section {
             margin-bottom: 30px;
@@ -60,10 +55,10 @@
         .formula-card {
             background: #f0f7fc;
             border-left: 5px solid var(--zins-main);
-            padding: 20px;
+            padding: 25px;
             margin: 20px 0;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             text-align: center;
         }
 
@@ -82,25 +77,24 @@
         }
 
         .highlight-text { color: var(--accent); font-weight: bold; }
-        .profit-text { color: var(--profit); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <a href="index.html" class="back-link">← Zurück zum Dashboard</a>
+    <a href="index.html" style="text-decoration: none; color: var(--text); font-weight: bold;">← Zurück zum Dashboard</a>
     
     <header>
         <h1>Kaufmännische Zinsrechnung: Das Kompendium</h1>
-        <p>Vollständige Übersicht aller Rechenwege inklusive Kapitalvariationen und Finanzierungserfolg.</p>
+        <p>Präzise Darstellung aller Verfahren und Formeln gemäß Ihren Vorgaben.</p>
     </header>
 
     <h2>1. Grundlagen und Zinstage-Regelung</h2>
     <div class="detail-section">
-        <p>In der kaufmännischen Zinsrechnung wird die Zeit nach der Methode 30/360 berechnet:</p>
+        <p>In der kaufmännischen Zinsrechnung (Methode 30/360) gelten folgende Regeln:</p>
         <ul>
             <li><strong>Zinsjahr:</strong> 360 Tage | <strong>Zinsmonat:</strong> 30 Tage.</li>
-            <li><strong>Tage:</strong> Der Tag der Einzahlung ist zinsfrei, der Tag der Rückzahlung zählt voll.</li>
+            <li><strong>Tage:</strong> Der erste Tag der Anlage bleibt zinsfrei, der letzte Tag wird voll mitgezählt.</li>
         </ul>
     </div>
 
@@ -120,27 +114,27 @@
         <div class="formula-card">Zinsen = Summe aller Zinszahlen / Zinsteiler</div>
     </div>
 
-    <h2>4. Vermehrtes und Vermindertes Kapital</h2>
+    <h2>4. Kapitalvariationen (Vermehrtes & Vermindertes Kapital)</h2>
     <div class="detail-section">
-        <p>Berechnung des Grundkapitals (K), wenn Zinsen bereits enthalten sind oder abgezogen wurden:</p>
+        <p>Ermittlung des Grundkapitals (K) nach Ihren Vorgaben:</p>
         
-        <h3>A) Vermehrtes Kapital (Zinsrechnung "im Hundert")</h3>
-        <p>Grundwert (100) + Zinsen (Z) = 100 + Z</p>
+        <h3>A) Vermehrtes Kapital (Zinsrechnen im Hundert)</h3>
+        <p>Berechnung des Kapitals inklusive Zinsen (K<sub>vi</sub>):</p>
         <div class="formula-card">
-            K = (K<sub>v</sub> * 100) / (100 + Z)
+            K = K<sub>vi</sub> * 100 / (100 + (p * t / 360))
         </div>
         
-        <h3>B) Vermindertes Kapital (Zinsrechnung "auf Hundert")</h3>
-        <p>Grundwert (100) - Zinsen (Z) = 100 - Z</p>
+        <h3>B) Vermindertes Kapital (Zinsrechnen auf Hundert)</h3>
+        <p>Berechnung des Kapitals nach Abzug von Zinsen (K<sub>mi</sub>):</p>
         <div class="formula-card">
-            K = (K<sub>m</sub> * 100) / (100 - Z)
+            K = K<sub>mi</sub> * 100 / (100 - (p * t / 360))
         </div>
     </div>
 
-    <h2>5. Wirtschaftlichkeitsprüfung: Skonto</h2>
+    <h2>5. Wirtschaftlichkeit & Skonto</h2>
     <div class="detail-section">
         <h3>Finanzierungsgewinn / -verlust</h3>
-        <div class="formula-card">Ergebnis = Skontobetrag (€) - Kreditzinsen (€)</div>
+        <div class="formula-card">Erfolg = Skontobetrag (€) - Kreditzinsen (€)</div>
 
         <h3>Effektiver Jahreszinssatz (p<sub>eff</sub>)</h3>
         <div class="formula-card">p<sub>eff</sub> = (Skontosatz * 360) / (Zahlungsziel - Skontofrist)</div>
