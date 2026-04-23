@@ -12,10 +12,11 @@
             --bg: #f5f6fa;
             --border-dark: #2d3436;
             --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             display: flex;
             justify-content: center;
@@ -31,9 +32,10 @@
             max-width: 950px;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 10px 10px 0px var(--border-dark);
+            box-shadow: 10px 10px 0px var(--border-dark); /* Sketch-Stil Schatten */
         }
 
+        /* Header & Navigation */
         .header-row {
             display: flex;
             align-items: center;
@@ -48,15 +50,14 @@
             font-weight: 600;
             display: flex;
             align-items: center;
+            gap: 5px;
             padding: 8px 15px;
             border-radius: 8px;
             transition: background 0.2s;
-            border: 1px solid transparent;
         }
 
         .back-btn:hover {
             background: var(--light);
-            border-color: var(--border-dark);
         }
 
         .main-title {
@@ -66,9 +67,11 @@
             font-weight: 800;
             color: var(--main);
             text-transform: uppercase;
+            letter-spacing: 1px;
             margin-left: auto;
         }
 
+        /* Themen-Kacheln */
         .grid-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -83,19 +86,30 @@
             background: var(--white);
             cursor: pointer;
             font-weight: 700;
-            transition: all 0.2s;
+            color: var(--border-dark);
+            font-size: 0.85rem;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
+            line-height: 1.2;
+        }
+
+        .topic-button:hover {
+            transform: translateY(-3px);
+            border-color: var(--main);
+            color: var(--main);
         }
 
         .topic-button.active {
             background: var(--main);
             color: var(--white);
+            border-color: var(--border-dark);
             box-shadow: 4px 4px 0px var(--border-dark);
         }
 
+        /* Aufgaben-Box */
         .task-box {
             border: 2px solid var(--border-dark);
             border-radius: 15px;
@@ -103,6 +117,7 @@
             margin-bottom: 25px;
             min-height: 160px;
             background: #fffdfb;
+            position: relative;
         }
 
         .label {
@@ -114,6 +129,7 @@
             text-transform: uppercase;
         }
 
+        /* Input Bereich */
         .input-area {
             border: 2px solid var(--border-dark);
             border-radius: 15px;
@@ -122,6 +138,17 @@
             display: flex;
             align-items: center;
             background: var(--white);
+            transition: box-shadow 0.2s;
+        }
+
+        .input-area:focus-within {
+            box-shadow: 0 0 0 3px var(--light);
+        }
+
+        .input-area label {
+            font-weight: 800;
+            margin-right: 20px;
+            font-size: 1.2rem;
         }
 
         .input-area input {
@@ -131,9 +158,19 @@
             font-size: 1.4rem;
             padding: 5px;
             outline: none;
+            color: var(--main-dark);
             font-weight: 600;
+            background: transparent;
         }
 
+        .unit-label {
+            margin-left: 15px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--main);
+        }
+
+        /* Action Buttons */
         .footer-actions {
             display: flex;
             gap: 20px;
@@ -148,25 +185,51 @@
             font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.2s;
+            user-select: none;
         }
 
-        .btn-feedback { background: var(--main); color: var(--white); }
-        .btn-next { background: #dfe6e9; }
+        .btn-feedback { 
+            background: var(--main); 
+            color: var(--white);
+        }
 
-        .correct-anim { background: #27ae60 !important; color: white !important; }
-        .wrong-anim { background: #d63031 !important; color: white !important; }
+        .btn-feedback:hover {
+            background: var(--main-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-next { 
+            background: #dfe6e9; 
+            color: var(--border-dark);
+        }
+
+        .btn-next:hover {
+            background: #b2bec3;
+            transform: scale(1.02);
+        }
+
+        /* Result Styles */
+        .res-text { font-size: 1.1rem; }
+        .correct-anim { color: #fff !important; background: #27ae60 !important; border-color: var(--border-dark) !important; }
+        .wrong-anim { color: #fff !important; background: #d63031 !important; border-color: var(--border-dark) !important; }
+
+        @media (max-width: 600px) {
+            .footer-actions { flex-direction: column; }
+            .grid-row { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
         <div class="header-row">
-            <a href="index.html" class="back-btn">← DASHBOARD</a>
+            <a href="index.html" class="back-link">← DASHBOARD</a>
             <div class="main-title">Prozentrechnung</div>
         </div>
 
-        <div class="grid-row">
+        <div class="grid-row" id="topic-nav">
             <div class="topic-button active" onclick="setTopic('W', this)">Prozentwert</div>
             <div class="topic-button" onclick="setTopic('p', this)">Prozentsatz</div>
             <div class="topic-button" onclick="setTopic('G', this)">Grundwert</div>
@@ -176,54 +239,46 @@
 
         <div class="task-box">
             <span class="label">Aufgabe</span>
-            <p id="question-text" style="font-size: 1.25rem; line-height: 1.6; margin: 0;">Lade Aufgabe...</p>
+            <p id="question-text" style="font-size: 1.25rem; line-height: 1.6; margin: 0; font-weight: 500;">Lade Aufgabe...</p>
         </div>
 
         <div class="input-area">
-            <label style="font-weight:800; margin-right:20px;">LÖSUNG</label>
+            <label>LÖSUNG</label>
             <input type="number" id="user-val" placeholder="0,00" step="0.01">
-            <span id="unit" style="margin-left:15px; font-weight:800; color:var(--main);"></span>
+            <span id="unit" class="unit-label"></span>
         </div>
 
         <div class="footer-actions">
             <div id="feedback-btn" class="btn-action btn-feedback" onclick="validate()">
                 <span id="res-label">Prüfen</span>
             </div>
-            <div class="btn-action btn-next" onclick="nextTask()">Nächste</div>
+            <div class="btn-action btn-next" onclick="nextTask()">
+                Nächste
+            </div>
         </div>
     </div>
 
     <script>
         const taskPool = {
             'W': [
-                { q: "Ein Händler kauft Ware für 4.500 €. Er erhält 12 % Rabatt. Wie viel Euro spart er?", a: 540, u: "€" },
-                { q: "Von 850 Mitarbeitern sind 6 % im Außendienst tätig. Wie viele Personen sind das?", a: 51, u: "Pers." },
-                { q: "Eine Versicherung erstattet 65 % eines Schadens von 2.400 €. Wie hoch ist die Erstattung?", a: 1560, u: "€" },
-                { q: "Ein Kunde zahlt eine Rechnung von 1.200 € unter Abzug von 3 % Skonto. Wie hoch ist der Skontobetrag?", a: 36, u: "€" }
+                { q: "Ein Unternehmen investiert 12.000 € in neue Hardware. Der Hersteller gewährt 15 % Rabatt. Wie hoch ist der Nachlass in Euro?", a: 1800, u: "€" },
+                { q: "Von 500 verkauften Tickets wurden 8 % storniert. Wie viele Tickets sind das?", a: 40, u: "Stück" }
             ],
             'p': [
-                { q: "Ein Vertreter erhält 450 € Provision für einen Umsatz von 9.000 €. Wie viel Prozent sind das?", a: 5, u: "%" },
-                { q: "Ein PC wurde von 800 € auf 680 € reduziert. Wie hoch ist der Prozentsatz des Rabatts?", a: 15, u: "%" },
-                { q: "In einer Klasse mit 25 Schülern fehlen heute 2 Schüler. Wie hoch ist die Fehlquote in Prozent?", a: 8, u: "%" },
-                { q: "Von 1.250 produzierten Teilen sind 50 fehlerhaft. Wie hoch ist der Ausschussanteil?", a: 4, u: "%" }
+                { q: "Ein Artikel wurde von 250 € auf 212,50 € reduziert. Berechne den Rabattsatz.", a: 15, u: "%" },
+                { q: "Ein Makler erhält 1.800 € Provision bei einem Verkaufswert von 60.000 €. Wie viel Prozent sind das?", a: 3, u: "%" }
             ],
             'G': [
-                { q: "Ein Mieter zahlt 180 € Nebenkosten. Das sind 15 % der Gesamtmiete. Wie hoch ist die Gesamtmiete?", a: 1200, u: "€" },
-                { q: "Ein Skonto-Abzug von 2 % entspricht 44 €. Wie hoch war der ursprüngliche Rechnungsbetrag?", a: 2200, u: "€" },
-                { q: "24 Schüler einer Schule sind in der Theater-AG. Das sind 6 % aller Schüler. Wie viele Schüler hat die Schule?", a: 400, u: "Schüler" },
-                { q: "Eine Provision von 4 % ergibt 160 €. Welcher Umsatz wurde erzielt?", a: 4000, u: "€" }
+                { q: "Ein Skonto-Abzug von 2 % entspricht 24 €. Wie hoch war der ursprüngliche Rechnungsbetrag?", a: 1200, u: "€" },
+                { q: "12 Personen einer Firma sind im Homeoffice, das sind 15 % der Belegschaft. Wie viele Mitarbeiter hat die Firma?", a: 80, u: "Pers." }
             ],
             'Gplus': [
-                { q: "Ein Fernseher kostet inklusive 19 % USt 1.190 €. Wie hoch ist der Nettopreis?", a: 1000, u: "€" },
-                { q: "Ein Rechnungsbetrag von 535,50 € enthält 19 % USt. Berechne den Nettowert.", a: 450, u: "€" },
-                { q: "Nach einer Mieterhöhung um 5 % zahlt eine Familie 840 €. Wie hoch war die Miete vorher?", a: 800, u: "€" },
-                { q: "Ein Preis stieg um 20 % auf 144 €. Wie hoch war der ursprüngliche Preis?", a: 120, u: "€" }
+                { q: "Ein Nettopreis von 1.200 € soll inklusive 19 % USt berechnet werden. Wie hoch ist der Brutto-Verkaufspreis?", a: 1428, u: "€" },
+                { q: "Ein Preis stieg um 10 % auf 110 €. Wie hoch war der Preis vor der Erhöhung?", a: 100, u: "€" }
             ],
             'Gminus': [
-                { q: "Nach Abzug von 10 % Rabatt kostet ein Handy noch 360 €. Wie hoch war der Originalpreis?", a: 400, u: "€" },
-                { q: "Ein Wintermantel wurde um 30 % reduziert und kostet nun 140 €. Was kostete er vorher?", a: 200, u: "€" },
-                { q: "Eine Flasche enthält nach 20 % Entnahme noch 400 ml. Wie viel war ursprünglich enthalten?", a: 500, u: "ml" },
-                { q: "Nach 2 % Skonto-Abzug zahlt ein Kunde 1.470 €. Wie hoch war der Rechnungsbetrag?", a: 1500, u: "€" }
+                { q: "Ein Mantel kostet nach 20 % Rabatt noch 160 €. Wie hoch war der Preis vor der Reduzierung?", a: 200, u: "€" },
+                { q: "Eine Flasche enthält nach 25 % Gratis-Entnahme noch 600 ml. Wie viel war ursprünglich enthalten?", a: 800, u: "ml" }
             ]
         };
 
@@ -240,23 +295,33 @@
         function nextTask() {
             const tasks = taskPool[currentCategory];
             currentTask = tasks[Math.floor(Math.random() * tasks.length)];
+            
+            // UI Reset
             document.getElementById('question-text').innerText = currentTask.q;
             document.getElementById('unit').innerText = currentTask.u;
             document.getElementById('res-label').innerText = "Prüfen";
-            document.getElementById('feedback-btn').className = "btn-action btn-feedback";
-            document.getElementById('user-val').value = "";
-            document.getElementById('user-val').focus();
+            
+            const fbBtn = document.getElementById('feedback-btn');
+            fbBtn.className = "btn-action btn-feedback";
+            
+            const input = document.getElementById('user-val');
+            input.value = "";
+            input.focus();
         }
 
         function validate() {
+            if (!currentTask) return;
             const val = parseFloat(document.getElementById('user-val').value);
+            const label = document.getElementById('res-label');
             const fbBtn = document.getElementById('feedback-btn');
+            
             if (isNaN(val)) return;
+
             if (Math.abs(val - currentTask.a) < 0.01) {
-                document.getElementById('res-label').innerText = "Korrekt!";
+                label.innerText = "Korrekt!";
                 fbBtn.className = "btn-action btn-feedback correct-anim";
             } else {
-                document.getElementById('res-label').innerText = "Lösung: " + currentTask.a;
+                label.innerText = "Lösung: " + currentTask.a;
                 fbBtn.className = "btn-action btn-feedback wrong-anim";
             }
         }
