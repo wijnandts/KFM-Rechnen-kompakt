@@ -3,259 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training: Prozentrechnung</title>
+    <title>Prozent-Master Pro</title>
     <style>
         :root {
-            --main: #e17055;
-            --light: #fab1a0;
-            --bg: #ecf0f1;
-            --border-dark: #2d3436;
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --primary: #4834d4;
+            --primary-hover: #3c2bb3;
+            --secondary: #95a5a6;
+            --accent: #e17055;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --calc-bg: #2d3436;
+            --calc-btn: #4b5563;
         }
 
         body {
-            font-family: sans-serif;
-            background-color: var(--bg);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            padding: 20px;
-            margin: 0;
+            color: var(--text-main);
         }
 
-        .card {
-            background: white;
-            border: 2px solid var(--border-dark);
-            width: 100%;
-            max-width: 900px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .header-row {
+        .main-wrapper {
             display: flex;
-            align-items: center;
-            margin-bottom: 25px;
+            gap: 30px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: flex-start;
         }
 
-        .back-btn {
-            font-size: 0.9rem;
-            text-decoration: none;
-            color: var(--border-dark);
-            margin-right: auto;
-        }
-
-        .main-title {
-            border: 2px solid var(--main);
+        /* Übungskarte */
+        .exercise-card {
+            background: var(--white);
+            flex: 1;
             border-radius: 20px;
-            padding: 6px 35px;
-            font-weight: bold;
-            color: var(--main);
-            text-transform: uppercase;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* Themen-Navigation basierend auf Sketch */
-        .grid-row {
+        .dashboard-back {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        h1 { font-size: 1.8rem; margin: 0 0 5px 0; color: var(--text-main); }
+        .subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
+
+        /* Themen-Pills */
+        .topic-nav {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 30px;
         }
 
-        .topic-button {
-            border: 2px solid var(--main);
-            border-radius: 12px;
-            padding: 10px 15px;
-            background: white;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--main);
+        .topic-pill {
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: #f1f2f6;
+            color: var(--text-muted);
             font-size: 0.85rem;
-            transition: all 0.2s;
-            flex: 1;
-            min-width: 160px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .topic-button.active {
-            background: var(--main);
-            color: white;
-        }
-
-        /* Aufgaben-Box */
-        .task-box {
-            border: 2px solid var(--border-dark);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            min-height: 180px;
-            background: #fdfdfd;
-        }
-
-        .label {
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: block;
-            margin-bottom: 15px;
-            color: var(--main);
-        }
-
-        /* Lösungseingabe */
-        .input-area {
-            border: 2px solid var(--border-dark);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            background: #fff;
-        }
-
-        .input-area label {
-            font-weight: bold;
-            margin-right: 15px;
-            font-size: 1.1rem;
-        }
-
-        .input-area input {
-            border: none;
-            border-bottom: 2px solid var(--light);
-            width: 100%;
-            font-size: 1.2rem;
-            padding: 5px;
-            outline: none;
-        }
-
-        /* Footer Buttons (Rückmeldung & Nächste) */
-        .footer-actions {
-            display: flex;
-            gap: 20px;
-        }
-
-        .btn-action {
-            flex: 1;
-            border: 2px solid var(--border-dark);
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            background: white;
-            text-transform: uppercase;
-            transition: background 0.2s;
+            border: 2px solid transparent;
+            transition: all 0.2s;
         }
 
-        .btn-feedback { border-color: var(--main); color: var(--main); }
-        .btn-feedback:hover { background: #fff5f2; }
-        .btn-next { background: var(--bg); }
-        .btn-next:hover { background: #dfe6e9; }
+        .topic-pill:hover { background: #dfe4ea; }
+        .topic-pill.active {
+            background: var(--white);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
-        .correct { color: #27ae60; font-weight: bold; }
-        .wrong { color: var(--main); font-weight: bold; }
+        /* Aufgaben-Bereich */
+        .task-container {
+            background: #f8f9fa;
+            border-left: 5px solid var(--primary);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .task-text { font-size: 1.15rem; line-height: 1.6; margin: 0; }
+
+        .info-box {
+            background: #fff9f1;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: #d35400;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Input */
+        .input-group { margin-bottom: 20px; }
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #edeff2;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus { border-color: var(--primary); }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #f1f2f6; color: var(--text-main); }
+        .btn-secondary:hover { background: #dfe4ea; }
+
+        /* Taschenrechner */
+        .calc-wrapper {
+            width: 320px;
+            background: var(--calc-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .calc-header { color: #9ca3af; font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 15px; }
+        #calc-screen {
+            width: 100%;
+            background: #1f2937;
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            color: #10b981;
+            font-size: 1.8rem;
+            text-align: right;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-btn {
+            background: var(--calc-btn);
+            border: none;
+            border-radius: 10px;
+            padding: 18px 0;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .calc-btn.op { background: var(--primary); }
+        .calc-btn.clear { background: var(--accent); }
+        .calc-btn.eq { background: #10b981; grid-column: span 2; }
+
+        /* Feedback Colors */
+        .correct { background: #10b981 !important; color: white !important; }
+        .wrong { background: #ef4444 !important; color: white !important; }
+
+        @media (max-width: 900px) {
+            .main-wrapper { flex-direction: column; align-items: center; }
+            .exercise-card { width: 100%; box-sizing: border-box; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="header-row">
-            <a href="index.html" class="back-btn">← zurück zum Dashboard</a>
-            <div class="main-title">Prozentrechnung</div>
+<div class="main-wrapper">
+    <div class="exercise-card">
+        <a href="index.html" class="dashboard-back">← Dashboard</a>
+        <h1>Prozent-Master Pro</h1>
+        <p class="subtitle">Übungsmodul für kaufmännische Prozentrechnung</p>
+
+        <div class="topic-nav">
+            <div class="topic-pill active" onclick="setCat('W', this)">Prozentwert</div>
+            <div class="topic-pill" onclick="setCat('p', this)">Prozentsatz</div>
+            <div class="topic-pill" onclick="setCat('G', this)">Grundwert</div>
+            <div class="topic-pill" onclick="setCat('Gplus', this)">Vermehrter GW</div>
+            <div class="topic-pill" onclick="setCat('Gminus', this)">Verminderter GW</div>
         </div>
 
-        <div class="grid-row" id="topic-nav">
-            <div class="topic-button active" onclick="setTopic('W', this)">Prozentwert berechnen</div>
-            <div class="topic-button" onclick="setTopic('p', this)">Prozentsatz berechnen</div>
-            <div class="topic-button" onclick="setTopic('G', this)">Grundwert berechnen</div>
-            <div class="topic-button" onclick="setTopic('Gplus', this)">verm. Grundwert (Netto/Brutto)</div>
-            <div class="topic-button" onclick="setTopic('Gminus', this)">verm. Grundwert (Rabatt)</div>
+        <div class="task-container">
+            <p id="task-text" class="task-text">Lade Aufgabe...</p>
         </div>
 
-        <div class="task-box">
-            <span class="label">Aufgabe:</span>
-            <p id="question-text" style="font-size: 1.15rem; line-height: 1.6;">Lade Aufgabe...</p>
+        <div class="info-box">
+            ⚠️ Info: Bitte das Ergebnis kaufmännisch auf 2 Stellen runden!
         </div>
 
-        <div class="input-area">
-            <label>Lösung:</label>
-            <input type="number" id="user-val" placeholder="Ergebnis eingeben..." step="0.01">
-            <span id="unit" style="margin-left: 10px; font-weight: bold; color: var(--border-dark);"></span>
+        <div class="input-group">
+            <input type="number" id="user-input" placeholder="Dein Ergebnis eingeben" step="0.01">
         </div>
 
-        <div class="footer-actions">
-            <div class="btn-action btn-feedback" onclick="validate()">
-                <span id="res-label">Rückmeldung</span>
-            </div>
-            <div class="btn-action btn-next" onclick="nextTask()">
-                Nächste Aufgabe
-            </div>
-        </div>
+        <button id="check-btn" class="btn btn-primary" onclick="check()">Antwort prüfen</button>
+        <button class="btn btn-secondary" onclick="next()">Nächste Aufgabe</button>
     </div>
 
-    <script>
-        const taskPool = {
-            'W': [
-                { q: "Ein Großhändler gewährt auf eine Warenlieferung im Wert von 1.250,00 € einen Treuerabatt von 12 %. Wie viel Euro beträgt der Rabatt?", a: 150.00, u: "€" },
-                { q: "Von 3.500 produzierten Bauteilen weisen 4 % Mängel auf. Wie viele Bauteile sind fehlerhaft?", a: 140, u: "Stück" }
-            ],
-            'p': [
-                { q: "Ein Artikel wurde von 180,00 € auf 153,00 € reduziert. Wie viel Prozent Preisnachlass entspricht das?", a: 15, u: "%" },
-                { q: "Ein Vertreter erhält für einen Verkauf von 5.000,00 € eine Provision von 225,00 €. Berechne den Provisionssatz.", a: 4.5, u: "%" }
-            ],
-            'G': [
-                { q: "Nach Abzug von 3 % Skonto (das entspricht 18,00 €) wird eine Rechnung beglichen. Wie hoch war der ursprüngliche Rechnungsbetrag?", a: 600.00, u: "€" },
-                { q: "In einer Stadt sind 2.400 Personen arbeitslos. Das entspricht einer Quote von 8 %. Wie viele Erwerbspersonen gibt es insgesamt?", a: 30000, u: "Personen" }
-            ],
-            'Gplus': [
-                { q: "Ein PC wird für 1.071,00 € inklusive 19 % Umsatzsteuer verkauft. Berechne den Nettopreis.", a: 900.00, u: "€" },
-                { q: "Eine Aktie ist um 15 % gestiegen und steht nun bei 230,00 €. Wie hoch war der Kurs vor dem Anstieg?", a: 200.00, u: "€" }
-            ],
-            'Gminus': [
-                { q: "Ein Wintermantel kostet im Ausverkauf nach 20 % Rabatt noch 144,00 €. Berechne den ursprünglichen Verkaufspreis.", a: 180.00, u: "€" },
-                { q: "Ein Unternehmen reduziert seine Belegschaft um 10 % auf nunmehr 450 Mitarbeiter. Wie viele Mitarbeiter waren es zuvor?", a: 500, u: "Mitarbeiter" }
-            ]
-        };
-
-        let currentCategory = 'W';
-        let currentTask = null;
-
-        function setTopic(cat, element) {
-            currentCategory = cat;
-            document.querySelectorAll('.topic-button').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            nextTask();
-        }
-
-        function nextTask() {
-            const tasks = taskPool[currentCategory];
-            currentTask = tasks[Math.floor(Math.random() * tasks.length)];
-            document.getElementById('question-text').innerText = currentTask.q;
-            document.getElementById('unit').innerText = currentTask.u;
-            document.getElementById('res-label').innerText = "Rückmeldung";
-            document.getElementById('res-label').className = "";
-            document.getElementById('user-val').value = "";
-            document.getElementById('user-val').focus();
-        }
-
-        function validate() {
-            if (!currentTask) return;
-            const val = parseFloat(document.getElementById('user-val').value);
-            const label = document.getElementById('res-label');
+    <div class="calc-wrapper">
+        <div class="calc-header">RECHNER</div>
+        <input type="text" id="calc-screen" readonly value="0">
+        <div class="calc-grid">
+            <button class="calc-btn clear" onclick="cClear()">C</button>
+            <button class="calc-btn op" onclick="cInput('/')">÷</button>
+            <button class="calc-btn op" onclick="cInput('*')">×</button>
+            <button class="calc-btn op" onclick="cInput('-')">-</button>
             
-            if (isNaN(val)) return;
+            <button class="calc-btn" onclick="cInput('7')">7</button>
+            <button class="calc-btn" onclick="cInput('8')">8</button>
+            <button class="calc-btn" onclick="cInput('9')">9</button>
+            <button class="calc-btn op" onclick="cInput('+')">+</button>
 
-            if (Math.abs(val - currentTask.a) < 0.01) {
-                label.innerText = "Korrekt! ✓";
-                label.className = "correct";
-            } else {
-                label.innerText = "Falsch! Lösung: " + currentTask.a.toLocaleString('de-DE', {minimumFractionDigits: 2});
-                label.className = "wrong";
-            }
+            <button class="calc-btn" onclick="cInput('4')">4</button>
+            <button class="calc-btn" onclick="cInput('5')">5</button>
+            <button class="calc-btn" onclick="cInput('6')">6</button>
+            <button class="calc-btn" onclick="cInput('.')">,</button>
+
+            <button class="calc-btn" onclick="cInput('1')">1</button>
+            <button class="calc-btn" onclick="cInput('2')">2</button>
+            <button class="calc-btn" onclick="cInput('3')">3</button>
+            <button class="calc-btn" onclick="cInput('0')">0</button>
+
+            <button class="calc-btn eq" onclick="cEval()">=</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const pool = {
+        'W': [
+            { q: "Ein Händler gewährt auf 1.450 € Warenwert 12 % Rabatt. Wie hoch ist der Rabattbetrag?", a: 174 },
+            { q: "Berechne 19 % Umsatzsteuer für einen Nettobetrag von 840,00 €.", a: 159.6 },
+            { q: "Ein Unternehmen investiert 25.000 €. 8 % davon entfallen auf Software. Wie viel Euro sind das?", a: 2000 }
+        ],
+        'p': [
+            { q: "Ein Vertreter erhält 315 € Provision bei 4.500 € Umsatz. Wie hoch ist der Prozentsatz?", a: 7 },
+            { q: "Ein Artikel wurde von 120 € auf 102 € reduziert. Wie viel % Rabatt entspricht das?", a: 15 },
+            { q: "Von 800 Bauteilen sind 16 fehlerhaft. Wie hoch ist die Ausschussquote in %?", a: 2 }
+        ],
+        'G': [
+            { q: "Ein Mieter zahlt 210 € Nebenkosten, was 14 % der Warmmiete entspricht. Wie hoch ist die Warmmiete?", a: 1500 },
+            { q: "3 % Skonto entsprechen einem Betrag von 45 €. Berechne den Rechnungsbetrag.", a: 1500 },
+            { q: "Ein Vertreter erhält bei 5 % Provisionssatz 1.200 €. Welcher Umsatz wurde erzielt?", a: 24000 }
+        ],
+        'Gplus': [
+            { q: "Ein Brutto-Preis von 535,50 € enthält 19 % USt. Berechne den Nettopreis.", a: 450 },
+            { q: "Nach einer Preiserhöhung um 8 % kostet ein Rohstoff 324 €/t. Wie hoch war der alte Preis?", a: 300 },
+            { q: "Eine Aktie steht nach 15 % Gewinn bei 230 €. Was war der Einstiegskurs?", a: 200 }
+        ],
+        'Gminus': [
+            { q: "Ein Mantel kostet nach 20 % Rabatt noch 144 €. Wie hoch war der ursprüngliche Preis?", a: 180 },
+            { q: "Nach Abzug von 2 % Skonto zahlt ein Kunde 1.470 €. Wie hoch war die Rechnung?", a: 1500 },
+            { q: "Ein Lagerbestand sank um 15 % auf 680 Einheiten. Wie hoch war der Anfangsbestand?", a: 800 }
+        ]
+    };
+
+    let cat = 'W';
+    let task = null;
+
+    function setCat(c, el) {
+        cat = c;
+        document.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+        next();
+    }
+
+    function next() {
+        const tasks = pool[cat];
+        task = tasks[Math.floor(Math.random() * tasks.length)];
+        document.getElementById('task-text').innerText = task.q;
+        document.getElementById('user-input').value = "";
+        document.getElementById('check-btn').innerText = "Antwort prüfen";
+        document.getElementById('check-btn').className = "btn btn-primary";
+        document.getElementById('user-input').focus();
+    }
+
+    function check() {
+        const val = parseFloat(document.getElementById('user-input').value);
+        const btn = document.getElementById('check-btn');
+        if (isNaN(val)) return;
+
+        if (Math.abs(val - task.a) < 0.01) {
+            btn.innerText = "Korrekt!";
+            btn.className = "btn btn-primary correct";
+        } else {
+            btn.innerText = "Falsch! Lösung: " + task.a.toFixed(2);
+            btn.className = "btn btn-primary wrong";
         }
+    }
 
-        // Initialisierung
-        nextTask();
-    </script>
+    // Rechner Funktionen
+    const screen = document.getElementById('calc-screen');
+    function cInput(v) { if(screen.value === "0") screen.value = ""; screen.value += v; }
+    function cClear() { screen.value = "0"; }
+    function cEval() { 
+        try { screen.value = eval(screen.value); } 
+        catch { screen.value = "Error"; } 
+    }
+
+    next();
+</script>
+
 </body>
 </html>
