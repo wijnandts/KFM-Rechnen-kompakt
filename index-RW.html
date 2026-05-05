@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RW-Lernportal BFS 2</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-blue: #0056b3;
+            --gray: #7f8c8d;
+            --border-purple: #8e44ad;
+            --border-blue: #3498db;
+            --border-orange: #e67e22;
+            --border-green: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header { text-align: center; margin-bottom: 40px; max-width: 800px; }
+        .header h1 { color: var(--primary-blue); font-size: 2.2rem; margin: 0; font-weight: 800; }
+        .header p { color: var(--gray); font-size: 1rem; margin: 10px 0 0; line-height: 1.5; }
+        .header a { color: var(--primary-blue); text-decoration: none; font-weight: bold; }
+
+        .section-container {
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px;
+            width: 100%;
+        }
+
+        .tile {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid transparent;
+        }
+
+        .tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .icon { font-size: 2.5rem; margin-right: 20px; min-width: 55px; text-align: center; }
+        .content { flex-grow: 1; text-align: left; }
+        .content h2 { color: var(--primary-blue); font-size: 1.15rem; margin: 0 0 5px; font-weight: 700; }
+        .content p { font-size: 0.85rem; line-height: 1.4; margin: 0 0 10px; color: #555; }
+
+        .badge {
+            background-color: #ecf0f1;
+            color: var(--gray);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .blue-border { border-left-color: var(--border-blue); }
+        .orange-border { border-left-color: var(--border-orange); }
+        .green-border { border-left-color: var(--border-green); }
+        .purple-border { border-left-color: var(--border-purple); }
+
+        .footer { 
+            margin-top: 50px; 
+            color: var(--gray); 
+            font-size: 0.9rem; 
+            text-align: center; 
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .footer a { color: var(--primary-blue); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>RW-Lernportal BFS 2</h1>
+        <p>Interaktive Übungen für das Berufskolleg.</p>
+        <p>Bei Wünschen: <a href="mailto:wijnandts@bk-erkelenz.de">wijnandts@bk-erkelenz.de</a></p>
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">Schritt 1: Der Jahresbeginn (Eröffnung)</div>
+        <div class="tile-grid">
+            <a href="./ebzuebk.html" class="tile blue-border">
+                <span class="icon">🔄</span>
+                <div class="content">
+                    <h2>1. Transfer: EB zu EBK</h2>
+                    <p>Werte von der Bilanz in das Konto übertragen.</p>
+                    <span class="badge">Transferleistung</span>
+                </div>
+            </a>
+            <a href="./eroeffnung.html" class="tile blue-border">
+                <span class="icon">🔑</span>
+                <div class="content">
+                    <h2>2. Eröffnungsbilanzkonto</h2>
+                    <p>EK-Berechnung und EBK-Erstellung.</p>
+                    <span class="badge">Grundlagen</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">Schritt 2: Laufendes Buchen</div>
+        <div class="tile-grid">
+            <a href="./bestandskonten.html" class="tile blue-border">
+                <span class="icon">📁</span>
+                <div class="content">
+                    <h2>3. Bestandskonten</h2>
+                    <p>Systematik von Zunahmen und Abnahmen.</p>
+                    <span class="badge">Bestand</span>
+                </div>
+            </a>
+            <a href="./erfolgskonten.html" class="tile orange-border">
+                <span class="icon">📈</span>
+                <div class="content">
+                    <h2>4. Erfolgskonten</h2>
+                    <p>Aufwendungen und Erträge buchen.</p>
+                    <span class="badge">Erfolg</span>
+                </div>
+            </a>
+            <a href="./steuern.html" class="tile green-border">
+                <span class="icon">💸</span>
+                <div class="content">
+                    <h2>5. Umsatzsteuer</h2>
+                    <p>Vorsteuer und Umsatzsteuer im Betrieb.</p>
+                    <span class="badge">Steuern</span>
+                </div>
+            </a>
+            <a href="./steuerabschluss.html" class="tile purple-border">
+                <span class="icon">🏁</span>
+                <div class="content">
+                    <h2>6. Steuerabschluss</h2>
+                    <p>Ermittlung der Zahllast.</p>
+                    <span class="badge">Zahllast</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">Schritt 3: Der Jahresabschluss</div>
+        <div class="tile-grid">
+            <a href="./guv.html" class="tile orange-border">
+                <span class="icon">⚖️</span>
+                <div class="content">
+                    <h2>7. GuV-Abschluss</h2>
+                    <p>Erfolgsermittlung am Jahresende.</p>
+                    <span class="badge">Abschluss</span>
+                </div>
+            </a>
+            <a href="./sbk.html" class="tile blue-border">
+                <span class="icon">🔒</span>
+                <div class="content">
+                    <h2>8. SBK-Abschluss</h2>
+                    <p>Die finalen Bestände sammeln.</p>
+                    <span class="badge">Bilanz</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">Training & Extras</div>
+        <div class="tile-grid">
+            <a href="./wegezumbuchen.html" class="tile blue-border">
+                <span class="icon">🛤️</span>
+                <div class="content">
+                    <h2>9. Wege zum Buchen</h2>
+                    <p>Analyse: Vom Geschäftsfall zum Buchungssatz.</p>
+                    <span class="badge">Analyse-Training</span>
+                </div>
+            </a>
+            <a href="./buchungssaetze.html" class="tile blue-border">
+                <span class="icon">📝</span>
+                <div class="content">
+                    <h2>10. Buchungssätze</h2>
+                    <p>Level-basiertes Training.</p>
+                    <span class="badge">Training</span>
+                </div>
+            </a>
+            <a href="./t-konten vorlagen.pdf" class="tile green-border" target="_blank">
+                <span class="icon">📄</span>
+                <div class="content">
+                    <h2>11. PDF-Download</h2>
+                    <p>Leere T-Konten Vorlagen.</p>
+                    <span class="badge">Material</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        Viel Erfolg beim Lernen!
+    </div>
+
+</body>
+</html>

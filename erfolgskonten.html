@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RW-Trainer: Erfolgskonten XXL (Mobile-Fit)</title>
+    <style>
+        :root { --primary: #e67e22; --primary-dark: #d35400; --bg: #fdfaf7; --success: #28a745; --error: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; touch-action: manipulation; }
+        .app-container { background: white; max-width: 950px; width: 100%; padding: 20px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
+        
+        /* Header & Navigation */
+        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 100; }
+        .btn-round { background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.3rem; }
+        
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; padding-right: 150px; }
+        .btn-home { text-decoration: none; color: #555; font-size: 0.9rem; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; }
+        
+        .level-selector { display: flex; gap: 5px; margin-top: 10px; }
+        .level-btn { padding: 8px 12px; border: 2px solid var(--primary); background: white; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+        .level-btn.active { background: var(--primary); color: white; }
+
+        /* Taschenrechner */
+        #calc-container { display: none; position: fixed; top: 100px; left: 20px; width: 230px; background: #333; border-radius: 12px; padding: 12px; z-index: 2000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); cursor: move; touch-action: none; }
+        #calc-display { width: 100%; height: 50px; background: #eee; border-radius: 5px; margin-bottom: 10px; text-align: right; padding: 10px; font-family: monospace; font-size: 1.4rem; border: none; box-sizing: border-box; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-btn { padding: 15px; border: none; border-radius: 8px; background: #555; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .calc-btn.op { background: var(--primary); }
+        .calc-btn.eq { background: var(--success); grid-column: span 2; }
+        .calc-btn.clr { background: var(--error); grid-column: span 2; }
+
+        h1 { color: var(--primary); text-align: center; font-size: 1.4rem; margin: 15px 0; }
+        .task-box { background: #fff4e5; border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 15px; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #5d3d21; }
+        
+        /* T-Konto Styling */
+        .konto-grid { overflow-x: auto; }
+        .t-konto { width: 100%; min-width: 650px; border-collapse: collapse; margin-top: 15px; border-top: 4px solid #333; table-layout: fixed; }
+        .t-konto th { border-bottom: 2px solid #333; padding: 10px; background: #fafafa; font-size: 0.95rem; }
+        .t-konto td { border-right: 2px solid #333; padding: 10px; vertical-align: top; width: 50%; }
+        .t-konto td:last-child { border-right: none; }
+        
+        .entry { display: flex; gap: 5px; align-items: center; margin-bottom: 10px; }
+        .gk-field { font-size: 0.75rem; color: #444; width: 130px; overflow: hidden; white-space: nowrap; font-weight: bold; }
+        .gk-select { flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.85rem; background: #fff; }
+        .val-input { width: 105px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: right; font-size: 0.9rem; font-weight: bold; }
+        
+        .sum-line { border-top: 2px solid #333; border-bottom: 4px double #333; margin-top: 10px; padding: 10px 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+
+        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        .btn-check { background-color: var(--primary); color: white; }
+        .btn-next { background-color: #6c757d; color: white; margin-top: 10px; opacity: 0.5; cursor: not-allowed; }
+        .btn-next.enabled { background-color: var(--success); opacity: 1; cursor: pointer; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; text-align: center; }
+        
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 650px; position: relative; }
+        .close { position: absolute; top: 15px; right: 25px; font-size: 32px; cursor: pointer; color: #888; }
+    </style>
+</head>
+<body>
+
+<div id="calc-container">
+    <input type="text" id="calc-display" readonly value="0">
+    <div class="calc-grid">
+        <button class="calc-btn clr" onclick="calcClear()">C</button>
+        <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+        <button class="calc-btn op" onclick="calcOp('*')">×</button>
+        <button class="calc-btn" onclick="calcNum('7')">7</button>
+        <button class="calc-btn" onclick="calcNum('8')">8</button>
+        <button class="calc-btn" onclick="calcNum('9')">9</button>
+        <button class="calc-btn op" onclick="calcOp('-')">-</button>
+        <button class="calc-btn" onclick="calcNum('4')">4</button>
+        <button class="calc-btn" onclick="calcNum('5')">5</button>
+        <button class="calc-btn" onclick="calcNum('6')">6</button>
+        <button class="calc-btn op" onclick="calcOp('+')">+</button>
+        <button class="calc-btn" onclick="calcNum('1')">1</button>
+        <button class="calc-btn" onclick="calcNum('2')">2</button>
+        <button class="calc-btn" onclick="calcNum('3')">3</button>
+        <button class="calc-btn op" onclick="calcNum('.')">.</button>
+        <button class="calc-btn" onclick="calcNum('0')">0</button>
+        <button class="calc-btn eq" onclick="calcSolve()">=</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header-actions">
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round" title="Kontakt">✉</a>
+        <button class="btn-round" onclick="toggleCalc()" title="Rechner">🖩</button>
+        <button class="btn-round" onclick="toggleHelp(true)" title="Hilfe">?</button>
+    </div>
+    
+    <div class="nav-header">
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel(1, this)">Stufe 1</button>
+            <button class="level-btn" onclick="setLevel(2, this)">Stufe 2</button>
+            <button class="level-btn" onclick="setLevel(3, this)">Stufe 3</button>
+        </div>
+    </div>
+
+    <h1>Erfolgskonten führen</h1>
+    <div id="task" class="task-box">Generiere Aufgabe...</div>
+
+    <div class="konto-grid">
+        <table class="t-konto">
+            <thead>
+                <tr><th colspan="2" id="konto-name">Konto</th></tr>
+                <tr><th>Soll</th><th>Haben</th></tr>
+            </thead>
+            <tbody id="konto-body">
+                <tr>
+                    <td id="soll-side"></td>
+                    <td id="haben-side"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="feedbackBox" class="feedback"></div>
+    <button class="btn-action btn-check" onclick="validate()">Eingabe prüfen</button>
+    <button id="nextTaskBtn" class="btn-action btn-next" onclick="generateTask()" disabled>Nächste Aufgabe</button>
+</div>
+
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="toggleHelp(false)">&times;</span>
+        <h2 style="color:var(--primary)">Anleitung: Erfolgskonten</h2>
+        <div style="font-size: 0.9rem; line-height: 1.6;">
+            <p>1. <b>Kein Anfangsbestand:</b> Erfolgskonten starten bei 0,00 €.</p>
+            <p>2. <b>Netto-Prinzip:</b> In Erfolgskonten werden nur Netto-Werte gebucht.</p>
+            <p>3. <b>Abschluss:</b> Der Saldo wird am Ende über das Konto <b>GuV</b> abgeschlossen.</p>
+            <p>4. <b>Brutto-Fälle:</b> In Stufe 3 musst du Brutto-Beträge durch 1,19 teilen, um den Netto-Wert zu erhalten.</p>
+        </div>
+        <button class="btn-action btn-check" style="margin-top: 20px;" onclick="toggleHelp(false)">Verstanden!</button>
+    </div>
+</div>
+
+<script>
+    let config = { level: 1 };
+    let currentTask = {};
+
+    const kontenListe = ["Bank", "Kasse", "Forderungen", "Verbindlichkeiten", "GuV", "Vorsteuer", "Umsatzsteuer", "Warenvorrat"];
+
+    const pool = [
+        { n: "Mietaufwendungen", t: "aufwand", f: [
+            {t:"Überweisung der monatlichen Miete", v:1500, gk:"Bank"},
+            {t:"Mietnebenkosten per Banklastschrift", v:240, gk:"Bank"},
+            {t:"Mietrechnung für externe Lagerhalle", v:800, gk:"Verbindlichkeiten"}
+        ]},
+        { n: "Umsatzerlöse für Waren", t: "ertrag", f: [
+            {t:"Warenverkauf auf Ziel an Kunden", v:4000, gk:"Forderungen"},
+            {t:"Barverkauf von Handelswaren", v:350, gk:"Kasse"},
+            {t:"Warenverkauf gegen Sofortüberweisung", v:2200, gk:"Bank"}
+        ]}
+    ];
+
+    const fmt = (n) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function toggleHelp(s) { document.getElementById('helpModal').style.display = s ? 'block' : 'none'; }
+    function toggleCalc() { const c = document.getElementById("calc-container"); c.style.display = (c.style.display === "block") ? "none" : "block"; }
+    function setLevel(l, b) { config.level = parseInt(l); document.querySelectorAll('.level-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); generateTask(); }
+
+    // Rechner Logik
+    let calcVal = "0";
+    function updateCalc() { document.getElementById("calc-display").value = calcVal; }
+    function calcNum(n) { calcVal === "0" && n !== "." ? calcVal = n : calcVal += n; updateCalc(); }
+    function calcOp(op) { calcVal += " " + op + " "; updateCalc(); }
+    function calcClear() { calcVal = "0"; updateCalc(); }
+    function calcSolve() { try { calcVal = eval(calcVal.replace('÷', '/').replace('×', '*')).toString(); } catch { calcVal = "Fehler"; } updateCalc(); }
+
+    const calc = document.getElementById("calc-container");
+    let isDragging = false, offset = [0,0];
+    const startDrag = (e) => { if(e.target.tagName === 'BUTTON') return; isDragging = true; const cX = e.clientX || e.touches[0].clientX; const cY = e.clientY || e.touches[0].clientY; offset = [calc.offsetLeft - cX, calc.offsetTop - cY]; };
+    const doDrag = (e) => { if (!isDragging) return; const cX = e.clientX || (e.touches ? e.touches[0].clientX : null); const cY = e.clientY || (e.touches ? e.touches[0].clientY : null); if(cX !== null) { calc.style.left = (cX + offset[0]) + "px"; calc.style.top = (cY + offset[1]) + "px"; }};
+    calc.addEventListener('mousedown', startDrag); calc.addEventListener('touchstart', startDrag);
+    document.addEventListener('mousemove', doDrag); document.addEventListener('touchmove', doDrag, {passive:false});
+    document.addEventListener('mouseup', () => isDragging = false); document.addEventListener('touchend', () => isDragging = false);
+
+    function generateTask() {
+        const nextBtn = document.getElementById('nextTaskBtn');
+        nextBtn.disabled = true; nextBtn.classList.remove('enabled');
+        
+        let sz = pool[Math.floor(Math.random() * pool.length)];
+        let count = config.level === 1 ? 1 : (config.level === 2 ? 2 : 3);
+        let selFaelle = [...sz.f].sort(() => 0.5 - Math.random()).slice(0, count);
+
+        // Stufe 3: Brutto-Werte im Text
+        selFaelle = selFaelle.map(f => {
+            let item = {...f};
+            item.displayV = item.v;
+            item.isBrutto = false;
+            if(config.level === 3 && Math.random() > 0.4) {
+                item.displayV = item.v * 1.19;
+                item.isBrutto = true;
+            }
+            return item;
+        });
+
+        currentTask = { konto: sz, faelle: selFaelle };
+        currentTask.solS = []; currentTask.solH = [];
+        let total = 0;
+        selFaelle.forEach(f => {
+            if(sz.t === "aufwand") currentTask.solS.push({gk: f.gk, v: f.v});
+            else currentTask.solH.push({gk: f.gk, v: f.v});
+            total += f.v;
+        });
+
+        if(sz.t === "aufwand") currentTask.solH.push({gk: "GuV", v: total});
+        else currentTask.solS.push({gk: "GuV", v: total});
+        currentTask.total = total;
+
+        render();
+    }
+
+    function render() {
+        document.getElementById('konto-name').innerText = currentTask.konto.n;
+        let t = `<b>Aufgabe:</b> Buchen Sie die Fälle und schließen Sie über <b>GuV</b> ab.<br>`;
+        t += currentTask.faelle.map(f => `• ${f.t}: ${fmt(f.displayV)} € ${f.isBrutto ? "(Brutto)" : "(Netto)"}`).join("<br>");
+        document.getElementById('task').innerHTML = t;
+
+        const buildSide = (side, solList) => {
+            let h = "";
+            let rows = config.level === 1 ? 2 : (config.level === 2 ? 3 : 5);
+            for(let i=0; i<rows; i++) {
+                h += `<div class="entry">`;
+                if(config.level < 3) h += `<span class="gk-field">${solList[i] ? solList[i].gk : ""}</span>`;
+                else h += `<select class="gk-select" id="${side}-gk-${i}"><option value="">Gegenkonto</option>${kontenListe.map(k=>`<option value="${k}">${k}</option>`).join('')}</select>`;
+                h += `<input type="number" step="0.01" class="val-input" id="${side}-val-${i}"></div>`;
+            }
+            h += `<div class="sum-line"><span>Summe:</span> <input type="number" step="0.01" class="val-input" id="${side}-sum"></div>`;
+            return h;
+        };
+        document.getElementById('soll-side').innerHTML = buildSide('s', currentTask.solS);
+        document.getElementById('haben-side').innerHTML = buildSide('h', currentTask.solH);
+        document.getElementById('feedbackBox').style.display = 'none';
+    }
+
+    function validate() {
+        const fb = document.getElementById('feedbackBox');
+        fb.style.display = 'block';
+        const sSum = parseFloat(document.getElementById('s-sum').value) || 0;
+        const hSum = parseFloat(document.getElementById('h-sum').value) || 0;
+
+        if(Math.abs(sSum - currentTask.total) < 0.01 && Math.abs(hSum - currentTask.total) < 0.01) {
+            fb.innerHTML = "✅ Korrekt! Das Konto wurde richtig geführt und abgeschlossen.";
+            fb.style.backgroundColor = "#d4edda"; fb.style.color = "#155724";
+            document.getElementById('nextTaskBtn').disabled = false; document.getElementById('nextTaskBtn').classList.add('enabled');
+        } else {
+            fb.innerHTML = "❌ Die Summen oder Netto-Werte stimmen nicht. Prüfen Sie Ihre Buchungen!";
+            fb.style.backgroundColor = "#f8d7da"; fb.style.color = "#721c24";
+        }
+    }
+    window.onload = generateTask;
+</script>
+</body>
+</html>

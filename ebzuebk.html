@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RW-Trainer BFS2: EB zu EBK XXL</title>
+    <style>
+        :root { --nrw-blue: #005aab; --bg-light: #f4f7f9; --success: #28a745; --error: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-light); display: flex; justify-content: center; padding: 10px; margin: 0; touch-action: manipulation; }
+        .app-container { background: white; max-width: 950px; width: 100%; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-top: 10px; position: relative; box-sizing: border-box; }
+        
+        /* Header & Navigation */
+        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 100; }
+        .btn-round { background: var(--nrw-blue); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.2rem; }
+        
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; padding-right: 140px; }
+        .btn-home { text-decoration: none; color: #555; font-size: 0.9rem; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; }
+
+        /* Taschenrechner */
+        #calc-container { display: none; position: fixed; top: 120px; left: 20px; width: 220px; background: #333; border-radius: 12px; padding: 12px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: move; touch-action: none; }
+        #calc-display { width: 100%; height: 45px; background: #eee; border-radius: 5px; margin-bottom: 10px; text-align: right; padding: 10px; font-family: monospace; font-size: 1.3rem; border: none; box-sizing: border-box; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .calc-btn { padding: 12px; border: none; border-radius: 6px; background: #555; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .calc-btn.op { background: var(--nrw-blue); }
+        .calc-btn.eq { background: var(--success); grid-column: span 2; }
+        .calc-btn.clr { background: var(--error); grid-column: span 2; }
+
+        h1 { color: var(--nrw-blue); text-align: center; font-size: 1.5rem; margin: 10px 0; }
+        
+        /* Bilanz-Box */
+        .eb-box { background: #fff; border: 2px solid #333; padding: 15px; margin: 15px 0; border-radius: 4px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); }
+        .eb-title { text-align: center; font-weight: bold; border-bottom: 2px solid #333; margin-bottom: 10px; padding-bottom: 5px; }
+        .eb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.85rem; }
+        .eb-side h4 { border-bottom: 1px solid #333; margin: 5px 0; }
+        .eb-item { display: flex; justify-content: space-between; margin: 2px 0; }
+
+        /* T-Konto Styling */
+        .konto-grid { overflow-x: auto; }
+        .t-konto { width: 100%; min-width: 650px; border-collapse: collapse; margin-top: 20px; border-top: 4px solid #333; table-layout: fixed; }
+        .t-konto th { border-bottom: 2px solid #333; padding: 10px; background: #fafafa; font-size: 0.9rem; }
+        .t-konto td { border-right: 2px solid #333; padding: 10px; vertical-align: top; width: 50%; }
+        .t-konto td:last-child { border-right: none; }
+        
+        .entry { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; }
+        select { flex-grow: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.8rem; background: #fff; min-width: 0; font-weight: bold; }
+        input.val-in { width: 110px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: right; font-size: 0.85rem; font-weight: bold; }
+        
+        .sum-line { border-top: 2px solid #333; border-bottom: 4px double #333; margin-top: 15px; padding: 8px 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn-action { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .btn-check { background-color: var(--nrw-blue); color: white; }
+        .btn-next { background-color: #6c757d; color: white; margin-top: 10px; opacity: 0.5; cursor: not-allowed; }
+        .btn-next.enabled { background-color: var(--success); opacity: 1; cursor: pointer; }
+        
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: left; font-weight: bold; border: 2px solid transparent; }
+
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
+        .modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 15px; width: 85%; max-width: 600px; position: relative; }
+        .close { position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div id="calc-container">
+    <input type="text" id="calc-display" readonly value="0">
+    <div class="calc-grid">
+        <button class="calc-btn clr" onclick="calcClear()">C</button>
+        <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+        <button class="calc-btn op" onclick="calcOp('*')">×</button>
+        <button class="calc-btn" onclick="calcNum('7')">7</button>
+        <button class="calc-btn" onclick="calcNum('8')">8</button>
+        <button class="calc-btn" onclick="calcNum('9')">9</button>
+        <button class="calc-btn op" onclick="calcOp('-')">-</button>
+        <button class="calc-btn" onclick="calcNum('4')">4</button>
+        <button class="calc-btn" onclick="calcNum('5')">5</button>
+        <button class="calc-btn" onclick="calcNum('6')">6</button>
+        <button class="calc-btn op" onclick="calcOp('+')">+</button>
+        <button class="calc-btn" onclick="calcNum('1')">1</button>
+        <button class="calc-btn" onclick="calcNum('2')">2</button>
+        <button class="calc-btn" onclick="calcNum('3')">3</button>
+        <button class="calc-btn op" onclick="calcNum('.')">.</button>
+        <button class="calc-btn" onclick="calcNum('0')">0</button>
+        <button class="calc-btn eq" onclick="calcSolve()">=</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header-actions">
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round">✉</a>
+        <button class="btn-round" onclick="toggleCalc()">🖩</button>
+        <button class="btn-round" onclick="toggleHelp(true)">?</button>
+    </div>
+
+    <div class="nav-header">
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
+    </div>
+
+    <h1>Transfer: Bilanz &rarr; EBK</h1>
+    
+    <div class="eb-box">
+        <div class="eb-title">Eröffnungsbilanz (EB) zum 01.01.</div>
+        <div class="eb-grid" id="eb-display"></div>
+    </div>
+
+    <div class="konto-grid">
+        <table class="t-konto">
+            <thead>
+                <tr><th colspan="2">Eröffnungsbilanzkonto (EBK)</th></tr>
+                <tr><th>Soll (Passiv-Übertrag)</th><th>Haben (Aktiv-Übertrag)</th></tr>
+            </thead>
+            <tbody id="konto-body"></tbody>
+        </table>
+    </div>
+
+    <div id="feedbackBox" class="feedback"></div>
+    <button class="btn-action btn-check" onclick="validate()">EBK buchen & prüfen</button>
+    <button id="nextTaskBtn" class="btn-action btn-next" onclick="generateTask()">Nächste Bilanz</button>
+</div>
+
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="toggleHelp(false)">&times;</span>
+        <h2 style="color:var(--nrw-blue)">Anleitung: Transfer</h2>
+        <div style="font-size: 0.9rem; line-height: 1.6;">
+            <p>1. <b>Aktiva</b> (links in EB) &rarr; werden im EBK <b>Haben</b> (rechts) gebucht.</p>
+            <p>2. <b>Passiva</b> (rechts in EB) &rarr; werden im EBK <b>Soll</b> (links) gebucht.</p>
+            <p>3. Das EBK ist das Gegenkonto für die Eröffnungsbuchungssätze.</p>
+            <p><i>Format: Nutze bei der Eingabe das Punkt-Symbol für Cent-Beträge.</i></p>
+        </div>
+        <button class="btn-action btn-check" onclick="toggleHelp(false)">Verstanden!</button>
+    </div>
+</div>
+
+<script>
+    const K_VERB = "Verbindlichkeiten a. L. L.";
+    const K_EK = "Eigenkapital";
+    const K_DARL = "Darlehen";
+    const kontenAktiv = ["BGA", "Fuhrpark", "Waren (Vorrat)", "Forderungen a. L. L.", "Bank", "Kasse"];
+    const kontenPassiv = [K_EK, K_DARL, K_VERB];
+    const alleKonten = ["-- wählen --", ...kontenAktiv, ...kontenPassiv];
+
+    let currentData = {};
+
+    const fmt = (n) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function toggleHelp(s) { document.getElementById('helpModal').style.display = s ? 'block' : 'none'; }
+    function toggleCalc() { const c = document.getElementById("calc-container"); c.style.display = (c.style.display === "block") ? "none" : "block"; }
+
+    let calcVal = "0";
+    function updateCalc() { document.getElementById("calc-display").value = calcVal; }
+    function calcNum(n) { calcVal === "0" && n !== "." ? calcVal = n : calcVal += n; updateCalc(); }
+    function calcOp(op) { calcVal += " " + op + " "; updateCalc(); }
+    function calcClear() { calcVal = "0"; updateCalc(); }
+    function calcSolve() { try { calcVal = eval(calcVal.replace('÷', '/').replace('×', '*')).toString(); } catch { calcVal = "Error"; } updateCalc(); }
+
+    const calc = document.getElementById("calc-container");
+    let isDragging = false, offset = [0,0];
+    const startDrag = (e) => { if(e.target.tagName === 'BUTTON') return; isDragging = true; const cX = e.clientX || e.touches[0].clientX; const cY = e.clientY || e.touches[0].clientY; offset = [calc.offsetLeft - cX, calc.offsetTop - cY]; };
+    const doDrag = (e) => { if (!isDragging) return; const cX = e.clientX || (e.touches ? e.touches[0].clientX : null); const cY = e.clientY || (e.touches ? e.touches[0].clientY : null); if(cX !== null) { calc.style.left = (cX + offset[0]) + "px"; calc.style.top = (cY + offset[1]) + "px"; }};
+    calc.addEventListener('mousedown', startDrag); calc.addEventListener('touchstart', startDrag);
+    document.addEventListener('mousemove', doDrag); document.addEventListener('touchmove', doDrag, {passive:false});
+    document.addEventListener('mouseup', () => isDragging = false); document.addEventListener('touchend', () => isDragging = false);
+
+    function renderFields() {
+        const body = document.getElementById('konto-body');
+        body.innerHTML = `
+            <tr>
+                <td id="soll-col">
+                    ${[1,2,3].map(i => `<div class="entry"><select id="s-sel-${i}"></select><input type="number" step="0.01" class="val-in" id="s-val-${i}" placeholder="0,00"></div>`).join('')}
+                    <div class="sum-line"><span>Summe Soll:</span> <input type="number" step="0.01" class="val-in" id="s-sum"></div>
+                </td>
+                <td id="haben-col">
+                    ${[1,2,3,4,5,6].map(i => `<div class="entry"><select id="h-sel-${i}"></select><input type="number" step="0.01" class="val-in" id="h-val-${i}" placeholder="0,00"></div>`).join('')}
+                    <div class="sum-line"><span>Summe Haben:</span> <input type="number" step="0.01" class="val-in" id="h-val-sum"></div>
+                </td>
+            </tr>
+        `;
+        document.querySelectorAll('select').forEach(sel => {
+            alleKonten.forEach(k => sel.add(new Option(k, k)));
+        });
+    }
+
+    function generateTask() {
+        const nextBtn = document.getElementById('nextTaskBtn');
+        nextBtn.disabled = true; nextBtn.classList.remove('enabled');
+        renderFields();
+        const r = (min, max) => (Math.floor(Math.random() * (max - min + 1) + min) * 100);
+        
+        const d = {
+            bga: r(500, 1000), fuhrpark: r(400, 700), waren: r(150, 300),
+            ford: r(80, 200), bank: r(250, 500), kasse: r(40, 90),
+            darlehen: r(400, 600), verb: r(200, 400)
+        };
+        const vermoegen = d.bga + d.fuhrpark + d.waren + d.ford + d.bank + d.kasse;
+        const ek = vermoegen - (d.darlehen + d.verb);
+        currentData = { ...d, ek, sum: vermoegen };
+
+        document.getElementById('eb-display').innerHTML = `
+            <div class="eb-side">
+                <h4>Aktiva</h4>
+                <div class="eb-item"><span>BGA:</span> <b>${fmt(d.bga)} €</b></div>
+                <div class="eb-item"><span>Fuhrpark:</span> <b>${fmt(d.fuhrpark)} €</b></div>
+                <div class="eb-item"><span>Waren (Vorrat):</span> <b>${fmt(d.waren)} €</b></div>
+                <div class="eb-item"><span>Forderungen a. L. L.:</span> <b>${fmt(d.ford)} €</b></div>
+                <div class="eb-item"><span>Bank:</span> <b>${fmt(d.bank)} €</b></div>
+                <div class="eb-item"><span>Kasse:</span> <b>${fmt(d.kasse)} €</b></div>
+                <div class="eb-item" style="border-top:2px solid #333; margin-top:5px; padding-top:2px;"><span>Summe Aktiva:</span> <b>${fmt(vermoegen)} €</b></div>
+            </div>
+            <div class="eb-side">
+                <h4>Passiva</h4>
+                <div class="eb-item"><span>Eigenkapital:</span> <b>${fmt(ek)} €</b></div>
+                <div class="eb-item"><span>Darlehen:</span> <b>${fmt(d.darlehen)} €</b></div>
+                <div class="eb-item"><span>Verbindlichkeiten a. L. L.:</span> <b>${fmt(d.verb)} €</b></div>
+                <div class="eb-item" style="border-top:2px solid #333; margin-top:52px; padding-top:2px;"><span>Summe Passiva:</span> <b>${fmt(vermoegen)} €</b></div>
+            </div>
+        `;
+        document.getElementById('feedbackBox').style.display = 'none';
+    }
+
+    function validate() {
+        const val = (id) => parseFloat(document.getElementById(id).value) || 0;
+        const selValue = (id) => document.getElementById(id).value;
+        let err = [];
+
+        const sollEntries = [1,2,3].map(i => ({k: selValue(`s-sel-${i}`), v: val(`s-val-${i}`)}));
+        const habenEntries = [1,2,3,4,5,6].map(i => ({k: selValue(`h-sel-${i}`), v: val(`h-val-${i}`)}));
+
+        sollEntries.forEach(e => { 
+            if(kontenAktiv.includes(e.k)) err.push(`❌ ${e.k} gehört im EBK auf die Haben-Seite.`); 
+        });
+        habenEntries.forEach(e => { 
+            if(kontenPassiv.includes(e.k)) err.push(`❌ ${e.k} gehört im EBK auf die Soll-Seite.`); 
+        });
+
+        const check = (list, name, target) => {
+            const item = list.find(x => x.k === name);
+            if(!item || item.k === "-- wählen --") err.push(`❌ Konto "${name}" fehlt.`);
+            else if(Math.abs(item.v - target) > 0.01) err.push(`❌ Wert für "${name}" ist falsch.`);
+        };
+
+        check(sollEntries, K_EK, currentData.ek);
+        check(sollEntries, K_DARL, currentData.darlehen);
+        check(sollEntries, K_VERB, currentData.verb);
+        check(habenEntries, "BGA", currentData.bga);
+        check(habenEntries, "Fuhrpark", currentData.fuhrpark);
+        check(habenEntries, "Waren (Vorrat)", currentData.waren);
+        check(habenEntries, "Forderungen a. L. L.", currentData.ford);
+        check(habenEntries, "Bank", currentData.bank);
+        check(habenEntries, "Kasse", currentData.kasse);
+
+        const uSumS = val('s-sum');
+        const uSumH = val('h-val-sum');
+
+        if(Math.abs(uSumS - currentData.sum) > 0.01 || Math.abs(uSumH - currentData.sum) > 0.01) {
+            err.push("❌ Die Bilanzsummen im EBK stimmen nicht.");
+        }
+
+        const fb = document.getElementById('feedbackBox');
+        fb.style.display = 'block';
+        if(err.length === 0) {
+            fb.innerHTML = "🎯 PERFEKT! Du hast das Spiegelbild-Prinzip verstanden.";
+            fb.style.backgroundColor = "#d4edda"; fb.style.color = "#155724"; fb.style.borderColor = "#c3e6cb";
+            document.getElementById('nextTaskBtn').disabled = false;
+            document.getElementById('nextTaskBtn').classList.add('enabled');
+        } else {
+            fb.innerHTML = "<b>Analyse:</b><br>" + [...new Set(err)].slice(0,3).join("<br>");
+            fb.style.backgroundColor = "#f8d7da"; fb.style.color = "#721c24"; fb.style.borderColor = "#f5c6cb";
+        }
+    }
+    window.onload = generateTask;
+</script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RW-Trainer: SBK Profi-Modell (Gliederung & Krumme Werte)</title>
+    <style>
+        :root { --nrw-blue: #005aab; --bg-light: #f0f4f8; --success: #28a745; --error: #dc3545; --border: #ced4da; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-light); margin: 0; padding: 10px; display: flex; justify-content: center; touch-action: manipulation; }
+        .app-container { background: white; max-width: 950px; width: 100%; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-top: 10px; position: relative; box-sizing: border-box; }
+        
+        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 2100; }
+        .btn-round { background: var(--nrw-blue); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.3rem; }
+        
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; padding-right: 150px; }
+        .btn-home { text-decoration: none; color: #555; font-size: 0.9rem; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; }
+        
+        .level-selector { display: flex; gap: 5px; }
+        .level-btn { padding: 8px 12px; border: 2px solid var(--nrw-blue); background: white; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--nrw-blue); font-size: 0.8rem; }
+        .level-btn.active { background: var(--nrw-blue); color: white; }
+
+        #calc-container { display: none; position: fixed; top: 120px; left: 20px; width: 230px; background: #333; border-radius: 12px; padding: 12px; z-index: 3000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); cursor: move; touch-action: none; }
+        #calc-display { width: 100%; height: 50px; background: #eee; border-radius: 5px; margin-bottom: 10px; text-align: right; padding: 10px; font-family: monospace; font-size: 1.4rem; border: none; box-sizing: border-box; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-btn { padding: 15px; border: none; border-radius: 8px; background: #555; color: white; font-weight: bold; cursor: pointer; }
+
+        h1 { color: var(--nrw-blue); text-align: center; font-size: 1.5rem; margin: 15px 0; text-transform: uppercase; }
+        .task-box { background: #eef2f7; border-left: 5px solid var(--nrw-blue); padding: 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; }
+        
+        .konto-grid { overflow-x: auto; }
+        .t-konto { width: 100%; min-width: 800px; border-collapse: collapse; margin-top: 15px; border-top: 4px solid #333; table-layout: fixed; }
+        .t-konto th { border-bottom: 2px solid #333; padding: 12px; background: #fafafa; font-size: 1rem; }
+        .t-konto td { border-right: 2px solid #333; padding: 15px; vertical-align: top; width: 50%; }
+        .t-konto td:last-child { border-right: none; }
+        
+        .entry { display: flex; gap: 5px; align-items: center; margin-bottom: 12px; }
+        .gk-select { flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; background: #fff; font-weight: bold; }
+        .val-in { width: 115px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; text-align: right; font-size: 0.95rem; font-weight: bold; }
+        
+        .sum-line { border-top: 2px solid #333; border-bottom: 4px double #333; margin-top: 20px; padding: 10px 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+
+        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        .btn-check { background-color: var(--nrw-blue); color: white; }
+        .btn-next { background-color: #6c757d; color: white; margin-top: 10px; opacity: 0.5; cursor: not-allowed; }
+        .btn-next.enabled { background-color: var(--success); opacity: 1; cursor: pointer; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; text-align: center; border: 2px solid transparent; }
+    </style>
+</head>
+<body>
+
+<div id="calc-container">
+    <input type="text" id="calc-display" readonly value="0">
+    <div class="calc-grid">
+        <button class="calc-btn" style="background:var(--error); grid-column:span 2;" onclick="calcClear()">C</button>
+        <button class="calc-btn" style="background:var(--nrw-blue);" onclick="calcOp('/')">÷</button>
+        <button class="calc-btn" style="background:var(--nrw-blue);" onclick="calcOp('*')">×</button>
+        <button class="calc-btn" onclick="calcNum('7')">7</button><button class="calc-btn" onclick="calcNum('8')">8</button><button class="calc-btn" onclick="calcNum('9')">9</button>
+        <button class="calc-btn" style="background:var(--nrw-blue);" onclick="calcOp('-')">-</button>
+        <button class="calc-btn" onclick="calcNum('4')">4</button><button class="calc-btn" onclick="calcNum('5')">5</button><button class="calc-btn" onclick="calcNum('6')">6</button>
+        <button class="calc-btn" style="background:var(--nrw-blue);" onclick="calcOp('+')">+</button>
+        <button class="calc-btn" onclick="calcNum('1')">1</button><button class="calc-btn" onclick="calcNum('2')">2</button><button class="calc-btn" onclick="calcNum('3')">3</button>
+        <button class="calc-btn" onclick="calcNum('.')">.</button><button class="calc-btn" onclick="calcNum('0')">0</button>
+        <button class="calc-btn" style="background:var(--success); grid-column:span 2;" onclick="calcSolve()">=</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header-actions">
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round" title="E-Mail">✉</a>
+        <button class="btn-round" onclick="toggleCalc()" title="Rechner">🖩</button>
+        <button class="btn-round" onclick="toggleHelp(true)" title="Hilfe">?</button>
+    </div>
+    
+    <div class="nav-header">
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel(1, this)">Stufe 1</button>
+            <button class="level-btn" onclick="setLevel(2, this)">Stufe 2</button>
+            <button class="level-btn" onclick="setLevel(3, this)">Stufe 3</button>
+        </div>
+    </div>
+
+    <h1>Schlussbilanzkonto (SBK)</h1>
+    <div id="task" class="task-box">Generiere Fall...</div>
+
+    <div class="konto-grid">
+        <table class="t-konto">
+            <thead>
+                <tr><th colspan="2">Schlussbilanzkonto (SBK)</th></tr>
+                <tr><th>Soll (Aktiva)</th><th>Haben (Passiva)</th></tr>
+            </thead>
+            <tbody id="konto-body"></tbody>
+        </table>
+    </div>
+
+    <div id="feedbackBox" class="feedback"></div>
+    <button class="btn-action btn-check" onclick="validate()">Abschluss prüfen</button>
+    <button id="nextTaskBtn" class="btn-action btn-next" onclick="generateTask()">Nächste Aufgabe</button>
+</div>
+
+<script>
+    let config = { level: 1, current: {} };
+    const aktivKonten = ["BGA", "Fuhrpark", "Warenvorrat", "Forderungen", "Bank", "Kasse"];
+    const passivKonten = ["Eigenkapital", "Darlehen", "Verbindlichkeiten"];
+
+    const fmt = (n) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function toggleCalc() { const c = document.getElementById("calc-container"); c.style.display = (c.style.display === "block") ? "none" : "block"; }
+    
+    let calcVal = "0";
+    function updateCalc() { document.getElementById("calc-display").value = calcVal; }
+    function calcNum(n) { calcVal = calcVal === "0" ? n : calcVal + n; updateCalc(); }
+    function calcOp(op) { calcVal += " " + op + " "; updateCalc(); }
+    function calcClear() { calcVal = "0"; updateCalc(); }
+    function calcSolve() { try { calcVal = eval(calcVal.replace('÷', '/').replace('×', '*')).toString(); } catch { calcVal = "Error"; } updateCalc(); }
+
+    function setLevel(lvl, btn) { config.level = lvl; document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); generateTask(); }
+
+    function renderFields() {
+        const body = document.getElementById('konto-body');
+        const rows = config.level === 3 ? 6 : 4;
+        let html = `<tr><td id="soll-side">`;
+        for(let i=0; i<rows; i++) {
+            html += `<div class="entry">`;
+            if(config.level === 1) html += `<span class="gk-field" style="flex:1" id="s-label-${i}"></span>`;
+            else html += `<select class="gk-select" id="s-gk-${i}"><option value="">-- Konto --</option>${aktivKonten.map(k=>`<option value="${k}">${k}</option>`).join('')}</select>`;
+            html += `<input type="number" step="0.01" class="val-in" id="s-val-${i}"></div>`;
+        }
+        html += `<div class="sum-line"><span>Summe:</span><input type="number" step="0.01" class="val-in" id="sum-s"></div></td><td id="haben-side">`;
+        for(let i=0; i<rows; i++) {
+            html += `<div class="entry">`;
+            if(config.level === 1) html += `<span class="gk-field" style="flex:1" id="h-label-${i}"></span>`;
+            else html += `<select class="gk-select" id="h-gk-${i}"><option value="">-- Konto --</option>${passivKonten.map(k=>`<option value="${k}">${k}</option>`).join('')}</select>`;
+            html += `<input type="number" step="0.01" class="val-in" id="h-val-${i}"></div>`;
+        }
+        html += `<div class="sum-line"><span>Summe:</span><input type="number" step="0.01" class="val-in" id="sum-h"></div></td></tr>`;
+        body.innerHTML = html;
+    }
+
+    function generateTask() {
+        renderFields();
+        const numA = config.level === 3 ? 5 : 3;
+        const numP = config.level === 3 ? 3 : 2;
+        
+        let aSelection = [...aktivKonten].sort(() => 0.5 - Math.random()).slice(0, numA);
+        let pSelection = [...passivKonten].sort(() => 0.5 - Math.random()).slice(0, numP);
+        
+        const getVal = () => {
+            if (config.level === 3) return Math.floor(Math.random() * 40000) + 1234.55; 
+            return (Math.floor(Math.random()*20)+5)*1000;
+        };
+
+        let aTasks = aSelection.map(n => ({n, v: getVal()}));
+        let pTasks = pSelection.map((n, i) => {
+            if(i === pSelection.length - 1) return {n, v: 0};
+            return {n, v: getVal()};
+        });
+
+        let sumA = aTasks.reduce((s, x) => s + x.v, 0);
+        let sumP_prev = pTasks.slice(0, -1).reduce((s, x) => s + x.v, 0);
+        pTasks[pTasks.length-1].v = Math.round((sumA - sumP_prev) * 100) / 100;
+
+        config.current = { aTasks, pTasks, sum: sumA };
+
+        document.getElementById('task').innerHTML = `<b>Schlussbestände am 31.12.:</b><br>` + 
+            [...aTasks, ...pTasks].sort(() => 0.5 - Math.random()).map(x => `${x.n}: ${fmt(x.v)} €`).join(" | ");
+        
+        document.getElementById('feedbackBox').style.display = 'none';
+        document.getElementById('nextTaskBtn').disabled = true; document.getElementById('nextTaskBtn').classList.remove('enabled');
+
+        if(config.level === 1) {
+            let sortedA = [...aTasks].sort((a,b) => aktivKonten.indexOf(a.n) - aktivKonten.indexOf(b.n));
+            let sortedP = [...pTasks].sort((a,b) => passivKonten.indexOf(a.n) - passivKonten.indexOf(b.n));
+            sortedA.forEach((x, i) => { if(document.getElementById(`s-label-${i}`)) document.getElementById(`s-label-${i}`).innerText = x.n; });
+            sortedP.forEach((x, i) => { if(document.getElementById(`h-label-${i}`)) document.getElementById(`h-label-${i}`).innerText = x.n; });
+        }
+    }
+
+    function validate() {
+        const c = config.current;
+        const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
+        const getGK = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
+        let err = [];
+
+        const uSumS = getV('sum-s');
+        const uSumH = getV('sum-h');
+
+        if(Math.abs(uSumS - c.sum) > 0.01 || Math.abs(uSumH - uSumS) > 0.01) err.push("Summenfehler oder SBK nicht ausgeglichen.");
+
+        const rows = config.level === 3 ? 6 : 4;
+        let lastAIdx = -1, lastPIdx = -1;
+
+        for(let i=0; i<rows; i++) {
+            let val = getV(`s-val-${i}`);
+            let name = config.level === 1 ? (document.getElementById(`s-label-${i}`)?.innerText || "") : getGK(`s-gk-${i}`);
+            if(val > 0) {
+                let match = c.aTasks.find(x => x.n === name && Math.abs(x.v - val) < 0.01);
+                if(!match) err.push(`Eintrag Soll (${name}) falsch.`);
+                if(config.level === 3) {
+                    let curIdx = aktivKonten.indexOf(name);
+                    if(curIdx < lastAIdx) err.push("Gliederung Aktiva: Anlagevermögen vor Umlaufvermögen.");
+                    lastAIdx = curIdx;
+                }
+            }
+        }
+        
+        for(let i=0; i<rows; i++) {
+            let val = getV(`h-val-${i}`);
+            let name = config.level === 1 ? (document.getElementById(`h-label-${i}`)?.innerText || "") : getGK(`h-gk-${i}`);
+            if(val > 0) {
+                let match = c.pTasks.find(x => x.n === name && Math.abs(x.v - val) < 0.01);
+                if(!match) err.push(`Eintrag Haben (${name}) falsch.`);
+                if(config.level === 3) {
+                    let curIdx = passivKonten.indexOf(name);
+                    if(curIdx < lastPIdx) err.push("Gliederung Passiva: Eigenkapital vor Fremdkapital.");
+                    lastPIdx = curIdx;
+                }
+            }
+        }
+
+        const fb = document.getElementById('feedbackBox'); fb.style.display = 'block';
+        if(err.length === 0) {
+            fb.innerHTML = "✅ Hervorragend! Das SBK ist fachlich einwandfrei abgeschlossen.";
+            fb.style.backgroundColor = "#d4edda"; fb.style.color = "#155724"; fb.style.borderColor = "#c3e6cb";
+            document.getElementById('nextTaskBtn').disabled = false; document.getElementById('nextTaskBtn').classList.add('enabled');
+        } else {
+            fb.innerHTML = "❌ " + err[0]; fb.style.backgroundColor = "#f8d7da"; fb.style.color = "#721c24"; fb.style.borderColor = "#f5c6cb";
+        }
+    }
+    window.onload = generateTask;
+</script>
+</body>
+</html>

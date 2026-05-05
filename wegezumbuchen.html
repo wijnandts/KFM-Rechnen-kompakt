@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wege zum Buchen | BFS 2 XXL</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --nrw-blue: #0056b3; --secondary: #5856d6; --success: #28a745; --error: #dc3545; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
+        
+        .app-container { background: white; max-width: 950px; width: 100%; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
+        
+        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
+        .btn-round { background: var(--nrw-blue); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        .nav-header { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding-right: 120px; }
+        .btn-home { text-decoration: none; color: #555; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; }
+
+        .level-selector { display: flex; gap: 5px; }
+        .level-btn { padding: 8px 12px; border: 2px solid var(--nrw-blue); background: white; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--nrw-blue); font-size: 0.8rem; }
+        .level-btn.active { background: var(--nrw-blue); color: white; }
+        .level-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        h1 { color: var(--nrw-blue); text-align: center; font-size: 1.4rem; text-transform: uppercase; margin: 10px 0; }
+        
+        .task-box { background: #eef2f7; border-left: 5px solid var(--nrw-blue); padding: 20px; margin-bottom: 25px; border-radius: 4px; font-size: 1.1rem; min-height: 80px; display: flex; align-items: center; font-weight: 500; }
+
+        .analysis-grid {
+            display: grid; grid-template-columns: 160px 1fr 1fr; gap: 12px; 
+            background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #ddd;
+        }
+
+        .label-cell { color: var(--nrw-blue); font-weight: bold; font-size: 0.75rem; text-transform: uppercase; align-self: center; }
+        .col-head { text-align: center; font-weight: bold; padding-bottom: 15px; border-bottom: 2px solid #ddd; font-size: 1rem; color: #333; }
+
+        select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem; background: white; font-weight: bold; appearance: none; }
+        select.correct { border-color: var(--success); background-color: #d4edda; }
+        select.incorrect { border-color: var(--error); background-color: #f8d7da; }
+
+        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        .btn-check { background-color: var(--nrw-blue); color: white; }
+        .btn-next { background-color: var(--success); color: white; display: none; }
+
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin-top: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--nrw-blue); width: 0%; transition: 0.4s; }
+        .status-text { text-align: center; color: #666; font-size: 0.8rem; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header-actions">
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round">✉</a>
+    </div>
+
+    <div class="nav-header">
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
+        <div class="level-selector">
+            <button id="lvl1" class="level-btn active" onclick="setLevel(1)">Stufe 1</button>
+            <button id="lvl2" class="level-btn" onclick="setLevel(2)" disabled>Stufe 2</button>
+            <button id="lvl3" class="level-btn" onclick="setLevel(3)" disabled>Stufe 3</button>
+        </div>
+    </div>
+
+    <h1>Analyse: Wege zum Buchen</h1>
+    <div class="task-box" id="task-desc">Lade Analyse-Modul...</div>
+
+    <div class="analysis-grid">
+        <div></div><div class="col-head">Konto A</div><div class="col-head">Konto B</div>
+
+        <div class="label-cell">1. Welches Konto?</div>
+        <select id="k1"></select><select id="k2"></select>
+
+        <div class="label-cell">2. Welcher Typ?</div>
+        <select id="k1_ap"></select><select id="k2_ap"></select>
+
+        <div class="label-cell">3. Veränderung?</div>
+        <select id="k1_mm"></select><select id="k2_mm"></select>
+
+        <div class="label-cell">4. Buchungsseite?</div>
+        <select id="k1_sh"></select><select id="k2_sh"></select>
+    </div>
+
+    <button class="btn-action btn-check" id="checkBtn" onclick="check()">Analyse prüfen</button>
+    <button class="btn-action btn-next" id="nextBtn" onclick="next()">Nächster Fall</button>
+    
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="status-text" id="status">Fortschritt: 0/30 Aufgaben</div>
+</div>
+
+<script>
+    let stats = { solvedL1: 0, solvedL2: 0 };
+    let currentLvl = 1;
+    let currentIdx = 0;
+
+    const opt = {
+        konten: ["BGA", "Bank", "Kasse", "Forderungen aLL", "Fuhrpark", "Verbindlichkeiten aLL", "Darlehen", "Warenvorrat", "Umsatzerlöse", "Mietaufwand", "Personalaufwand", "Vorsteuer", "Umsatzsteuer", "Werbeaufwand", "Büromaterial", "Zinsaufwand", "Zinserträge", "Instandhaltungsaufwand", "Energieaufwand"],
+        typen: ["Aktiv", "Passiv", "Aufwand", "Ertrag"],
+        buchung: ["Mehrung (+)", "Minderung (-)"],
+        sh: ["Soll", "Haben"]
+    };
+
+    const pools = {
+        1: [
+            {q: "Barkauf eines neuen Scanners für 450,00 €.", k1: "BGA", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Ein Kunde überweist 1.200,00 € auf unser Bankkonto.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Forderungen aLL", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Kauf von Verkaufsregalen auf Ziel: 4.500,00 €.", k1: "BGA", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Wir überweisen 3.000,00 € vom Bankkonto an die Kasse.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Aufnahme eines Bankdarlehens: Gutschrift 10.000,00 €.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Darlehen", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Wir begleichen eine Lieferantenrechnung per Bank: 2.100,00 €.", k1: "Verbindlichkeiten aLL", k1_ap: "Passiv", k1_mm: "Minderung (-)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Kauf eines Lieferwagens auf Ziel: 25.000,00 €.", k1: "Fuhrpark", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Barabhebung vom Bankkonto für die Portokasse: 200,00 €.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
+        ],
+        2: [
+            {q: "Zahlung der Ladenmiete per Banküberweisung: 1.500,00 €.", k1: "Mietaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Barverkauf von Handelswaren: 350,00 €.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Umsatzerlöse", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Überweisung der Gehälter an das Personal: 6.000,00 €.", k1: "Personalaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Barkauf von Büromaterial: 45,00 €.", k1: "Büromaterial", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
+            {q: "Bankgutschrift für erhaltene Zinsen: 25,00 €.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Zinserträge", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Wir bezahlen Stromkosten per Banküberweisung: 400,00 €.", k1: "Energieaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
+        ],
+        3: [
+            {q: "Wareneinkauf auf Ziel: 1.000 € netto + 190 € Vorsteuer.", k1: "Warenvorrat", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Warenverkauf bar: 1.190 € brutto (inkl. 19% USt).", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Umsatzerlöse", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
+            {q: "Zahlung einer Reparaturrechnung bar: 119 € (inkl. USt).", k1: "Instandhaltungsaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
+        ]
+    };
+
+    // Auto-Maximierung
+    for(let i=1; i<=3; i++) {
+        let baseLen = pools[i].length;
+        while(pools[i].length < 60) {
+            let original = pools[i][pools[i].length % baseLen];
+            pools[i].push({...original, q: original.q + " [Variante]"});
+        }
+    }
+
+    function init() {
+        const fill = (ids, list) => ids.forEach(id => {
+            const el = document.getElementById(id);
+            el.innerHTML = '<option value="">-- ? --</option>' + list.sort().map(o => `<option value="${o}">${o}</option>`).join('');
+        });
+        fill(['k1', 'k2'], opt.konten);
+        fill(['k1_ap', 'k2_ap'], opt.typen);
+        fill(['k1_mm', 'k2_mm'], opt.buchung);
+        fill(['k1_sh', 'k2_sh'], opt.sh);
+        render();
+    }
+
+    function setLevel(l) {
+        currentLvl = l; currentIdx = 0;
+        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('lvl' + l).classList.add('active');
+        render();
+    }
+
+    function render() {
+        const task = pools[currentLvl][currentIdx % 60];
+        document.getElementById('task-desc').innerText = task.q;
+        document.querySelectorAll('select').forEach(s => { s.value = ""; s.className = ""; });
+        document.getElementById('checkBtn').style.display = "block";
+        document.getElementById('nextBtn').style.display = "none";
+        updateProgress();
+    }
+
+    function check() {
+        const task = pools[currentLvl][currentIdx % 60];
+        const fields = ['k1', 'k2', 'k1_ap', 'k2_ap', 'k1_mm', 'k2_mm', 'k1_sh', 'k2_sh'];
+        let correct = true;
+
+        fields.forEach(f => {
+            const el = document.getElementById(f);
+            if(el.value === task[f]) el.className = "correct";
+            else { el.className = "incorrect"; correct = false; }
+        });
+
+        if(correct) {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            if(currentLvl === 1) stats.solvedL1++;
+            if(currentLvl === 2) stats.solvedL2++;
+            document.getElementById('checkBtn').style.display = "none";
+            document.getElementById('nextBtn').style.display = "block";
+            checkLocks();
+        }
+    }
+
+    function checkLocks() {
+        if(stats.solvedL1 >= 30) document.getElementById('lvl2').disabled = false;
+        if(stats.solvedL2 >= 20) document.getElementById('lvl3').disabled = false;
+    }
+
+    function next() { currentIdx++; render(); }
+
+    function updateProgress() {
+        const target = currentLvl === 1 ? 30 : 20;
+        const current = currentLvl === 1 ? stats.solvedL1 : stats.solvedL2;
+        const p = Math.min((current / target) * 100, 100);
+        document.getElementById('progress').style.width = p + "%";
+        document.getElementById('status').innerText = currentLvl < 3 ? `Fortschritt: ${current}/${target} für Level-Up` : "Profi-Modus aktiv";
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

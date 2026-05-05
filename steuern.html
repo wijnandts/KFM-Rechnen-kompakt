@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RW-Trainer: Steuerkonten führen (Laufendes Buchen)</title>
+    <style>
+        :root { 
+            --ust-color: #27ae60; 
+            --vst-color: #00ced1; 
+            --primary: var(--ust-color); 
+            --bg: #f7fcf9; 
+            --success: #2ecc71; 
+            --error: #e74c3c; 
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; touch-action: manipulation; }
+        .app-container { background: white; max-width: 950px; width: 100%; padding: 20px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-top: 10px; position: relative; box-sizing: border-box; }
+        
+        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 100; }
+        .btn-round { background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.3rem; }
+        
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; padding-right: 150px; }
+        .btn-home { text-decoration: none; color: #555; font-size: 0.9rem; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; }
+        
+        .level-selector { display: flex; gap: 5px; margin-top: 10px; }
+        .level-btn { padding: 8px 12px; border: 2px solid var(--primary); background: white; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--primary); font-size: 0.8rem; }
+        .level-btn.active { background: var(--primary); color: white; }
+
+        #calc-container { display: none; position: fixed; top: 100px; left: 20px; width: 230px; background: #333; border-radius: 12px; padding: 12px; z-index: 2000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); cursor: move; touch-action: none; }
+        #calc-display { width: 100%; height: 50px; background: #eee; border-radius: 5px; margin-bottom: 10px; text-align: right; padding: 10px; font-family: monospace; font-size: 1.4rem; border: none; box-sizing: border-box; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-btn { padding: 15px; border: none; border-radius: 8px; background: #555; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .calc-btn.op { background: var(--primary); }
+        .calc-btn.eq { background: var(--success); grid-column: span 2; }
+        .calc-btn.clr { background: var(--error); grid-column: span 2; }
+
+        h1 { color: var(--primary); text-align: center; font-size: 1.4rem; margin: 15px 0; text-transform: uppercase; }
+        .task-box { background: #f0fdfa; border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 15px; border-radius: 4px; font-size: 0.95rem; line-height: 1.5; color: #1e462f; }
+        
+        .konto-grid { overflow-x: auto; }
+        .t-konto { width: 100%; min-width: 650px; border-collapse: collapse; margin-top: 15px; border-top: 4px solid #333; table-layout: fixed; }
+        .t-konto th { border-bottom: 2px solid #333; padding: 10px; background: #fafafa; font-size: 0.95rem; }
+        .t-konto td { border-right: 2px solid #333; padding: 10px; vertical-align: top; width: 50%; }
+        .t-konto td:last-child { border-right: none; }
+        
+        .entry { display: flex; gap: 5px; align-items: center; margin-bottom: 10px; }
+        .gk-field { font-size: 0.75rem; color: #444; width: 130px; overflow: hidden; white-space: nowrap; font-weight: bold; }
+        .gk-select { flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.85rem; background: #fff; font-weight: bold; }
+        .val-input { width: 105px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: right; font-size: 0.9rem; font-weight: bold; }
+        
+        .sum-line { border-top: 2px solid #333; border-bottom: 4px double #333; margin-top: 10px; padding: 10px 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+
+        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        .btn-check { background-color: var(--primary); color: white; }
+        .btn-next { background-color: #6c757d; color: white; margin-top: 10px; opacity: 0.5; cursor: not-allowed; }
+        .btn-next.enabled { background-color: var(--success); opacity: 1; cursor: pointer; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; text-align: center; border: 2px solid transparent; }
+    </style>
+</head>
+<body>
+
+<div id="calc-container">
+    <input type="text" id="calc-display" readonly value="0">
+    <div class="calc-grid">
+        <button class="calc-btn clr" onclick="calcClear()">C</button>
+        <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+        <button class="calc-btn op" onclick="calcOp('*')">×</button>
+        <button class="calc-btn" onclick="calcNum('7')">7</button>
+        <button class="calc-btn" onclick="calcNum('8')">8</button>
+        <button class="calc-btn" onclick="calcNum('9')">9</button>
+        <button class="calc-btn op" onclick="calcOp('-')">-</button>
+        <button class="calc-btn" onclick="calcNum('4')">4</button>
+        <button class="calc-btn" onclick="calcNum('5')">5</button>
+        <button class="calc-btn" onclick="calcNum('6')">6</button>
+        <button class="calc-btn op" onclick="calcOp('+')">+</button>
+        <button class="calc-btn" onclick="calcNum('1')">1</button>
+        <button class="calc-btn" onclick="calcNum('2')">2</button>
+        <button class="calc-btn" onclick="calcNum('3')">3</button>
+        <button class="calc-btn op" onclick="calcNum('.')">.</button>
+        <button class="calc-btn" onclick="calcNum('0')">0</button>
+        <button class="calc-btn eq" onclick="calcSolve()">=</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header-actions">
+        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round">✉</a>
+        <button class="btn-round" onclick="toggleCalc()" title="Rechner">🖩</button>
+        <button class="btn-round" onclick="toggleHelp(true)" title="Hilfe">?</button>
+    </div>
+    
+    <div class="nav-header">
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel(1, this)">Stufe 1</button>
+            <button class="level-btn" onclick="setLevel(2, this)">Stufe 2</button>
+            <button class="level-btn" onclick="setLevel(3, this)">Stufe 3</button>
+        </div>
+    </div>
+
+    <h1 id="page-title">Steuerkonto führen</h1>
+    <div id="task" class="task-box">Generiere Aufgabe...</div>
+
+    <div class="konto-grid">
+        <table class="t-konto">
+            <thead>
+                <tr><th colspan="2" id="konto-name-header">Konto</th></tr>
+                <tr><th>Soll</th><th>Haben</th></tr>
+            </thead>
+            <tbody id="konto-body">
+                <tr>
+                    <td id="soll-side"></td>
+                    <td id="haben-side"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="feedbackBox" class="feedback"></div>
+    <button class="btn-action btn-check" onclick="validate()">Eingabe prüfen</button>
+    <button id="nextTaskBtn" class="btn-action btn-next" onclick="generateTask()" disabled>Nächste Aufgabe</button>
+</div>
+
+<script>
+    let config = { level: 1 };
+    let currentTask = { type: 'UST', solS: [], solH: [], targetSum: 0 };
+    const kontenListe = ["Bank", "Kasse", "Forderungen a. L. L.", "Verbindlichkeiten a. L. L.", "EBK", "SBK", "Warenvorrat"];
+
+    const poolUST = [
+        {t:"Warenverkauf auf Ziel", v:5000, gk:"Forderungen a. L. L."},
+        {t:"Barverkauf von Handelswaren", v:450, gk:"Kasse"},
+        {t:"Banküberweisung aus Warenverkauf", v:3200, gk:"Bank"}
+    ];
+
+    const poolVST = [
+        {t:"Wareneinkauf auf Ziel", v:2000, gk:"Verbindlichkeiten a. L. L."},
+        {t:"Barzahlung für Büromaterial", v:120, gk:"Kasse"},
+        {t:"Reparaturrechnung per Banküberweisung", v:600, gk:"Bank"}
+    ];
+
+    const fmt = (n) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function toggleHelp(s) { /* Logic handled in separate help view if needed */ }
+    function toggleCalc() { const c = document.getElementById("calc-container"); c.style.display = (c.style.display === "block") ? "none" : "block"; }
+    function setLevel(l, b) { config.level = parseInt(l); document.querySelectorAll('.level-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); generateTask(); }
+
+    function generateTask() {
+        const nextBtn = document.getElementById('nextTaskBtn');
+        nextBtn.disabled = true; nextBtn.classList.remove('enabled');
+        
+        currentTask.type = Math.random() > 0.5 ? 'UST' : 'VST';
+        const isUst = currentTask.type === 'UST';
+        document.documentElement.style.setProperty('--primary', isUst ? '#27ae60' : '#00ced1');
+        
+        document.getElementById('page-title').innerText = isUst ? 'Umsatzsteuer führen' : 'Vorsteuer führen';
+        document.getElementById('konto-name-header').innerText = isUst ? 'Umsatzsteuer' : 'Vorsteuer';
+
+        let anzahl = config.level === 1 ? 1 : (config.level === 2 ? 2 : 3);
+        let ab = Math.floor(Math.random() * 2000) + 500;
+        let pool = isUst ? poolUST : poolVST;
+        let selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, anzahl);
+
+        currentTask.solS = []; currentTask.solH = [];
+        let totalTax = ab;
+
+        if(isUst) currentTask.solH.push({gk: "EBK", v: ab});
+        else currentTask.solS.push({gk: "EBK", v: ab});
+
+        selected.forEach(f => {
+            let taxValue = Math.round(f.v * 0.19 * 100) / 100;
+            if(isUst) currentTask.solH.push({gk: f.gk, v: taxValue});
+            else currentTask.solS.push({gk: f.gk, v: taxValue});
+            totalTax += taxValue;
+            f.taxVal = taxValue;
+        });
+
+        if(config.level === 3) {
+            let saldo = Math.round(totalTax * 100) / 100;
+            if(isUst) currentTask.solS.push({gk: "SBK", v: saldo});
+            else currentTask.solH.push({gk: "SBK", v: saldo});
+            currentTask.targetSum = totalTax;
+        }
+
+        let taskText = `<b>Anfangsbestand:</b> ${fmt(ab)} €<br><br><b>Buchungen:</b><br>`;
+        selected.forEach(f => {
+            if(config.level === 3 && Math.random() > 0.5) {
+                taskText += `• ${f.t}: Bruttobetrag ${fmt(f.v * 1.19)} € (inkl. 19% Steuer)<br>`;
+            } else {
+                taskText += `• ${f.t}: Steuerbetrag ${fmt(f.taxVal)} €<br>`;
+            }
+        });
+        document.getElementById('task').innerHTML = taskText;
+        render();
+    }
+
+    function render() {
+        const buildSide = (side, solList) => {
+            let h = "";
+            let rows = config.level === 3 ? 6 : 4;
+            for(let i=0; i<rows; i++) {
+                h += `<div class="entry">`;
+                if(config.level < 2) h += `<span class="gk-field" id="${side}-label-${i}">${solList[i] ? solList[i].gk : ""}</span>`;
+                else h += `<select class="gk-select" id="${side}-gk-${i}"><option value="">Gegenkonto</option>${kontenListe.map(k=>`<option value="${k}">${k}</option>`).join('')}</select>`;
+                h += `<input type="number" step="0.01" class="val-input" id="${side}-val-${i}"></div>`;
+            }
+            if(config.level === 3) h += `<div class="sum-line"><span>Summe:</span> <input type="number" step="0.01" class="val-input" id="${side}-sum"></div>`;
+            return h;
+        };
+        document.getElementById('soll-side').innerHTML = buildSide('s', currentTask.solS);
+        document.getElementById('haben-side').innerHTML = buildSide('h', currentTask.solH);
+        document.getElementById('feedbackBox').style.display = 'none';
+    }
+
+    function validate() {
+        const fb = document.getElementById('feedbackBox');
+        fb.style.display = 'block';
+        
+        const check = (side, sol) => {
+            let user = [];
+            let rows = config.level === 3 ? 6 : 4;
+            for(let i=0; i<rows; i++) {
+                let v = parseFloat(document.getElementById(`${side}-val-${i}`).value) || 0;
+                let gk = config.level < 2 ? (document.getElementById(`${side}-label-${i}`)?.innerText || "") : document.getElementById(`${side}-gk-${i}`).value;
+                if(v > 0) user.push({gk: gk, v: Math.round(v*100)/100});
+            }
+            if(user.length !== sol.length) return false;
+            let solCopy = JSON.parse(JSON.stringify(sol));
+            for(let u of user) {
+                let idx = solCopy.findIndex(s => Math.abs(s.v - u.v) < 0.01 && (config.level < 2 || s.gk === u.gk));
+                if(idx === -1) return false;
+                solCopy.splice(idx, 1);
+            }
+            return true;
+        };
+
+        let ok = check('s', currentTask.solS) && check('h', currentTask.solH);
+        if(config.level === 3) {
+            let sSum = Math.round((parseFloat(document.getElementById('s-sum').value)||0)*100)/100;
+            let hSum = Math.round((parseFloat(document.getElementById('h-sum').value)||0)*100)/100;
+            if(Math.abs(sSum - currentTask.targetSum) > 0.01 || Math.abs(hSum - sSum) > 0.01) ok = false;
+        }
+
+        if(ok) {
+            fb.innerHTML = "✅ Hervorragend! Das Steuerkonto wurde korrekt geführt und abgeschlossen."; 
+            fb.style.backgroundColor = "#d4edda"; fb.style.color = "#155724";
+            document.getElementById('nextTaskBtn').disabled = false; document.getElementById('nextTaskBtn').classList.add('enabled');
+        } else {
+            fb.innerHTML = "❌ Fehler in den Buchungen, Gegenkonten oder Summen. Bitte prüfen!"; 
+            fb.style.backgroundColor = "#f8d7da"; fb.style.color = "#721c24";
+        }
+    }
+
+    // Calculator Logic (Standard)
+    let calcVal = "0";
+    function updateCalc() { document.getElementById("calc-display").value = calcVal; }
+    function calcNum(n) { calcVal === "0" && n !== "." ? calcVal = n : calcVal += n; updateCalc(); }
+    function calcOp(op) { calcVal += " " + op + " "; updateCalc(); }
+    function calcClear() { calcVal = "0"; updateCalc(); }
+    function calcSolve() { try { calcVal = eval(calcVal.replace('÷', '/').replace('×', '*')).toString(); } catch { calcVal = "Error"; } updateCalc(); }
+
+    window.onload = generateTask;
+</script>
+</body>
+</html>
