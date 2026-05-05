@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mathematik-Lernportal – Berufskolleg</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --text: #2c3e50;
+            --primary: #1a5276;
+            --grey: #7f8c8d;
+            --border: #dde3ea;
+            --white: #ffffff;
+
+            /* Farbcodes je Themenbereich */
+            --c-prozent:    #8e44ad;
+            --c-dreisatz:   #2980b9;
+            --c-durchschn:  #4834d4;
+            --c-kalkul:     #16a085;
+            --c-kasse:      #e67e22;
+            --c-zinsen:     #2980b9;
+            --c-brueche:    #c0392b;
+            --c-masse:      #27ae60;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 24px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .header-icon { font-size: 3rem; margin-bottom: 8px; }
+        .header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--grey);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .header-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .badge {
+            background: var(--white);
+            border: 1px solid var(--border);
+            color: var(--grey);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* SEKTION */
+        .section-wrap {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--grey);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+        }
+
+        /* TILE-GRID */
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        /* TILE */
+        .tile {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+            padding: 22px 22px 18px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            border-left: 6px solid transparent;
+            transition: transform 0.18s, box-shadow 0.18s;
+            position: relative;
+        }
+        .tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+        }
+
+        .tile-icon {
+            font-size: 2.2rem;
+            min-width: 48px;
+            text-align: center;
+            line-height: 1;
+        }
+        .tile-body { flex: 1; }
+        .tile-body h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+        .tile-body p {
+            font-size: 0.82rem;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        /* PAAR-LINKS (Erklärun / Übung) */
+        .tile-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            transition: opacity 0.15s;
+        }
+        .tile-link:hover { opacity: 0.8; }
+        .tile-link.erklaerung {
+            background: #eef2f7;
+            color: var(--primary);
+        }
+        .tile-link.uebung {
+            color: white;
+        }
+
+        /* STATUS-BADGE */
+        .status-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .status-badge.neu { background: #ffeaa7; color: #9a7d0a; }
+        .status-badge.bald { background: #dfe6e9; color: #636e72; }
+
+        /* FARBEN je Thema */
+        .c-prozent   { border-left-color: var(--c-prozent); }
+        .c-dreisatz  { border-left-color: var(--c-dreisatz); }
+        .c-durchschn { border-left-color: var(--c-durchschn); }
+        .c-kalkul    { border-left-color: var(--c-kalkul); }
+        .c-kasse     { border-left-color: var(--c-kasse); }
+        .c-zinsen    { border-left-color: var(--c-zinsen); }
+        .c-brueche   { border-left-color: var(--c-brueche); }
+        .c-masse     { border-left-color: var(--c-masse); }
+
+        .bg-prozent   { background: var(--c-prozent); }
+        .bg-dreisatz  { background: var(--c-dreisatz); }
+        .bg-durchschn { background: var(--c-durchschn); }
+        .bg-kalkul    { background: var(--c-kalkul); }
+        .bg-kasse     { background: var(--c-kasse); }
+        .bg-zinsen    { background: var(--c-zinsen); }
+        .bg-brueche   { background: var(--c-brueche); }
+        .bg-masse     { background: var(--c-masse); }
+
+        /* LERN-TIPP */
+        .lerntipp {
+            width: 100%;
+            max-width: 900px;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+            border-left: 6px solid #f39c12;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+        }
+        .lerntipp h3 { font-size: 0.9rem; color: #9a7d0a; margin-bottom: 6px; }
+        .lerntipp p { font-size: 0.85rem; color: var(--grey); line-height: 1.5; }
+
+        /* LINK ZUM RW-PORTAL */
+        .rw-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 18px 22px;
+            text-decoration: none;
+            color: var(--text);
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+            border-left: 6px solid #3498db;
+            transition: transform 0.18s;
+        }
+        .rw-link:hover { transform: translateY(-2px); }
+        .rw-link .icon { font-size: 2rem; }
+        .rw-link h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+        .rw-link p { font-size: 0.82rem; color: var(--grey); }
+
+        /* FOOTER */
+        .footer {
+            color: var(--grey);
+            font-size: 0.82rem;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            max-width: 900px;
+            width: 100%;
+        }
+        .footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5rem; }
+            .tile { padding: 18px 16px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-icon">📐</div>
+    <h1>Mathematik – Lernportal</h1>
+    <p>Interaktive Übungen für das Berufskolleg NRW.<br>Alle Module offline nutzbar – direkt am Smartphone.</p>
+    <div class="header-badges">
+        <span class="badge">BFS 1</span>
+        <span class="badge">BFS 2</span>
+        <span class="badge">AVB</span>
+        <span class="badge">Einzelhandel</span>
+        <span class="badge">Lernmodus</span>
+        <span class="badge">Prüfungsmodus</span>
+    </div>
+</div>
+
+<!-- LERNTIPP -->
+<div class="lerntipp">
+    <h3>💡 So nutzt du dieses Portal</h3>
+    <p>Jedes Thema hat eine <strong>Erklärung</strong> (Theorie + Formeln) und eine <strong>Übung</strong> (interaktive Aufgaben). Starte im <strong>Lernmodus</strong> mit Tipps und Rechenwegen – oder wechsle in den <strong>Prüfungsmodus</strong> zur Vorbereitung auf Klassenarbeiten.</p>
+</div>
+
+<!-- ======================== -->
+<!-- THEMENBEREICH 1: GRUNDLAGEN -->
+<!-- ======================== -->
+<div class="section-wrap">
+    <div class="section-title">📊 Grundlegende Rechenverfahren</div>
+    <div class="tile-grid">
+
+        <!-- PROZENTRECHNUNG -->
+        <div class="tile c-prozent">
+            <div class="tile-icon">%</div>
+            <div class="tile-body">
+                <h2>Prozentrechnung</h2>
+                <p>Grundwert, Prozentwert, Prozentsatz – mit Rabatt, Skonto und Mehrwertsteuer.</p>
+                <div class="tile-links">
+                    <a href="prozentrechnung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="prozent_uebung.html" class="tile-link uebung bg-prozent">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- DREISATZ -->
+        <div class="tile c-dreisatz">
+            <div class="tile-icon">3×</div>
+            <div class="tile-body">
+                <h2>Dreisatz</h2>
+                <p>Proportionaler und antiproportionaler Dreisatz – mit Textaufgaben.</p>
+                <div class="tile-links">
+                    <a href="dreisatz_erklaerung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="dreisatz-aufgaben.html" class="tile-link uebung bg-dreisatz">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- DURCHSCHNITT -->
+        <div class="tile c-durchschn">
+            <div class="tile-icon">∅</div>
+            <div class="tile-body">
+                <h2>Durchschnittsrechnung</h2>
+                <p>Einfacher und gewogener Durchschnitt – Umsätze, Preise, Mengen.</p>
+                <div class="tile-links">
+                    <a href="durchschnitt_erklaerung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="durchschnitt_uebung.html" class="tile-link uebung bg-durchschn">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRÜCHE (NEU) -->
+        <div class="tile c-brueche">
+            <div class="tile-icon">½</div>
+            <div class="tile-body">
+                <h2>Brüche & Grundrechenarten</h2>
+                <p>Kürzen, Erweitern, Addieren, Subtrahieren, Multiplizieren und Dividieren von Brüchen.</p>
+                <span class="status-badge neu">Neu</span>
+                <div class="tile-links">
+                    <a href="mathematik-brueche.html" class="tile-link uebung bg-brueche">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- MASSEINHEITEN (NEU) -->
+        <div class="tile c-masse">
+            <div class="tile-icon">📏</div>
+            <div class="tile-body">
+                <h2>Maßeinheiten & Umrechnung</h2>
+                <p>Länge, Gewicht, Volumen, Zeit und Fläche – Umrechnung und Textaufgaben.</p>
+                <span class="status-badge neu">Neu</span>
+                <div class="tile-links">
+                    <a href="mathematik-masse.html" class="tile-link uebung bg-masse">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ======================== -->
+<!-- THEMENBEREICH 2: KAUFMÄNNISCH -->
+<!-- ======================== -->
+<div class="section-wrap">
+    <div class="section-title">🏪 Kaufmännische Mathematik</div>
+    <div class="tile-grid">
+
+        <!-- KALKULATION -->
+        <div class="tile c-kalkul">
+            <div class="tile-icon">🏷️</div>
+            <div class="tile-body">
+                <h2>Kalkulation</h2>
+                <p>Einstandspreis, Handelsspanne, Verkaufspreis – Vorwärts- und Rückwärtskalkulation.</p>
+                <div class="tile-links">
+                    <a href="kalkulation_erklaerung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="kalkulation_uebung.html" class="tile-link uebung bg-kalkul">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- KASSENABRECHNUNG -->
+        <div class="tile c-kasse">
+            <div class="tile-icon">🧾</div>
+            <div class="tile-body">
+                <h2>Kassenabrechnung</h2>
+                <p>Tageslosung, Soll-Bestand, Ist-Bestand und Kassendifferenzen berechnen.</p>
+                <div class="tile-links">
+                    <a href="kasse_erklaerung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="kasse_uebung.html" class="tile-link uebung bg-kasse">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZINSRECHNUNG -->
+        <div class="tile c-zinsen">
+            <div class="tile-icon">💰</div>
+            <div class="tile-body">
+                <h2>Zinsrechnung</h2>
+                <p>Kapitalzins, Zinssatz, Laufzeit, Effektivzins und Skonto-Wirtschaftlichkeit.</p>
+                <div class="tile-links">
+                    <a href="zinsen_erklaerung.html" class="tile-link erklaerung">📖 Erklärung</a>
+                    <a href="zinsen_uebung.html" class="tile-link uebung bg-zinsen">🎮 Übung</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- LINK ZUM RW-PORTAL -->
+<a href="index.html" class="rw-link">
+    <span class="icon">📒</span>
+    <div>
+        <h3>Rechnungswesen-Portal (BFS 2)</h3>
+        <p>Kontenrahmen, Buchungssätze, Jahresabschluss – zur separaten Lernumgebung wechseln.</p>
+    </div>
+    <span style="margin-left:auto; font-size:1.3rem; color:#aaa;">→</span>
+</a>
+
+<!-- FOOTER -->
+<div class="footer">
+    Viel Erfolg beim Lernen! &nbsp;|&nbsp;
+    <a href="mailto:wijnandts@bk-erkelenz.de">wijnandts@bk-erkelenz.de</a><br>
+    <span style="font-size:0.75rem; margin-top:6px; display:block;">
+        Offline nutzbar · Kein Tracking · MIT-Lizenz (Code) · CC BY-SA (Inhalte)
+    </span>
+</div>
+
+</body>
+</html>

@@ -2,50 +2,949 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Übung: Kassenabrechnung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kassenabrechnung – Interaktive Übung</title>
     <style>
-        :root { --bg: #ecf0f1; --main: #f1c40f; --dark: #9a7d0a; --light: #ffeaa7; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
-        h1 { color: var(--dark); border-bottom: 4px solid var(--main); padding-bottom: 10px; }
-        .question-box { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 6px solid var(--main); }
-        input { padding: 10px; border: 2px solid #ddd; border-radius: 8px; width: 120px; }
-        .btn-check { background: var(--main); color: #2c3e50; padding: 15px 30px; border: none; border-radius: 10px; font-weight: bold; box-shadow: 0 5px 0 var(--dark); cursor: pointer; }
-        .btn-check:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        :root {
+            --main: #e67e22;
+            --main-dark: #9a5b10;
+            --main-light: #fef5e7;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg: #f8f4ef;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --grey: #7f8c8d;
+            --border: #e5d5c0;
+            --calc-bg: #1a1a2e;
+            --calc-btn: #16213e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-home {
+            text-decoration: none;
+            color: var(--grey);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .btn-home:hover { background: var(--main-light); }
+        .nav-title { font-size: 0.85rem; color: var(--grey); }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--main-dark), var(--main));
+            color: white;
+            padding: 28px 30px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .app-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .app-header p { font-size: 0.9rem; opacity: 0.85; }
+
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            background: var(--white);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--grey);
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            border-color: var(--main);
+            background: var(--main-light);
+            color: var(--main-dark);
+        }
+
+        .progress-section {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--grey);
+            margin-bottom: 6px;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--main), #f39c12);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+
+        .aufgabe-nummer {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--main);
+            margin-bottom: 8px;
+        }
+        .aufgabe-typ-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: var(--main-light);
+            color: var(--main-dark);
+            margin-bottom: 14px;
+        }
+        .aufgabe-text {
+            background: #fdf6ee;
+            border-left: 5px solid var(--main);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .aufgabe-text .wert { font-weight: 700; color: var(--main-dark); }
+        .aufgabe-text .gesucht { font-weight: 700; color: #c0392b; }
+
+        /* SCHEMA-BOX (Lernmodus) */
+        .schema-box {
+            background: var(--main-light);
+            border: 2px dashed var(--main);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+        }
+        .schema-box h4 {
+            color: var(--main-dark);
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .schema-zeile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+        .schema-op {
+            width: 20px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--main);
+        }
+        .schema-zeile.ergebnis {
+            border-top: 2px solid var(--main);
+            margin-top: 6px;
+            padding-top: 8px;
+            font-weight: 700;
+            color: var(--main-dark);
+        }
+
+        /* EINGABE-FELDER */
+        .eingabe-gruppe {
+            margin-bottom: 18px;
+        }
+        .eingabe-zeile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .eingabe-label {
+            font-weight: 600;
+            font-size: 0.92rem;
+            min-width: 200px;
+        }
+        .eingabe-feld {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            width: 150px;
+            transition: border-color 0.2s;
+            -moz-appearance: textfield;
+        }
+        .eingabe-feld:focus { outline: none; border-color: var(--main); }
+        .eingabe-feld::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .eingabe-einheit { font-size: 0.9rem; color: var(--grey); font-weight: 600; }
+
+        /* SCORE */
+        .score-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .score-item {
+            flex: 1;
+            background: #f7f9fc;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .score-item .score-zahl { font-size: 1.6rem; font-weight: 800; }
+        .score-item .score-label { font-size: 0.7rem; color: var(--grey); text-transform: uppercase; }
+        .score-item.richtig .score-zahl { color: var(--success); }
+        .score-item.falsch .score-zahl { color: var(--error); }
+
+        /* BUTTONS */
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+        .btn-primary { background: var(--main); color: white; }
+        .btn-primary:hover { background: var(--main-dark); }
+        .btn-secondary { background: #eef2f7; color: var(--text); }
+        .btn-secondary:hover { background: #dde3ea; }
+        .btn-hint { background: var(--main-light); color: var(--main-dark); border: 2px solid var(--main); }
+
+        /* FEEDBACK */
+        .feedback-box {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .feedback-box.richtig { background: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .feedback-box.falsch { background: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+        .feedback-box.info { background: var(--main-light); color: var(--main-dark); border-left: 5px solid var(--main); }
+
+        /* RECHENWEG */
+        .rechenweg-box {
+            background: #f7f9fc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .rechenweg-box h4 { color: var(--main-dark); margin-bottom: 10px; font-size: 0.9rem; }
+        .rw-zeile {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        .rw-op { width: 20px; font-weight: 700; color: var(--main); flex-shrink: 0; margin-top: 1px; }
+        .rw-zwischenergebnis {
+            border-top: 2px solid var(--main);
+            margin-top: 8px;
+            padding-top: 8px;
+            font-weight: 700;
+            color: var(--main-dark);
+        }
+
+        /* PRÜFUNG AUSWERTUNG */
+        .pruefungs-auswertung {
+            display: none;
+            text-align: center;
+        }
+        .auswertung-kreis {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--main), var(--main-dark));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        /* RECHNER */
+        .rechner-card {
+            background: var(--calc-bg);
+            border-radius: 16px;
+            padding: 20px;
+            position: sticky;
+            top: 16px;
+        }
+        .rechner-label {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .rechner-display {
+            background: #0d0d1a;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 1.6rem;
+            color: #ffa726;
+            text-align: right;
+            margin-bottom: 14px;
+            min-height: 56px;
+            word-break: break-all;
+        }
+        .rechner-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .r-btn {
+            background: var(--calc-btn);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 6px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .r-btn:hover { background: #2d3561; }
+        .r-btn.op { color: #ffa726; }
+        .r-btn.clear { color: #ff6b6b; }
+        .r-btn.equals { background: var(--main); color: white; }
+        .r-btn.equals:hover { background: var(--main-dark); }
+
+        /* LEHRKRAFT */
+        .lehrkraft-panel {
+            display: none;
+            background: #fffbf0;
+            border: 2px dashed #f39c12;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.9rem;
+        }
+        .lehrkraft-panel h3 { color: #9a7d0a; margin-bottom: 12px; }
+        .lehrkraft-panel ul { padding-left: 20px; }
+        .lehrkraft-panel li { margin-bottom: 6px; }
+        .toggle-lehrkraft {
+            display: block;
+            text-align: center;
+            max-width: 1100px;
+            margin: 16px auto 0;
+            color: var(--grey);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 720px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .rechner-card { position: static; }
+            .eingabe-label { min-width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Übung: Kassenabrechnung</h1>
-        <div id="quiz"></div>
-        <button class="btn-check" onclick="check()">Prüfen</button>
-        <a href="index.html" style="margin-left:20px; color: var(--dark);">Zurück</a>
+
+<div class="nav-bar">
+    <a href="index-mathematik.html" class="btn-home">⬅ Mathematik-Portal</a>
+    <span class="nav-title">Kassenabrechnung – Interaktive Übung</span>
+</div>
+
+<div class="app-header">
+    <h1>🧾 Kassenabrechnung üben</h1>
+    <p>Tageslosung · Soll-Bestand · Ist-Bestand · Kassendifferenzen · Kassenbericht</p>
+</div>
+
+<div class="mode-tabs">
+    <button class="tab-btn active" onclick="setModus('lern')" id="tab-lern">📖 Lernmodus</button>
+    <button class="tab-btn" onclick="setModus('pruefung')" id="tab-pruefung">🎯 Prüfungsmodus</button>
+</div>
+
+<div class="progress-section">
+    <div class="progress-info">
+        <span id="aufgabe-status">Aufgabe 1 von 10</span>
+        <span id="punkte-status">⭐ 0 Punkte</span>
+    </div>
+    <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+</div>
+
+<div class="main-layout">
+
+    <div class="card" id="uebungs-karte">
+
+        <div class="score-box" id="score-box">
+            <div class="score-item richtig">
+                <div class="score-zahl" id="score-richtig">0</div>
+                <div class="score-label">Richtig</div>
+            </div>
+            <div class="score-item falsch">
+                <div class="score-zahl" id="score-falsch">0</div>
+                <div class="score-label">Falsch</div>
+            </div>
+        </div>
+
+        <div class="aufgabe-nummer" id="aufgabe-nr">Aufgabe 1</div>
+        <div class="aufgabe-typ-badge" id="aufgabe-typ">Tageslosung</div>
+        <div class="aufgabe-text" id="aufgabe-text">Wird geladen...</div>
+
+        <!-- SCHEMA (Lernmodus) -->
+        <div class="schema-box" id="schema-box">
+            <h4>📋 Schema: Tageslosung</h4>
+            <div class="schema-zeile"><span class="schema-op"> </span><span>Kassen-Endbestand (Ist)</span></div>
+            <div class="schema-zeile"><span class="schema-op">−</span><span>Kassen-Anfangsbestand</span></div>
+            <div class="schema-zeile"><span class="schema-op">+</span><span>Ausgaben</span></div>
+            <div class="schema-zeile"><span class="schema-op">+</span><span>Privatentnahmen</span></div>
+            <div class="schema-zeile"><span class="schema-op">−</span><span>Privateinlagen</span></div>
+            <div class="schema-zeile ergebnis"><span class="schema-op">=</span><span>Tageslosung (Tageseinnahmen)</span></div>
+        </div>
+
+        <!-- EINGABE -->
+        <div class="eingabe-gruppe" id="eingabe-gruppe">
+            <div class="eingabe-zeile" id="eingabe-zeile-1">
+                <label class="eingabe-label" id="eingabe-label-1">Ergebnis 1:</label>
+                <input type="number" id="antwort-1" class="eingabe-feld" step="0.01" placeholder="0,00">
+                <span class="eingabe-einheit">€</span>
+            </div>
+            <div class="eingabe-zeile" id="eingabe-zeile-2" style="display:none">
+                <label class="eingabe-label" id="eingabe-label-2">Ergebnis 2:</label>
+                <input type="number" id="antwort-2" class="eingabe-feld" step="0.01" placeholder="0,00">
+                <span class="eingabe-einheit" id="einheit-2">€</span>
+            </div>
+        </div>
+
+        <div class="feedback-box" id="feedback-box"></div>
+
+        <div class="rechenweg-box" id="rechenweg-box">
+            <h4>🔢 Rechenweg</h4>
+            <div id="rechenweg-inhalt"></div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-pruefen" onclick="pruefen()">✔ Antwort prüfen</button>
+        <button class="btn btn-hint" id="btn-tipp" onclick="zeigeTipp()">💡 Tipp anzeigen</button>
+        <button class="btn btn-secondary" id="btn-naechste" onclick="naechsteAufgabe()" style="display:none">➡ Nächste Aufgabe</button>
+
+        <div class="pruefungs-auswertung" id="pruefungs-auswertung">
+            <div class="auswertung-kreis">
+                <span id="auswertung-zahl">0/10</span>
+            </div>
+            <p id="auswertung-text" style="margin-bottom:16px; color: var(--grey);"></p>
+            <button class="btn btn-primary" onclick="neustart()">🔄 Nochmal üben</button>
+        </div>
+
     </div>
 
-    <script>
-        const questions = [];
-        for(let i=1; i<=30; i++) {
-            let einnahme = 1000 + (i * 123.45);
-            let ausgabe = 20 + i;
-            let soll = einnahme - ausgabe;
-            questions.push({
-                q: `Tageseinnahmen: ${einnahme.toFixed(2)} €. Ausgaben: ${ausgabe.toFixed(2)} €. Berechne den Kassen-Sollbestand.`,
-                a: soll.toFixed(2)
-            });
+    <!-- RECHNER -->
+    <div class="rechner-card">
+        <div class="rechner-label">Taschenrechner</div>
+        <div class="rechner-display" id="r-display">0</div>
+        <div class="rechner-grid">
+            <button class="r-btn clear" onclick="rC()">C</button>
+            <button class="r-btn op" onclick="rOp('÷')">÷</button>
+            <button class="r-btn op" onclick="rOp('×')">×</button>
+            <button class="r-btn op" onclick="rOp('-')">−</button>
+
+            <button class="r-btn" onclick="rN('7')">7</button>
+            <button class="r-btn" onclick="rN('8')">8</button>
+            <button class="r-btn" onclick="rN('9')">9</button>
+            <button class="r-btn op" onclick="rOp('+')">+</button>
+
+            <button class="r-btn" onclick="rN('4')">4</button>
+            <button class="r-btn" onclick="rN('5')">5</button>
+            <button class="r-btn" onclick="rN('6')">6</button>
+            <button class="r-btn" onclick="rN('.')">.</button>
+
+            <button class="r-btn" onclick="rN('1')">1</button>
+            <button class="r-btn" onclick="rN('2')">2</button>
+            <button class="r-btn" onclick="rN('3')">3</button>
+            <button class="r-btn" onclick="rN('0')">0</button>
+
+            <button class="r-btn equals" onclick="rEq()" style="grid-column: span 4">=</button>
+        </div>
+    </div>
+
+</div>
+
+<span class="toggle-lehrkraft" onclick="toggleLehrkraft()">👩‍🏫 Lehrkraft-Modus</span>
+
+<div class="lehrkraft-panel" id="lehrkraft-panel">
+    <h3>👩‍🏫 Lehrkraft-Modus</h3>
+    <ul>
+        <li><strong>App-Titel:</strong> Kassenabrechnung – Interaktive Übung</li>
+        <li><strong>Version:</strong> 2.0.0 | <strong>Stand:</strong> Mai 2025</li>
+        <li><strong>Fach:</strong> Mathematik | <strong>Bildungsgang:</strong> BFS 1, BFS 2, AVB, Einzelhandel</li>
+        <li><strong>Aufgabentypen:</strong> Tageslosung, Soll-Bestand, Kassendifferenz (Manko/Überschuss), vollständiger Kassenbericht</li>
+        <li><strong>Schema:</strong> Endbestand − Anfangsbestand + Ausgaben + Privatentnahmen − Privateinlagen = Tageslosung</li>
+        <li><strong>Lernmodus:</strong> Schema sichtbar, Tipps, vollständiger Rechenweg</li>
+        <li><strong>Prüfungsmodus:</strong> Keine Hilfen, Auswertung am Ende</li>
+        <li><strong>Datenschutz:</strong> Keine personenbezogenen Daten. Kein localStorage. Kein Tracking.</li>
+        <li><strong>Lizenz:</strong> MIT (Code), CC BY-SA (Inhalte)</li>
+    </ul>
+    <button class="btn btn-secondary" style="margin-top:12px; width:auto; padding: 8px 16px;" onclick="neustart()">🔄 App zurücksetzen</button>
+</div>
+
+<script>
+/* ============================================
+   AUFGABEN-POOL: Kassenabrechnung
+   ============================================ */
+
+function rnd(min, max, step = 1) {
+    const steps = Math.floor((max - min) / step);
+    return Math.round((min + Math.floor(Math.random() * steps) * step) * 100) / 100;
+}
+
+const aufgabenPool = [
+
+    // TYP 1: Tageslosung berechnen (einfach)
+    {
+        typ: "Tageslosung berechnen",
+        schema: true,
+        tipp: "Verwende das Schema: Endbestand − Anfangsbestand + Ausgaben = Tageslosung",
+        zweiteEingabe: false,
+        erstelle: () => {
+            const anfang = rnd(200, 500, 50);
+            const ausgaben = rnd(10, 80, 5);
+            const losung = rnd(800, 2500, 50);
+            const ende = losung + anfang - ausgaben;
+            const loesung = parseFloat(losung.toFixed(2));
+            return {
+                text: `Am Ende des Tages zählt die Kassiererin im Modeshop <span class="wert">${ende.toFixed(2)} €</span> in der Kasse.<br>
+Der <span class="wert">Kassenanfangsbestand</span> (Wechselgeld) betrug <span class="wert">${anfang.toFixed(2)} €</span>.<br>
+Im Laufe des Tages wurden <span class="wert">${ausgaben.toFixed(2)} €</span> für Reinigungsmittel bar ausgegeben.<br><br>
+<span class="gesucht">Gesucht: Wie hoch war die Tageslosung (Tageseinnahmen)?</span>`,
+                loesung1: loesung,
+                rechenweg: [
+                    `Kassen-Endbestand (Ist):     ${ende.toFixed(2)} €`,
+                    `− Kassen-Anfangsbestand:   − ${anfang.toFixed(2)} €`,
+                    `+ Ausgaben:                + ${ausgaben.toFixed(2)} €`,
+                    `= Tageslosung:             = ${loesung.toFixed(2)} €`
+                ]
+            };
         }
-        const selection = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
-        const container = document.getElementById('quiz');
-        selection.forEach((item, i) => {
-            container.innerHTML += `<div class="question-box"><p>${item.q}</p><input type="number" step="0.01" id="ans${i}"> €<div id="res${i}"></div></div>`;
-        });
-        function check() {
-            selection.forEach((item, i) => {
-                const val = document.getElementById(`ans${i}`).value;
-                const res = document.getElementById(`res${i}`);
-                if(Math.abs(val - item.a) < 0.05) { res.innerHTML = "✅ Stimmt!"; res.style.color = "green"; }
-                else { res.innerHTML = "❌ Falsch. Lösung: " + item.a; res.style.color = "red"; }
-            });
+    },
+
+    // TYP 2: Tageslosung mit Privatentnahme
+    {
+        typ: "Tageslosung mit Privatentnahme",
+        schema: true,
+        tipp: "Privatentnahmen werden wie Ausgaben behandelt: sie erhöhen die Tageslosung rechnerisch.",
+        zweiteEingabe: false,
+        erstelle: () => {
+            const anfang = rnd(150, 400, 50);
+            const ausgaben = rnd(15, 60, 5);
+            const privatentnahme = rnd(20, 100, 10);
+            const losung = rnd(1000, 3000, 100);
+            const ende = losung + anfang - ausgaben - privatentnahme;
+            const loesung = parseFloat(losung.toFixed(2));
+            return {
+                text: `Kassenendbestand: <span class="wert">${ende.toFixed(2)} €</span><br>
+Kassen-Anfangsbestand: <span class="wert">${anfang.toFixed(2)} €</span><br>
+Ausgaben (Porto): <span class="wert">${ausgaben.toFixed(2)} €</span><br>
+Privatentnahme der Inhaberin: <span class="wert">${privatentnahme.toFixed(2)} €</span><br><br>
+<span class="gesucht">Gesucht: Tageslosung</span>`,
+                loesung1: loesung,
+                rechenweg: [
+                    `Kassen-Endbestand (Ist):     ${ende.toFixed(2)} €`,
+                    `− Kassen-Anfangsbestand:   − ${anfang.toFixed(2)} €`,
+                    `+ Ausgaben:                + ${ausgaben.toFixed(2)} €`,
+                    `+ Privatentnahme:          + ${privatentnahme.toFixed(2)} €`,
+                    `= Tageslosung:             = ${loesung.toFixed(2)} €`
+                ]
+            };
         }
-    </script>
+    },
+
+    // TYP 3: Soll-Bestand berechnen
+    {
+        typ: "Soll-Bestand berechnen",
+        schema: false,
+        tipp: "Soll-Bestand = Anfangsbestand + Tageslosung − Ausgaben − Privatentnahmen",
+        zweiteEingabe: false,
+        erstelle: () => {
+            const anfang = rnd(200, 500, 50);
+            const losung = rnd(800, 2500, 100);
+            const ausgaben = rnd(20, 100, 10);
+            const soll = parseFloat((anfang + losung - ausgaben).toFixed(2));
+            return {
+                text: `Kassen-Anfangsbestand: <span class="wert">${anfang.toFixed(2)} €</span><br>
+Tageslosung (Tageseinnahmen): <span class="wert">${losung.toFixed(2)} €</span><br>
+Barausgaben: <span class="wert">${ausgaben.toFixed(2)} €</span><br><br>
+<span class="gesucht">Gesucht: Wie hoch ist der Kassen-Sollbestand am Tagesende?</span>`,
+                loesung1: soll,
+                rechenweg: [
+                    `Soll-Bestand = Anfangsbestand + Tageslosung − Ausgaben`,
+                    `Soll-Bestand = ${anfang.toFixed(2)} € + ${losung.toFixed(2)} € − ${ausgaben.toFixed(2)} €`,
+                    `Soll-Bestand = ${soll.toFixed(2)} €`
+                ]
+            };
+        }
+    },
+
+    // TYP 4: Kassendifferenz (Manko oder Überschuss)
+    {
+        typ: "Kassendifferenz ermitteln",
+        schema: false,
+        tipp: "Kassendifferenz = Ist-Bestand − Soll-Bestand. Negativ = Manko, Positiv = Überschuss.",
+        zweiteEingabe: false,
+        erstelle: () => {
+            const soll = rnd(500, 2000, 50);
+            const differenz = (Math.random() > 0.5 ? 1 : -1) * rnd(2, 25, 1);
+            const ist = parseFloat((soll + differenz).toFixed(2));
+            const loesung = parseFloat(differenz.toFixed(2));
+            const art = loesung >= 0 ? 'Kassenüberschuss' : 'Kassenmanko';
+            return {
+                text: `Am Tagesende ergibt sich folgender Befund:<br>
+Kassen-Sollbestand (laut Buchführung): <span class="wert">${soll.toFixed(2)} €</span><br>
+Kassen-Istbestand (tatsächlich gezählt): <span class="wert">${ist.toFixed(2)} €</span><br><br>
+<span class="gesucht">Gesucht: Wie hoch ist die Kassendifferenz? (Vorzeichen beachten!)</span><br>
+<small style="color:var(--grey)">Negativ = Kassenmanko · Positiv = Kassenüberschuss</small>`,
+                loesung1: loesung,
+                rechenweg: [
+                    `Kassendifferenz = Ist-Bestand − Soll-Bestand`,
+                    `Kassendifferenz = ${ist.toFixed(2)} € − ${soll.toFixed(2)} €`,
+                    `Kassendifferenz = ${loesung.toFixed(2)} €`,
+                    `→ ${loesung >= 0 ? '✅ Kassenüberschuss (Ist > Soll)' : '⚠️ Kassenmanko (Ist < Soll)'}`
+                ]
+            };
+        }
+    },
+
+    // TYP 5: Vollständiger Kassenbericht (2 Ergebnisse)
+    {
+        typ: "Vollständiger Kassenbericht",
+        schema: true,
+        tipp: "Berechne zuerst die Tageslosung, dann den Soll-Bestand.",
+        zweiteEingabe: true,
+        label1: "Tageslosung",
+        label2: "Soll-Bestand",
+        erstelle: () => {
+            const anfang = rnd(200, 400, 50);
+            const ausgaben = rnd(10, 80, 5);
+            const losung = rnd(900, 2000, 100);
+            const ende = parseFloat((losung + anfang - ausgaben).toFixed(2));
+            const soll = parseFloat((anfang + losung - ausgaben).toFixed(2)); // = ende in einfachem Fall
+            return {
+                text: `Erstelle den Kassenbericht für den heutigen Tag:<br><br>
+Kassen-Anfangsbestand: <span class="wert">${anfang.toFixed(2)} €</span><br>
+Kassen-Endbestand (Ist): <span class="wert">${ende.toFixed(2)} €</span><br>
+Barausgaben: <span class="wert">${ausgaben.toFixed(2)} €</span><br><br>
+<span class="gesucht">Gesucht: (1) Tageslosung und (2) Kassen-Sollbestand</span>`,
+                loesung1: losung,
+                loesung2: soll,
+                rechenweg: [
+                    `(1) Tageslosung:`,
+                    `Endbestand − Anfangsbestand + Ausgaben`,
+                    `= ${ende.toFixed(2)} € − ${anfang.toFixed(2)} € + ${ausgaben.toFixed(2)} € = ${losung.toFixed(2)} €`,
+                    `(2) Soll-Bestand:`,
+                    `Anfangsbestand + Tageslosung − Ausgaben`,
+                    `= ${anfang.toFixed(2)} € + ${losung.toFixed(2)} € − ${ausgaben.toFixed(2)} € = ${soll.toFixed(2)} €`
+                ]
+            };
+        }
+    }
+];
+
+/* ============================================
+   ZUSTAND
+   ============================================ */
+let modus = 'lern';
+let aufgabenQueue = [];
+let aktuelleAufgabe = null;
+let aktuellerIndex = 0;
+let maxAufgaben = 10;
+let scoreRichtig = 0;
+let scoreFalsch = 0;
+let beantwortet = false;
+
+/* ============================================
+   INITIALISIERUNG
+   ============================================ */
+function init() {
+    aufgabenQueue = [];
+    aktuellerIndex = 0;
+    scoreRichtig = 0;
+    scoreFalsch = 0;
+    beantwortet = false;
+
+    for (let i = 0; i < maxAufgaben; i++) {
+        const typ = aufgabenPool[i % aufgabenPool.length];
+        aufgabenQueue.push({ ...typ, ...typ.erstelle() });
+    }
+
+    document.getElementById('pruefungs-auswertung').style.display = 'none';
+    aktualisiereScore();
+    zeigeAufgabe();
+}
+
+function zeigeAufgabe() {
+    if (aktuellerIndex >= maxAufgaben) {
+        if (modus === 'pruefung') zeigePruefungsAuswertung();
+        return;
+    }
+
+    aktuelleAufgabe = aufgabenQueue[aktuellerIndex];
+    beantwortet = false;
+
+    document.getElementById('aufgabe-nr').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('aufgabe-typ').textContent = aktuelleAufgabe.typ;
+    document.getElementById('aufgabe-text').innerHTML = aktuelleAufgabe.text;
+    document.getElementById('antwort-1').value = '';
+    document.getElementById('antwort-2').value = '';
+    document.getElementById('antwort-1').focus();
+
+    // 2. Eingabefeld
+    const zeile2 = document.getElementById('eingabe-zeile-2');
+    if (aktuelleAufgabe.zweiteEingabe) {
+        zeile2.style.display = 'flex';
+        document.getElementById('eingabe-label-1').textContent = aktuelleAufgabe.label1 + ':';
+        document.getElementById('eingabe-label-2').textContent = aktuelleAufgabe.label2 + ':';
+    } else {
+        zeile2.style.display = 'none';
+        document.getElementById('eingabe-label-1').textContent = 'Dein Ergebnis:';
+    }
+
+    // Schema
+    document.getElementById('schema-box').style.display = (modus === 'lern' && aktuelleAufgabe.schema) ? 'block' : 'none';
+
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'block';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = modus === 'lern' ? 'block' : 'none';
+
+    aktualisiereProgress();
+}
+
+/* ============================================
+   PRÜFEN
+   ============================================ */
+function pruefen() {
+    if (beantwortet) return;
+
+    const val1 = parseFloat(document.getElementById('antwort-1').value);
+    const val2 = parseFloat(document.getElementById('antwort-2').value);
+    const loes1 = aktuelleAufgabe.loesung1;
+    const loes2 = aktuelleAufgabe.loesung2;
+
+    if (isNaN(val1)) { zeigeInfo('⚠️ Bitte gib eine Zahl ein.'); return; }
+    if (aktuelleAufgabe.zweiteEingabe && isNaN(val2)) { zeigeInfo('⚠️ Bitte beide Felder ausfüllen.'); return; }
+
+    const tol = 0.05;
+    const richtig1 = Math.abs(val1 - loes1) <= tol;
+    const richtig2 = !aktuelleAufgabe.zweiteEingabe || Math.abs(val2 - loes2) <= tol;
+    const allesRichtig = richtig1 && richtig2;
+
+    beantwortet = true;
+
+    if (allesRichtig) {
+        scoreRichtig++;
+        let msg = `✅ Richtig! Tageslosung: ${loes1.toFixed(2)} €`;
+        if (aktuelleAufgabe.zweiteEingabe) msg += ` · Soll-Bestand: ${loes2.toFixed(2)} €`;
+        zeigeFeedback('richtig', msg);
+    } else {
+        scoreFalsch++;
+        let msg = `❌ Leider nicht ganz korrekt.<br>`;
+        if (!richtig1) msg += `(1) Erwartet: <strong>${loes1.toFixed(2)} €</strong><br>`;
+        if (aktuelleAufgabe.zweiteEingabe && !richtig2) msg += `(2) Erwartet: <strong>${loes2.toFixed(2)} €</strong>`;
+        zeigeFeedback('falsch', msg);
+    }
+
+    if (modus === 'lern') zeigeRechenweg();
+
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+
+    if (aktuellerIndex < maxAufgaben - 1) {
+        document.getElementById('btn-naechste').style.display = 'block';
+    } else {
+        setTimeout(() => {
+            if (modus === 'pruefung') zeigePruefungsAuswertung();
+            else zeigeLernAuswertung();
+        }, 600);
+    }
+
+    aktualisiereScore();
+}
+
+function naechsteAufgabe() { aktuellerIndex++; zeigeAufgabe(); }
+
+function zeigeRechenweg() {
+    const box = document.getElementById('rechenweg-box');
+    const inhalt = document.getElementById('rechenweg-inhalt');
+    inhalt.innerHTML = aktuelleAufgabe.rechenweg.map(z =>
+        `<div class="rw-zeile"><span>${z}</span></div>`
+    ).join('');
+    box.style.display = 'block';
+}
+
+function zeigeTipp() {
+    zeigeInfo('💡 ' + aktuelleAufgabe.tipp);
+}
+
+/* ============================================
+   AUSWERTUNGEN
+   ============================================ */
+function zeigeLernAuswertung() {
+    document.getElementById('aufgabe-text').style.display = 'none';
+    document.getElementById('schema-box').style.display = 'none';
+    document.getElementById('eingabe-gruppe').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+    document.getElementById('pruefungs-auswertung').style.display = 'block';
+}
+
+function zeigePruefungsAuswertung() {
+    document.getElementById('aufgabe-text').style.display = 'none';
+    document.getElementById('schema-box').style.display = 'none';
+    document.getElementById('eingabe-gruppe').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+    document.getElementById('pruefungs-auswertung').style.display = 'block';
+}
+
+function getBewertung() {
+    const pct = scoreRichtig / maxAufgaben;
+    if (pct === 1) return '🏆 Perfekt! Alle Aufgaben richtig gelöst!';
+    if (pct >= 0.8) return '🌟 Sehr gut! Du beherrschst die Kassenabrechnung sicher.';
+    if (pct >= 0.6) return '👍 Gut! Noch ein bisschen üben, dann sitzt es perfekt.';
+    if (pct >= 0.4) return '📚 Schau dir das Schema nochmal an und übe weiter.';
+    return '💪 Gib nicht auf! Im Lernmodus kannst du jeden Rechenweg nachlesen.';
+}
+
+function neustart() {
+    document.getElementById('aufgabe-text').style.display = 'block';
+    document.getElementById('eingabe-gruppe').style.display = 'block';
+    init();
+}
+
+/* ============================================
+   HILFSFUNKTIONEN
+   ============================================ */
+function zeigeFeedback(typ, text) {
+    const box = document.getElementById('feedback-box');
+    box.className = `feedback-box ${typ}`;
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+
+function zeigeInfo(text) {
+    const box = document.getElementById('feedback-box');
+    box.className = 'feedback-box info';
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+
+function aktualisiereScore() {
+    document.getElementById('score-richtig').textContent = scoreRichtig;
+    document.getElementById('score-falsch').textContent = scoreFalsch;
+    document.getElementById('punkte-status').textContent = `⭐ ${scoreRichtig} Punkte`;
+}
+
+function aktualisiereProgress() {
+    document.getElementById('aufgabe-status').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('progress-fill').style.width = (aktuellerIndex / maxAufgaben * 100) + '%';
+}
+
+function setModus(m) {
+    modus = m;
+    document.getElementById('tab-lern').classList.toggle('active', m === 'lern');
+    document.getElementById('tab-pruefung').classList.toggle('active', m === 'pruefung');
+    neustart();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        if (!beantwortet) pruefen();
+        else if (document.getElementById('btn-naechste').style.display !== 'none') naechsteAufgabe();
+    }
+});
+
+/* ============================================
+   TASCHENRECHNER
+   ============================================ */
+let rExpr = "";
+let rNeu = true;
+function rUpdate() { document.getElementById('r-display').textContent = rExpr || "0"; }
+function rN(v) { if (rNeu && v !== '.') { rExpr = v; rNeu = false; } else { rExpr += v; } rUpdate(); }
+function rOp(op) { rNeu = false; rExpr += op; rUpdate(); }
+function rC() { rExpr = ""; rNeu = true; rUpdate(); }
+function rEq() {
+    try {
+        const ausdruck = rExpr.replace(/÷/g, '/').replace(/×/g, '*');
+        let e = eval(ausdruck);
+        if (!isFinite(e)) throw new Error();
+        rExpr = String(Math.round(e * 10000) / 10000);
+        rNeu = true;
+        rUpdate();
+    } catch { document.getElementById('r-display').textContent = 'Fehler'; rExpr = ''; rNeu = true; }
+}
+
+function toggleLehrkraft() {
+    const p = document.getElementById('lehrkraft-panel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+
+window.onload = init;
+</script>
 </body>
 </html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brüche & Grundrechenarten – Interaktive Übung</title>
+    <style>
+        :root {
+            --main: #c0392b;
+            --main-dark: #7b241c;
+            --main-light: #fadbd8;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg: #fdf5f4;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --grey: #7f8c8d;
+            --border: #e8d5d3;
+            --calc-bg: #1a1a2e;
+            --calc-btn: #16213e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .nav-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .btn-home { text-decoration: none; color: var(--grey); font-size: 0.85rem; padding: 8px 14px; background: var(--white); border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        .btn-home:hover { background: var(--main-light); }
+        .nav-title { font-size: 0.85rem; color: var(--grey); }
+
+        .app-header { background: linear-gradient(135deg, var(--main-dark), var(--main)); color: white; padding: 28px 30px; border-radius: 16px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .app-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .app-header p { font-size: 0.9rem; opacity: 0.85; }
+
+        /* LEVEL-TABS */
+        .level-tabs { display: flex; gap: 8px; margin-bottom: 16px; max-width: 1100px; margin-left: auto; margin-right: auto; flex-wrap: wrap; }
+        .level-btn { flex: 1; min-width: 120px; padding: 10px; border: 2px solid var(--border); background: var(--white); border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--grey); transition: all 0.2s; }
+        .level-btn.active { border-color: var(--main); background: var(--main-light); color: var(--main-dark); }
+
+        .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .tab-btn { flex: 1; padding: 12px; border: 2px solid var(--border); background: var(--white); border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--grey); transition: all 0.2s; }
+        .tab-btn.active { border-color: var(--main); background: var(--main-light); color: var(--main-dark); }
+
+        .progress-section { max-width: 1100px; margin: 0 auto 20px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--grey); margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--main), #e74c3c); border-radius: 4px; transition: width 0.4s ease; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .card { background: var(--white); border-radius: 16px; padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+        .aufgabe-nummer { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--main); margin-bottom: 8px; }
+        .aufgabe-typ-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: var(--main-light); color: var(--main-dark); margin-bottom: 14px; }
+
+        /* BRUCH-DARSTELLUNG */
+        .aufgabe-text {
+            background: #fdf0ef;
+            border-left: 5px solid var(--main);
+            border-radius: 8px;
+            padding: 22px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .bruch {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .bruch .zaehler { border-bottom: 2px solid var(--main-dark); padding: 0 4px; line-height: 1.4; }
+        .bruch .nenner { padding: 0 4px; line-height: 1.4; }
+        .gesucht { font-weight: 700; color: #c0392b; }
+        .operator-sym { font-size: 1.3rem; font-weight: 700; vertical-align: middle; margin: 0 8px; color: var(--main-dark); }
+
+        /* HILFE (Lernmodus) */
+        .hilfe-box { background: #fef9f0; border: 2px dashed #e67e22; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.88rem; }
+        .hilfe-box h4 { color: #d35400; margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; }
+        .hilfe-box ol { padding-left: 20px; }
+        .hilfe-box li { margin-bottom: 4px; }
+
+        /* EINGABE */
+        .eingabe-zeile { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .eingabe-label { font-weight: 600; font-size: 0.92rem; min-width: 140px; }
+        .eingabe-feld { padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; width: 130px; transition: border-color 0.2s; -moz-appearance: textfield; }
+        .eingabe-feld:focus { outline: none; border-color: var(--main); }
+        .eingabe-feld::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .eingabe-einheit { font-size: 0.9rem; color: var(--grey); font-weight: 600; }
+
+        /* BRUCH-EINGABE (Zähler / Nenner) */
+        .bruch-eingabe { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .bruch-eingabe-label { font-weight: 600; font-size: 0.92rem; min-width: 140px; }
+        .bruch-felder { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+        .bruch-felder input { width: 80px; padding: 8px; border: 2px solid var(--border); border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 700; -moz-appearance: textfield; }
+        .bruch-felder input:focus { outline: none; border-color: var(--main); }
+        .bruch-felder input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .bruch-trennstrich { width: 80px; height: 2px; background: var(--main-dark); }
+
+        .score-box { display: flex; gap: 12px; margin-bottom: 16px; }
+        .score-item { flex: 1; background: #f7f9fc; border-radius: 10px; padding: 12px; text-align: center; }
+        .score-item .score-zahl { font-size: 1.6rem; font-weight: 800; }
+        .score-item .score-label { font-size: 0.7rem; color: var(--grey); text-transform: uppercase; }
+        .score-item.richtig .score-zahl { color: var(--success); }
+        .score-item.falsch .score-zahl { color: var(--error); }
+
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+        .btn-primary { background: var(--main); color: white; }
+        .btn-primary:hover { background: var(--main-dark); }
+        .btn-secondary { background: #eef2f7; color: var(--text); }
+        .btn-secondary:hover { background: #dde3ea; }
+        .btn-hint { background: #fef9f0; color: #d35400; border: 2px solid #e67e22; }
+
+        .feedback-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; font-size: 0.95rem; display: none; }
+        .feedback-box.richtig { background: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .feedback-box.falsch { background: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+        .feedback-box.info { background: var(--main-light); color: var(--main-dark); border-left: 5px solid var(--main); }
+
+        .rechenweg-box { background: #f7f9fc; border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; display: none; }
+        .rechenweg-box h4 { color: var(--main-dark); margin-bottom: 10px; font-size: 0.9rem; }
+        .rw-schritt { display: flex; gap: 10px; margin-bottom: 6px; font-size: 0.9rem; align-items: flex-start; }
+        .rw-nr { background: var(--main); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+        .rw-ergebnis { border-top: 2px solid var(--main); margin-top: 8px; padding-top: 8px; font-weight: 700; color: var(--main-dark); }
+
+        .pruefungs-auswertung { display: none; text-align: center; }
+        .auswertung-kreis { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--main), var(--main-dark)); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.8rem; font-weight: 800; }
+
+        /* RECHNER */
+        .rechner-card { background: var(--calc-bg); border-radius: 16px; padding: 20px; position: sticky; top: 16px; }
+        .rechner-label { color: #9ca3af; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .rechner-display { background: #0d0d1a; border-radius: 10px; padding: 16px; font-family: monospace; font-size: 1.6rem; color: #ef5350; text-align: right; margin-bottom: 14px; min-height: 56px; word-break: break-all; }
+        .rechner-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .r-btn { background: var(--calc-btn); border: none; border-radius: 8px; padding: 14px 6px; color: #e0e0e0; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+        .r-btn:hover { background: #2d3561; }
+        .r-btn.op { color: #ef5350; }
+        .r-btn.clear { color: #ff6b6b; }
+        .r-btn.equals { background: var(--main); color: white; }
+        .r-btn.equals:hover { background: var(--main-dark); }
+
+        .lehrkraft-panel { display: none; background: #fffbf0; border: 2px dashed #f39c12; border-radius: 12px; padding: 20px; margin-top: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; font-size: 0.9rem; }
+        .lehrkraft-panel h3 { color: #9a7d0a; margin-bottom: 12px; }
+        .lehrkraft-panel ul { padding-left: 20px; }
+        .lehrkraft-panel li { margin-bottom: 6px; }
+        .toggle-lehrkraft { display: block; text-align: center; max-width: 1100px; margin: 16px auto 0; color: var(--grey); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+
+        @media (max-width: 720px) { .main-layout { grid-template-columns: 1fr; } .rechner-card { position: static; } }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <a href="index-mathematik.html" class="btn-home">⬅ Mathematik-Portal</a>
+    <span class="nav-title">Brüche & Grundrechenarten</span>
+</div>
+
+<div class="app-header">
+    <h1>½ Brüche & Grundrechenarten</h1>
+    <p>Kürzen · Erweitern · Addieren · Subtrahieren · Multiplizieren · Dividieren · Bruch ↔ Dezimal</p>
+</div>
+
+<!-- LEVEL-TABS -->
+<div class="level-tabs">
+    <button class="level-btn active" onclick="setLevel('einstieg')" id="lvl-einstieg">🌱 Einstieg</button>
+    <button class="level-btn" onclick="setLevel('training')" id="lvl-training">💪 Training</button>
+    <button class="level-btn" onclick="setLevel('profi')" id="lvl-profi">🏆 Profi</button>
+</div>
+
+<div class="mode-tabs">
+    <button class="tab-btn active" onclick="setModus('lern')" id="tab-lern">📖 Lernmodus</button>
+    <button class="tab-btn" onclick="setModus('pruefung')" id="tab-pruefung">🎯 Prüfungsmodus</button>
+</div>
+
+<div class="progress-section">
+    <div class="progress-info">
+        <span id="aufgabe-status">Aufgabe 1 von 10</span>
+        <span id="punkte-status">⭐ 0 Punkte</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="main-layout">
+    <div class="card">
+
+        <div class="score-box">
+            <div class="score-item richtig"><div class="score-zahl" id="score-richtig">0</div><div class="score-label">Richtig</div></div>
+            <div class="score-item falsch"><div class="score-zahl" id="score-falsch">0</div><div class="score-label">Falsch</div></div>
+        </div>
+
+        <div class="aufgabe-nummer" id="aufgabe-nr">Aufgabe 1</div>
+        <div class="aufgabe-typ-badge" id="aufgabe-typ">Bruchrechnung</div>
+        <div class="aufgabe-text" id="aufgabe-text">Wird geladen...</div>
+
+        <div class="hilfe-box" id="hilfe-box" style="display:none">
+            <h4>💡 Hilfe</h4>
+            <div id="hilfe-inhalt"></div>
+        </div>
+
+        <!-- Standard-Eingabe (für Dezimalzahlen / Prozentzahlen) -->
+        <div class="eingabe-zeile" id="eingabe-standard">
+            <label class="eingabe-label">Dein Ergebnis:</label>
+            <input type="number" id="antwort-std" class="eingabe-feld" step="0.001" placeholder="0">
+            <span class="eingabe-einheit" id="einheit-std"></span>
+        </div>
+
+        <!-- Bruch-Eingabe (Zähler + Nenner) -->
+        <div class="bruch-eingabe" id="eingabe-bruch" style="display:none">
+            <span class="bruch-eingabe-label">Dein Ergebnis:</span>
+            <div class="bruch-felder">
+                <input type="number" id="antwort-zaehler" placeholder="Zähler" step="1">
+                <div class="bruch-trennstrich"></div>
+                <input type="number" id="antwort-nenner" placeholder="Nenner" step="1">
+            </div>
+            <span style="margin-left:8px; font-size:0.8rem; color:var(--grey);">(vollständig gekürzt)</span>
+        </div>
+
+        <div class="feedback-box" id="feedback-box"></div>
+        <div class="rechenweg-box" id="rechenweg-box"><h4>🔢 Rechenweg</h4><div id="rechenweg-inhalt"></div></div>
+
+        <button class="btn btn-primary" id="btn-pruefen" onclick="pruefen()">✔ Antwort prüfen</button>
+        <button class="btn btn-hint" id="btn-tipp" onclick="zeigeTipp()">💡 Hilfe anzeigen</button>
+        <button class="btn btn-secondary" id="btn-naechste" onclick="naechsteAufgabe()" style="display:none">➡ Nächste Aufgabe</button>
+
+        <div class="pruefungs-auswertung" id="pruefungs-auswertung">
+            <div class="auswertung-kreis"><span id="auswertung-zahl">0/10</span></div>
+            <p id="auswertung-text" style="margin-bottom:16px; color:var(--grey);"></p>
+            <button class="btn btn-primary" onclick="neustart()">🔄 Nochmal üben</button>
+        </div>
+
+    </div>
+
+    <!-- RECHNER -->
+    <div class="rechner-card">
+        <div class="rechner-label">Taschenrechner</div>
+        <div class="rechner-display" id="r-display">0</div>
+        <div class="rechner-grid">
+            <button class="r-btn clear" onclick="rC()">C</button>
+            <button class="r-btn op" onclick="rOp('÷')">÷</button>
+            <button class="r-btn op" onclick="rOp('×')">×</button>
+            <button class="r-btn op" onclick="rOp('-')">−</button>
+            <button class="r-btn" onclick="rN('7')">7</button>
+            <button class="r-btn" onclick="rN('8')">8</button>
+            <button class="r-btn" onclick="rN('9')">9</button>
+            <button class="r-btn op" onclick="rOp('+')">+</button>
+            <button class="r-btn" onclick="rN('4')">4</button>
+            <button class="r-btn" onclick="rN('5')">5</button>
+            <button class="r-btn" onclick="rN('6')">6</button>
+            <button class="r-btn" onclick="rN('.')">.</button>
+            <button class="r-btn" onclick="rN('1')">1</button>
+            <button class="r-btn" onclick="rN('2')">2</button>
+            <button class="r-btn" onclick="rN('3')">3</button>
+            <button class="r-btn" onclick="rN('0')">0</button>
+            <button class="r-btn equals" onclick="rEq()" style="grid-column: span 4">=</button>
+        </div>
+    </div>
+</div>
+
+<span class="toggle-lehrkraft" onclick="toggleLehrkraft()">👩‍🏫 Lehrkraft-Modus</span>
+<div class="lehrkraft-panel" id="lehrkraft-panel">
+    <h3>👩‍🏫 Lehrkraft-Modus</h3>
+    <ul>
+        <li><strong>App-Titel:</strong> Brüche & Grundrechenarten – Interaktive Übung</li>
+        <li><strong>Version:</strong> 1.0.0 | <strong>Stand:</strong> Mai 2025</li>
+        <li><strong>Fach:</strong> Mathematik | <strong>Bildungsgang:</strong> BFS 1, BFS 2, AVB, Einzelhandel</li>
+        <li><strong>Level Einstieg:</strong> Bruch zu Dezimal, einfaches Kürzen, Addition/Subtraktion gleicher Nenner</li>
+        <li><strong>Level Training:</strong> Erweitern, Addition/Subtraktion verschiedener Nenner, Multiplikation</li>
+        <li><strong>Level Profi:</strong> Division von Brüchen, gemischte Operationen, Textaufgaben</li>
+        <li><strong>Lernmodus:</strong> Schritt-für-Schritt-Hilfe, vollständiger Rechenweg nach Prüfung</li>
+        <li><strong>Datenschutz:</strong> Keine personenbezogenen Daten. Kein localStorage. Kein Tracking.</li>
+        <li><strong>Lizenz:</strong> MIT (Code), CC BY-SA (Inhalte)</li>
+    </ul>
+    <button class="btn btn-secondary" style="margin-top:12px; width:auto; padding: 8px 16px;" onclick="neustart()">🔄 Zurücksetzen</button>
+</div>
+
+<script>
+/* ============================================
+   GGT (Größter gemeinsamer Teiler) – für Kürzen
+   ============================================ */
+function ggt(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function kuerze(z, n) { const g = ggt(Math.abs(z), Math.abs(n)); return [z / g, n / g]; }
+function kgv(a, b) { return Math.abs(a * b) / ggt(a, b); }
+
+/* ============================================
+   AUFGABEN-POOLS JE LEVEL
+   ============================================ */
+
+function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+const aufgabenPools = {
+
+    einstieg: [
+        // Bruch → Dezimal
+        {
+            typ: "Bruch in Dezimalzahl umrechnen",
+            eingabeTyp: "standard",
+            einheit: "",
+            hilfe: ["Teile den Zähler durch den Nenner: z ÷ n", "Beispiel: 3/4 = 3 ÷ 4 = 0,75"],
+            erstelle: () => {
+                const nenner = [2,4,5,8,10,20,25,100][rndInt(0,7)];
+                const zaehler = rndInt(1, nenner - 1);
+                const dezimal = parseFloat((zaehler / nenner).toFixed(4));
+                return {
+                    text: `Rechne den Bruch in eine Dezimalzahl um:<br><br><span style="font-size:1.8rem; font-weight:700; color:var(--main-dark);">${zaehler}/${nenner}</span><br><br><span class="gesucht">= ? (als Dezimalzahl)</span>`,
+                    loesung: dezimal,
+                    rechenweg: [
+                        `${zaehler} ÷ ${nenner} = ${dezimal}`,
+                        `Der Bruch ${zaehler}/${nenner} = <strong>${dezimal}</strong>`
+                    ]
+                };
+            }
+        },
+        // Kürzen
+        {
+            typ: "Bruch kürzen",
+            eingabeTyp: "bruch",
+            hilfe: ["Bestimme den GGT (größten gemeinsamen Teiler) von Zähler und Nenner", "Teile Zähler und Nenner durch den GGT"],
+            erstelle: () => {
+                const n_end = [2,3,4,5,7][rndInt(0,4)];
+                const z_end = rndInt(1, n_end - 1);
+                const faktor = rndInt(2, 6);
+                const z = z_end * faktor;
+                const n = n_end * faktor;
+                return {
+                    text: `Kürze den Bruch so weit wie möglich:<br><br><span style="font-size:1.8rem; font-weight:700; color:var(--main-dark);">${z}/${n}</span>`,
+                    loesung_z: z_end,
+                    loesung_n: n_end,
+                    rechenweg: [
+                        `GGT(${z}, ${n}) = ${faktor}`,
+                        `Zähler: ${z} ÷ ${faktor} = ${z_end}`,
+                        `Nenner: ${n} ÷ ${faktor} = ${n_end}`,
+                        `Ergebnis: <strong>${z_end}/${n_end}</strong>`
+                    ]
+                };
+            }
+        },
+        // Addition gleicher Nenner
+        {
+            typ: "Brüche addieren (gleicher Nenner)",
+            eingabeTyp: "bruch",
+            hilfe: ["Bei gleichem Nenner: Zähler addieren, Nenner bleibt gleich.", "Dann kürzen!"],
+            erstelle: () => {
+                const n = rndInt(4, 12);
+                const z1 = rndInt(1, n - 2);
+                const z2 = rndInt(1, n - z1 - 1);
+                const zRes = z1 + z2;
+                const [zK, nK] = kuerze(zRes, n);
+                return {
+                    text: `Addiere die Brüche und kürze das Ergebnis:<br><br>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--main-dark);">${z1}/${n} + ${z2}/${n}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `Gleicher Nenner → Zähler addieren`,
+                        `${z1}/${n} + ${z2}/${n} = ${zRes}/${n}`,
+                        `GGT(${zRes}, ${n}) = ${ggt(zRes, n)}`,
+                        `Kürzen: ${zRes}/${n} = <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        }
+    ],
+
+    training: [
+        // Addition verschiedener Nenner
+        {
+            typ: "Brüche addieren (verschiedener Nenner)",
+            eingabeTyp: "bruch",
+            hilfe: [
+                "Schritt 1: Finde das KgV (kleinstes gemeinsames Vielfaches) der Nenner.",
+                "Schritt 2: Erweitere beide Brüche auf den gemeinsamen Nenner.",
+                "Schritt 3: Addiere die Zähler. Schritt 4: Kürzen."
+            ],
+            erstelle: () => {
+                const n1 = [2,3,4,5,6][rndInt(0,4)];
+                const n2 = [2,3,4,5,6].filter(x => x !== n1)[rndInt(0,3)];
+                const z1 = rndInt(1, n1 - 1);
+                const z2 = rndInt(1, n2 - 1);
+                const hN = kgv(n1, n2);
+                const zGes = z1 * (hN / n1) + z2 * (hN / n2);
+                const [zK, nK] = kuerze(zGes, hN);
+                return {
+                    text: `Addiere und kürze:<br><br>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--main-dark);">${z1}/${n1} + ${z2}/${n2}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `KgV(${n1}, ${n2}) = ${hN}`,
+                        `${z1}/${n1} = ${z1 * (hN / n1)}/${hN}`,
+                        `${z2}/${n2} = ${z2 * (hN / n2)}/${hN}`,
+                        `${z1 * (hN / n1)}/${hN} + ${z2 * (hN / n2)}/${hN} = ${zGes}/${hN}`,
+                        `Kürzen: <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        },
+        // Subtraktion verschiedener Nenner
+        {
+            typ: "Brüche subtrahieren (verschiedener Nenner)",
+            eingabeTyp: "bruch",
+            hilfe: [
+                "Gleiches Vorgehen wie bei Addition: erst auf gleichen Nenner bringen.",
+                "Dann Zähler subtrahieren und kürzen."
+            ],
+            erstelle: () => {
+                const n1 = [4,6,8,10,12][rndInt(0,4)];
+                const n2 = [2,3,4,6].filter(x => x !== n1)[rndInt(0,3)];
+                const z2 = rndInt(1, n2 - 1);
+                const hN = kgv(n1, n2);
+                const z1Min = z2 * (hN / n2) + 1;
+                const z1 = rndInt(Math.min(z1Min, n1), n1);
+                const zGes = z1 * (hN / n1) - z2 * (hN / n2);
+                const [zK, nK] = kuerze(Math.abs(zGes), hN);
+                return {
+                    text: `Subtrahiere und kürze:<br><br>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--main-dark);">${z1}/${n1} − ${z2}/${n2}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `KgV(${n1}, ${n2}) = ${hN}`,
+                        `${z1}/${n1} = ${z1 * (hN / n1)}/${hN}`,
+                        `${z2}/${n2} = ${z2 * (hN / n2)}/${hN}`,
+                        `${z1 * (hN / n1)}/${hN} − ${z2 * (hN / n2)}/${hN} = ${Math.abs(zGes)}/${hN}`,
+                        `Kürzen: <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        },
+        // Multiplikation
+        {
+            typ: "Brüche multiplizieren",
+            eingabeTyp: "bruch",
+            hilfe: [
+                "Zähler × Zähler, Nenner × Nenner.",
+                "Dann das Ergebnis kürzen."
+            ],
+            erstelle: () => {
+                const z1 = rndInt(1, 7);
+                const n1 = rndInt(z1 + 1, 10);
+                const z2 = rndInt(1, 5);
+                const n2 = rndInt(z2 + 1, 8);
+                const zGes = z1 * z2;
+                const nGes = n1 * n2;
+                const [zK, nK] = kuerze(zGes, nGes);
+                return {
+                    text: `Multipliziere und kürze:<br><br>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--main-dark);">${z1}/${n1} × ${z2}/${n2}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `Zähler: ${z1} × ${z2} = ${zGes}`,
+                        `Nenner: ${n1} × ${n2} = ${nGes}`,
+                        `= ${zGes}/${nGes}`,
+                        `GGT(${zGes}, ${nGes}) = ${ggt(zGes, nGes)}`,
+                        `Kürzen: <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        }
+    ],
+
+    profi: [
+        // Division
+        {
+            typ: "Brüche dividieren",
+            eingabeTyp: "bruch",
+            hilfe: [
+                "Division = mit dem Kehrwert multiplizieren.",
+                "a/b ÷ c/d = a/b × d/c",
+                "Dann Zähler × Zähler, Nenner × Nenner, kürzen."
+            ],
+            erstelle: () => {
+                const z1 = rndInt(2, 7);
+                const n1 = rndInt(z1 + 1, 10);
+                const z2 = rndInt(2, 5);
+                const n2 = rndInt(z2 + 1, 8);
+                // a/b ÷ c/d = (a*d)/(b*c)
+                const zGes = z1 * n2;
+                const nGes = n1 * z2;
+                const [zK, nK] = kuerze(zGes, nGes);
+                return {
+                    text: `Dividiere und kürze:<br><br>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--main-dark);">${z1}/${n1} ÷ ${z2}/${n2}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `Division → mit Kehrwert multiplizieren`,
+                        `${z1}/${n1} ÷ ${z2}/${n2} = ${z1}/${n1} × ${n2}/${z2}`,
+                        `Zähler: ${z1} × ${n2} = ${zGes}`,
+                        `Nenner: ${n1} × ${z2} = ${nGes}`,
+                        `= ${zGes}/${nGes}`,
+                        `Kürzen: <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        },
+        // Textaufgabe mit Brüchen
+        {
+            typ: "Textaufgabe mit Brüchen",
+            eingabeTyp: "standard",
+            einheit: "Stück",
+            hilfe: [
+                "Lies genau: Welcher Teil (Bruch) des Ganzen ist gesucht?",
+                "Multipliziere: Gesamtmenge × Bruch"
+            ],
+            erstelle: () => {
+                const gesamt = [24, 36, 48, 60, 80, 100][rndInt(0, 5)];
+                const n = [2, 3, 4, 5, 6][rndInt(0, 4)];
+                const z = rndInt(1, n - 1);
+                const ergebnis = (gesamt * z) / n;
+                return {
+                    text: `In einem Lager befinden sich <span style="font-weight:700">${gesamt} Kartons</span>. 
+                    Davon sind <span style="font-weight:700; color:var(--main-dark)">${z}/${n}</span> bereits versandt worden.<br><br>
+                    <span class="gesucht">Gesucht: Wie viele Kartons wurden versandt?</span>`,
+                    loesung: ergebnis,
+                    rechenweg: [
+                        `Berechnung: ${gesamt} × ${z}/${n}`,
+                        `= (${gesamt} × ${z}) / ${n}`,
+                        `= ${gesamt * z} / ${n}`,
+                        `= <strong>${ergebnis} Kartons</strong>`
+                    ]
+                };
+            }
+        },
+        // Gemischte Operation
+        {
+            typ: "Gemischte Bruchrechnung",
+            eingabeTyp: "bruch",
+            hilfe: [
+                "Tipp: Punkt vor Strich (× und ÷ vor + und −).",
+                "Berechne zuerst die Multiplikation, dann die Addition."
+            ],
+            erstelle: () => {
+                const z1 = rndInt(1,4); const n1 = rndInt(z1+1, 8);
+                const z2 = rndInt(1,4); const n2 = rndInt(z2+1, 8);
+                const z3 = rndInt(1,3); const n3 = rndInt(z3+1, 6);
+                // z1/n1 + z2/n2 × z3/n3
+                // erst Multiplikation
+                const zm = z2 * z3; const nm = n2 * n3;
+                const [zmK, nmK] = kuerze(zm, nm);
+                // dann Addition
+                const hN = kgv(n1, nmK);
+                const zGes = z1 * (hN / n1) + zmK * (hN / nmK);
+                const [zK, nK] = kuerze(zGes, hN);
+                return {
+                    text: `Berechne (Punkt vor Strich!):<br><br>
+                    <span style="font-size:1.4rem; font-weight:700; color:var(--main-dark);">${z1}/${n1} + ${z2}/${n2} × ${z3}/${n3}</span>`,
+                    loesung_z: zK,
+                    loesung_n: nK,
+                    rechenweg: [
+                        `Erst Multiplikation: ${z2}/${n2} × ${z3}/${n3} = ${zm}/${nm} = ${zmK}/${nmK}`,
+                        `Dann Addition: ${z1}/${n1} + ${zmK}/${nmK}`,
+                        `KgV(${n1}, ${nmK}) = ${hN}`,
+                        `= ${z1 * (hN/n1)}/${hN} + ${zmK * (hN/nmK)}/${hN}`,
+                        `= ${zGes}/${hN}`,
+                        `Kürzen: <strong>${zK}/${nK}</strong>`
+                    ]
+                };
+            }
+        }
+    ]
+};
+
+/* ============================================
+   ZUSTAND
+   ============================================ */
+let modus = 'lern';
+let level = 'einstieg';
+let aufgabenQueue = [];
+let aktuelleAufgabe = null;
+let aktuellerIndex = 0;
+let maxAufgaben = 10;
+let scoreRichtig = 0;
+let scoreFalsch = 0;
+let beantwortet = false;
+
+/* ============================================
+   INITIALISIERUNG
+   ============================================ */
+function init() {
+    aufgabenQueue = [];
+    aktuellerIndex = 0;
+    scoreRichtig = 0;
+    scoreFalsch = 0;
+    beantwortet = false;
+
+    const pool = aufgabenPools[level];
+    for (let i = 0; i < maxAufgaben; i++) {
+        const typ = pool[i % pool.length];
+        aufgabenQueue.push({ ...typ, ...typ.erstelle() });
+    }
+
+    document.getElementById('pruefungs-auswertung').style.display = 'none';
+    aktualisiereScore();
+    zeigeAufgabe();
+}
+
+function zeigeAufgabe() {
+    if (aktuellerIndex >= maxAufgaben) { zeigeAuswertung(); return; }
+
+    aktuelleAufgabe = aufgabenQueue[aktuellerIndex];
+    beantwortet = false;
+
+    document.getElementById('aufgabe-nr').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('aufgabe-typ').textContent = aktuelleAufgabe.typ;
+    document.getElementById('aufgabe-text').innerHTML = aktuelleAufgabe.text;
+
+    // Eingabe-Typ wählen
+    const istBruch = aktuelleAufgabe.eingabeTyp === 'bruch';
+    document.getElementById('eingabe-standard').style.display = istBruch ? 'none' : 'flex';
+    document.getElementById('eingabe-bruch').style.display = istBruch ? 'flex' : 'none';
+    document.getElementById('einheit-std').textContent = aktuelleAufgabe.einheit || '';
+
+    if (istBruch) {
+        document.getElementById('antwort-zaehler').value = '';
+        document.getElementById('antwort-nenner').value = '';
+        document.getElementById('antwort-zaehler').focus();
+    } else {
+        document.getElementById('antwort-std').value = '';
+        document.getElementById('antwort-std').focus();
+    }
+
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('hilfe-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'block';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = modus === 'lern' ? 'block' : 'none';
+
+    aktualisiereProgress();
+}
+
+/* ============================================
+   PRÜFEN
+   ============================================ */
+function pruefen() {
+    if (beantwortet) return;
+    const istBruch = aktuelleAufgabe.eingabeTyp === 'bruch';
+
+    if (istBruch) {
+        const z = parseInt(document.getElementById('antwort-zaehler').value);
+        const n = parseInt(document.getElementById('antwort-nenner').value);
+        if (isNaN(z) || isNaN(n) || n === 0) { zeigeInfo('⚠️ Bitte Zähler und Nenner eingeben (Nenner ≠ 0).'); return; }
+
+        // Normalisiere Eingabe (kürzen)
+        const [zNorm, nNorm] = kuerze(Math.abs(z), Math.abs(n));
+        const richtig = zNorm === aktuelleAufgabe.loesung_z && nNorm === aktuelleAufgabe.loesung_n;
+
+        beantwortet = true;
+        if (richtig) { scoreRichtig++; zeigeFeedback('richtig', `✅ Richtig! ${aktuelleAufgabe.loesung_z}/${aktuelleAufgabe.loesung_n}`); }
+        else { scoreFalsch++; zeigeFeedback('falsch', `❌ Falsch. Richtig: <strong>${aktuelleAufgabe.loesung_z}/${aktuelleAufgabe.loesung_n}</strong>`); }
+
+    } else {
+        const val = parseFloat(document.getElementById('antwort-std').value);
+        if (isNaN(val)) { zeigeInfo('⚠️ Bitte eine Zahl eingeben.'); return; }
+        const richtig = Math.abs(val - aktuelleAufgabe.loesung) < 0.01;
+        beantwortet = true;
+        if (richtig) { scoreRichtig++; zeigeFeedback('richtig', `✅ Richtig! ${aktuelleAufgabe.loesung}`); }
+        else { scoreFalsch++; zeigeFeedback('falsch', `❌ Falsch. Richtig: <strong>${aktuelleAufgabe.loesung}</strong>`); }
+    }
+
+    if (modus === 'lern') zeigeRechenweg();
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+
+    if (aktuellerIndex < maxAufgaben - 1) {
+        document.getElementById('btn-naechste').style.display = 'block';
+    } else {
+        setTimeout(zeigeAuswertung, 700);
+    }
+    aktualisiereScore();
+}
+
+function naechsteAufgabe() { aktuellerIndex++; zeigeAufgabe(); }
+
+function zeigeRechenweg() {
+    const box = document.getElementById('rechenweg-box');
+    document.getElementById('rechenweg-inhalt').innerHTML =
+        aktuelleAufgabe.rechenweg.map((s, i) =>
+            `<div class="rw-schritt"><div class="rw-nr">${i+1}</div><div>${s}</div></div>`
+        ).join('');
+    box.style.display = 'block';
+}
+
+function zeigeTipp() {
+    const hilfe = aktuelleAufgabe.hilfe || [];
+    document.getElementById('hilfe-inhalt').innerHTML = '<ol>' + hilfe.map(h => `<li>${h}</li>`).join('') + '</ol>';
+    document.getElementById('hilfe-box').style.display = 'block';
+}
+
+function zeigeAuswertung() {
+    document.getElementById('aufgabe-text').style.display = 'none';
+    document.getElementById('eingabe-standard').style.display = 'none';
+    document.getElementById('eingabe-bruch').style.display = 'none';
+    document.getElementById('hilfe-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+    document.getElementById('pruefungs-auswertung').style.display = 'block';
+}
+
+function getBewertung() {
+    const p = scoreRichtig / maxAufgaben;
+    if (p === 1) return '🏆 Perfekt! Alle Aufgaben richtig!';
+    if (p >= 0.8) return '🌟 Sehr gut! Die Bruchrechnung sitzt!';
+    if (p >= 0.6) return '👍 Gut! Noch etwas üben, dann klappt es.';
+    return '📚 Übung macht den Meister – schau dir die Rechenwege an!';
+}
+
+function neustart() {
+    document.getElementById('aufgabe-text').style.display = 'block';
+    document.getElementById('eingabe-standard').style.display = 'flex';
+    init();
+}
+
+/* ============================================
+   HILFSFUNKTIONEN
+   ============================================ */
+function zeigeFeedback(typ, text) {
+    const box = document.getElementById('feedback-box');
+    box.className = `feedback-box ${typ}`;
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+function zeigeInfo(text) {
+    const box = document.getElementById('feedback-box');
+    box.className = 'feedback-box info';
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+function aktualisiereScore() {
+    document.getElementById('score-richtig').textContent = scoreRichtig;
+    document.getElementById('score-falsch').textContent = scoreFalsch;
+    document.getElementById('punkte-status').textContent = `⭐ ${scoreRichtig} Punkte`;
+}
+function aktualisiereProgress() {
+    document.getElementById('aufgabe-status').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('progress-fill').style.width = (aktuellerIndex / maxAufgaben * 100) + '%';
+}
+function setModus(m) { modus = m; document.getElementById('tab-lern').classList.toggle('active', m==='lern'); document.getElementById('tab-pruefung').classList.toggle('active', m==='pruefung'); neustart(); }
+function setLevel(l) {
+    level = l;
+    ['einstieg','training','profi'].forEach(x => document.getElementById('lvl-'+x).classList.toggle('active', x===l));
+    neustart();
+}
+
+/* RECHNER */
+let rExpr = ""; let rNeu = true;
+function rUpdate() { document.getElementById('r-display').textContent = rExpr || "0"; }
+function rN(v) { if (rNeu && v !== '.') { rExpr = v; rNeu = false; } else { rExpr += v; } rUpdate(); }
+function rOp(op) { rNeu = false; rExpr += op; rUpdate(); }
+function rC() { rExpr = ""; rNeu = true; rUpdate(); }
+function rEq() {
+    try { const e = eval(rExpr.replace(/÷/g,'/').replace(/×/g,'*')); rExpr = String(Math.round(e*10000)/10000); rNeu = true; rUpdate(); }
+    catch { document.getElementById('r-display').textContent = 'Fehler'; rExpr = ''; rNeu = true; }
+}
+function toggleLehrkraft() { const p = document.getElementById('lehrkraft-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+
+window.onload = init;
+</script>
+</body>
+</html>

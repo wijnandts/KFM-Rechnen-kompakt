@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maßeinheiten – Interaktive Übung</title>
+    <style>
+        :root {
+            --main: #27ae60;
+            --main-dark: #1a7a44;
+            --main-light: #d5f5e3;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg: #f0faf4;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --grey: #7f8c8d;
+            --border: #c3e6d0;
+            --calc-bg: #1a1a2e;
+            --calc-btn: #16213e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
+
+        .nav-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .btn-home { text-decoration: none; color: var(--grey); font-size: 0.85rem; padding: 8px 14px; background: var(--white); border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        .btn-home:hover { background: var(--main-light); }
+
+        .app-header { background: linear-gradient(135deg, var(--main-dark), var(--main)); color: white; padding: 28px 30px; border-radius: 16px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .app-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .app-header p { font-size: 0.9rem; opacity: 0.85; }
+
+        /* KATEGORIE-TABS */
+        .kat-tabs { display: flex; gap: 8px; margin-bottom: 16px; max-width: 1100px; margin-left: auto; margin-right: auto; flex-wrap: wrap; }
+        .kat-btn { padding: 10px 14px; border: 2px solid var(--border); background: var(--white); border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--grey); transition: all 0.2s; }
+        .kat-btn.active { border-color: var(--main); background: var(--main-light); color: var(--main-dark); }
+
+        .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+        .tab-btn { flex: 1; padding: 12px; border: 2px solid var(--border); background: var(--white); border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--grey); transition: all 0.2s; }
+        .tab-btn.active { border-color: var(--main); background: var(--main-light); color: var(--main-dark); }
+
+        .progress-section { max-width: 1100px; margin: 0 auto 20px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--grey); margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--main), #2ecc71); border-radius: 4px; transition: width 0.4s ease; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .card { background: var(--white); border-radius: 16px; padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+        .aufgabe-nummer { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--main); margin-bottom: 8px; }
+        .aufgabe-typ-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: var(--main-light); color: var(--main-dark); margin-bottom: 14px; }
+        .aufgabe-text { background: #eafaf1; border-left: 5px solid var(--main); border-radius: 8px; padding: 20px; font-size: 1.05rem; line-height: 1.7; margin-bottom: 20px; }
+        .aufgabe-text .wert { font-weight: 700; color: var(--main-dark); }
+        .aufgabe-text .gesucht { font-weight: 700; color: #c0392b; }
+
+        /* UMRECHNUNGSTABELLE (Lernmodus) */
+        .tabelle-box { background: var(--main-light); border: 2px dashed var(--main); border-radius: 10px; padding: 16px; margin-bottom: 20px; font-size: 0.85rem; }
+        .tabelle-box h4 { color: var(--main-dark); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; }
+        .umrechnungs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 6px; }
+        .ur-zeile { background: white; border-radius: 6px; padding: 6px 10px; font-family: monospace; font-size: 0.88rem; }
+
+        .score-box { display: flex; gap: 12px; margin-bottom: 16px; }
+        .score-item { flex: 1; background: #f7f9fc; border-radius: 10px; padding: 12px; text-align: center; }
+        .score-item .score-zahl { font-size: 1.6rem; font-weight: 800; }
+        .score-item .score-label { font-size: 0.7rem; color: var(--grey); text-transform: uppercase; }
+        .score-item.richtig .score-zahl { color: var(--success); }
+        .score-item.falsch .score-zahl { color: var(--error); }
+
+        .eingabe-zeile { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .eingabe-label { font-weight: 600; font-size: 0.92rem; min-width: 140px; }
+        .eingabe-feld { padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; width: 150px; transition: border-color 0.2s; -moz-appearance: textfield; }
+        .eingabe-feld:focus { outline: none; border-color: var(--main); }
+        .eingabe-feld::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .eingabe-einheit { font-size: 0.9rem; color: var(--grey); font-weight: 600; }
+
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+        .btn-primary { background: var(--main); color: white; }
+        .btn-primary:hover { background: var(--main-dark); }
+        .btn-secondary { background: #eef2f7; color: var(--text); }
+        .btn-secondary:hover { background: #dde3ea; }
+        .btn-hint { background: var(--main-light); color: var(--main-dark); border: 2px solid var(--main); }
+
+        .feedback-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; font-size: 0.95rem; display: none; }
+        .feedback-box.richtig { background: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .feedback-box.falsch { background: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+        .feedback-box.info { background: var(--main-light); color: var(--main-dark); border-left: 5px solid var(--main); }
+
+        .rechenweg-box { background: #f7f9fc; border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; display: none; }
+        .rechenweg-box h4 { color: var(--main-dark); margin-bottom: 10px; font-size: 0.9rem; }
+        .rw-schritt { display: flex; gap: 10px; margin-bottom: 6px; font-size: 0.9rem; align-items: flex-start; }
+        .rw-nr { background: var(--main); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+
+        .pruefungs-auswertung { display: none; text-align: center; }
+        .auswertung-kreis { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--main), var(--main-dark)); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.8rem; font-weight: 800; }
+
+        /* RECHNER */
+        .rechner-card { background: var(--calc-bg); border-radius: 16px; padding: 20px; position: sticky; top: 16px; }
+        .rechner-label { color: #9ca3af; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .rechner-display { background: #0d0d1a; border-radius: 10px; padding: 16px; font-family: monospace; font-size: 1.6rem; color: #66bb6a; text-align: right; margin-bottom: 14px; min-height: 56px; word-break: break-all; }
+        .rechner-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .r-btn { background: var(--calc-btn); border: none; border-radius: 8px; padding: 14px 6px; color: #e0e0e0; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+        .r-btn:hover { background: #2d3561; }
+        .r-btn.op { color: #66bb6a; }
+        .r-btn.clear { color: #ff6b6b; }
+        .r-btn.equals { background: var(--main); color: white; }
+
+        .lehrkraft-panel { display: none; background: #fffbf0; border: 2px dashed #f39c12; border-radius: 12px; padding: 20px; margin-top: 20px; max-width: 1100px; margin-left: auto; margin-right: auto; font-size: 0.9rem; }
+        .lehrkraft-panel h3 { color: #9a7d0a; margin-bottom: 12px; }
+        .lehrkraft-panel ul { padding-left: 20px; }
+        .lehrkraft-panel li { margin-bottom: 6px; }
+        .toggle-lehrkraft { display: block; text-align: center; max-width: 1100px; margin: 16px auto 0; color: var(--grey); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+
+        @media (max-width: 720px) { .main-layout { grid-template-columns: 1fr; } .rechner-card { position: static; } }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <a href="index-mathematik.html" class="btn-home">⬅ Mathematik-Portal</a>
+    <span style="font-size:0.85rem; color:var(--grey);">Maßeinheiten & Umrechnung</span>
+</div>
+
+<div class="app-header">
+    <h1>📏 Maßeinheiten & Umrechnung</h1>
+    <p>Länge · Gewicht · Volumen · Zeit · Fläche – Umrechnen und Textaufgaben</p>
+</div>
+
+<!-- KATEGORIEN -->
+<div class="kat-tabs">
+    <button class="kat-btn active" onclick="setKat('alle')" id="kat-alle">🔀 Alle</button>
+    <button class="kat-btn" onclick="setKat('laenge')" id="kat-laenge">📏 Länge</button>
+    <button class="kat-btn" onclick="setKat('gewicht')" id="kat-gewicht">⚖️ Gewicht</button>
+    <button class="kat-btn" onclick="setKat('volumen')" id="kat-volumen">🧴 Volumen</button>
+    <button class="kat-btn" onclick="setKat('zeit')" id="kat-zeit">⏱️ Zeit</button>
+    <button class="kat-btn" onclick="setKat('flaeche')" id="kat-flaeche">🗺️ Fläche</button>
+</div>
+
+<div class="mode-tabs">
+    <button class="tab-btn active" onclick="setModus('lern')" id="tab-lern">📖 Lernmodus</button>
+    <button class="tab-btn" onclick="setModus('pruefung')" id="tab-pruefung">🎯 Prüfungsmodus</button>
+</div>
+
+<div class="progress-section">
+    <div class="progress-info">
+        <span id="aufgabe-status">Aufgabe 1 von 10</span>
+        <span id="punkte-status">⭐ 0 Punkte</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="main-layout">
+    <div class="card">
+
+        <div class="score-box">
+            <div class="score-item richtig"><div class="score-zahl" id="score-richtig">0</div><div class="score-label">Richtig</div></div>
+            <div class="score-item falsch"><div class="score-zahl" id="score-falsch">0</div><div class="score-label">Falsch</div></div>
+        </div>
+
+        <div class="aufgabe-nummer" id="aufgabe-nr">Aufgabe 1</div>
+        <div class="aufgabe-typ-badge" id="aufgabe-typ">Umrechnung</div>
+        <div class="aufgabe-text" id="aufgabe-text">Wird geladen...</div>
+
+        <!-- Umrechnungstabelle (Lernmodus) -->
+        <div class="tabelle-box" id="tabelle-box">
+            <h4>📋 Umrechnungstabelle</h4>
+            <div class="umrechnungs-grid" id="tabelle-inhalt"></div>
+        </div>
+
+        <div class="eingabe-zeile">
+            <label class="eingabe-label">Dein Ergebnis:</label>
+            <input type="number" id="antwort-feld" class="eingabe-feld" step="any" placeholder="0">
+            <span class="eingabe-einheit" id="einheit-anzeige"></span>
+        </div>
+
+        <div class="feedback-box" id="feedback-box"></div>
+        <div class="rechenweg-box" id="rechenweg-box"><h4>🔢 Rechenweg</h4><div id="rechenweg-inhalt"></div></div>
+
+        <button class="btn btn-primary" id="btn-pruefen" onclick="pruefen()">✔ Antwort prüfen</button>
+        <button class="btn btn-hint" id="btn-tipp" onclick="zeigeTipp()">💡 Umrechnungshilfe</button>
+        <button class="btn btn-secondary" id="btn-naechste" onclick="naechsteAufgabe()" style="display:none">➡ Nächste Aufgabe</button>
+
+        <div class="pruefungs-auswertung" id="pruefungs-auswertung">
+            <div class="auswertung-kreis"><span id="auswertung-zahl">0/10</span></div>
+            <p id="auswertung-text" style="margin-bottom:16px; color:var(--grey);"></p>
+            <button class="btn btn-primary" onclick="neustart()">🔄 Nochmal üben</button>
+        </div>
+    </div>
+
+    <!-- RECHNER -->
+    <div class="rechner-card">
+        <div class="rechner-label">Taschenrechner</div>
+        <div class="rechner-display" id="r-display">0</div>
+        <div class="rechner-grid">
+            <button class="r-btn clear" onclick="rC()">C</button>
+            <button class="r-btn op" onclick="rOp('÷')">÷</button>
+            <button class="r-btn op" onclick="rOp('×')">×</button>
+            <button class="r-btn op" onclick="rOp('-')">−</button>
+            <button class="r-btn" onclick="rN('7')">7</button>
+            <button class="r-btn" onclick="rN('8')">8</button>
+            <button class="r-btn" onclick="rN('9')">9</button>
+            <button class="r-btn op" onclick="rOp('+')">+</button>
+            <button class="r-btn" onclick="rN('4')">4</button>
+            <button class="r-btn" onclick="rN('5')">5</button>
+            <button class="r-btn" onclick="rN('6')">6</button>
+            <button class="r-btn" onclick="rN('.')">.</button>
+            <button class="r-btn" onclick="rN('1')">1</button>
+            <button class="r-btn" onclick="rN('2')">2</button>
+            <button class="r-btn" onclick="rN('3')">3</button>
+            <button class="r-btn" onclick="rN('0')">0</button>
+            <button class="r-btn equals" onclick="rEq()" style="grid-column: span 4">=</button>
+        </div>
+    </div>
+</div>
+
+<span class="toggle-lehrkraft" onclick="toggleLehrkraft()">👩‍🏫 Lehrkraft-Modus</span>
+<div class="lehrkraft-panel" id="lehrkraft-panel">
+    <h3>👩‍🏫 Lehrkraft-Modus</h3>
+    <ul>
+        <li><strong>App-Titel:</strong> Maßeinheiten & Umrechnung – Interaktive Übung</li>
+        <li><strong>Version:</strong> 1.0.0 | <strong>Stand:</strong> Mai 2025</li>
+        <li><strong>Fach:</strong> Mathematik | <strong>Bildungsgang:</strong> BFS 1, BFS 2, AVB, Einzelhandel</li>
+        <li><strong>Kategorien:</strong> Länge, Gewicht, Volumen, Zeit, Fläche – einzeln oder gemischt</li>
+        <li><strong>Aufgabentypen:</strong> Direkte Umrechnung, Textaufgaben mit Berufsbezug</li>
+        <li><strong>Lernmodus:</strong> Umrechnungstabelle sichtbar, Tipp, vollständiger Rechenweg</li>
+        <li><strong>Datenschutz:</strong> Keine personenbezogenen Daten. Kein localStorage. Kein Tracking.</li>
+        <li><strong>Lizenz:</strong> MIT (Code), CC BY-SA (Inhalte)</li>
+    </ul>
+    <button class="btn btn-secondary" style="margin-top:12px; width:auto; padding: 8px 16px;" onclick="neustart()">🔄 Zurücksetzen</button>
+</div>
+
+<script>
+/* ============================================
+   UMRECHNUNGSDATEN
+   ============================================ */
+const kategorien = {
+    laenge: {
+        name: "Länge",
+        tabelle: ["1 km = 1.000 m", "1 m = 100 cm", "1 cm = 10 mm", "1 m = 1.000 mm"],
+        aufgaben: [
+            () => { const km = [1.5,2,3.2,5,0.8,4.5][rndInt(0,5)]; return { text: `Rechne um: <span class="wert">${km} km</span> = ? m`, loesung: km*1000, einheit: 'm', rw: [`${km} km × 1.000 = <strong>${km*1000} m</strong>`], tipp: "1 km = 1.000 m → mit 1.000 multiplizieren" }; },
+            () => { const m = [250,500,1200,3500,750][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${m} m</span> = ? km`, loesung: m/1000, einheit: 'km', rw: [`${m} m ÷ 1.000 = <strong>${m/1000} km</strong>`], tipp: "1 km = 1.000 m → durch 1.000 teilen" }; },
+            () => { const cm = [50,120,350,15,75][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${cm} cm</span> = ? m`, loesung: cm/100, einheit: 'm', rw: [`${cm} cm ÷ 100 = <strong>${cm/100} m</strong>`], tipp: "1 m = 100 cm → durch 100 teilen" }; },
+            () => { const m = [1.5,2.4,0.8,3.2,0.5][rndInt(0,4)]; return { text: `Ein Regal ist <span class="wert">${m} m</span> hoch. Wie viel ist das in cm?`, loesung: m*100, einheit: 'cm', rw: [`${m} m × 100 = <strong>${m*100} cm</strong>`], tipp: "1 m = 100 cm → mit 100 multiplizieren" }; },
+        ]
+    },
+    gewicht: {
+        name: "Gewicht",
+        tabelle: ["1 t = 1.000 kg", "1 kg = 1.000 g", "1 g = 1.000 mg", "1 kg = 1.000.000 mg"],
+        aufgaben: [
+            () => { const kg = [2.5,5,1.2,0.75,3][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${kg} kg</span> = ? g`, loesung: kg*1000, einheit: 'g', rw: [`${kg} kg × 1.000 = <strong>${kg*1000} g</strong>`], tipp: "1 kg = 1.000 g → mit 1.000 multiplizieren" }; },
+            () => { const g = [500,1500,2400,750,3200][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${g} g</span> = ? kg`, loesung: g/1000, einheit: 'kg', rw: [`${g} g ÷ 1.000 = <strong>${g/1000} kg</strong>`], tipp: "1 kg = 1.000 g → durch 1.000 teilen" }; },
+            () => { const t = [1.5,2,0.8,3.2,5][rndInt(0,4)]; return { text: `Eine Lieferung wiegt <span class="wert">${t} t</span>. Wie viel kg sind das?`, loesung: t*1000, einheit: 'kg', rw: [`${t} t × 1.000 = <strong>${t*1000} kg</strong>`], tipp: "1 t = 1.000 kg → mit 1.000 multiplizieren" }; },
+            () => { const kg = [2500,5000,1200,3800][rndInt(0,3)]; return { text: `Im Lager lagern <span class="wert">${kg} kg</span> Waren. Wie viel Tonnen sind das?`, loesung: kg/1000, einheit: 't', rw: [`${kg} kg ÷ 1.000 = <strong>${kg/1000} t</strong>`], tipp: "1 t = 1.000 kg → durch 1.000 teilen" }; },
+        ]
+    },
+    volumen: {
+        name: "Volumen",
+        tabelle: ["1 l = 1.000 ml", "1 l = 10 dl", "1 dl = 100 ml", "1 m³ = 1.000 l"],
+        aufgaben: [
+            () => { const l = [1.5,2.5,0.75,3,0.5][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${l} l</span> = ? ml`, loesung: l*1000, einheit: 'ml', rw: [`${l} l × 1.000 = <strong>${l*1000} ml</strong>`], tipp: "1 l = 1.000 ml → mit 1.000 multiplizieren" }; },
+            () => { const ml = [500,250,1500,750,2000][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${ml} ml</span> = ? l`, loesung: ml/1000, einheit: 'l', rw: [`${ml} ml ÷ 1.000 = <strong>${ml/1000} l</strong>`], tipp: "1 l = 1.000 ml → durch 1.000 teilen" }; },
+            () => { const l = [5,10,2.5,7.5,15][rndInt(0,4)]; return { text: `Ein Getränkebehälter fasst <span class="wert">${l} l</span>. Wie viel dl ist das?`, loesung: l*10, einheit: 'dl', rw: [`${l} l × 10 = <strong>${l*10} dl</strong>`], tipp: "1 l = 10 dl → mit 10 multiplizieren" }; },
+            () => { const dl = [20,50,15,30,8][rndInt(0,4)]; return { text: `Rechne <span class="wert">${dl} dl</span> in Milliliter um.`, loesung: dl*100, einheit: 'ml', rw: [`${dl} dl × 100 = <strong>${dl*100} ml</strong>`], tipp: "1 dl = 100 ml → mit 100 multiplizieren" }; },
+        ]
+    },
+    zeit: {
+        name: "Zeit",
+        tabelle: ["1 h = 60 min", "1 min = 60 s", "1 h = 3.600 s", "1 Tag = 24 h"],
+        aufgaben: [
+            () => { const h = [1.5,2,0.5,3,2.5][rndInt(0,4)]; const min = h*60; return { text: `Rechne um: <span class="wert">${h} h</span> = ? min`, loesung: min, einheit: 'min', rw: [`${h} h × 60 = <strong>${min} min</strong>`], tipp: "1 h = 60 min → mit 60 multiplizieren" }; },
+            () => { const min = [90,120,45,150,75][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${min} min</span> = ? h`, loesung: min/60, einheit: 'h', rw: [`${min} min ÷ 60 = <strong>${min/60} h</strong>`], tipp: "1 h = 60 min → durch 60 teilen" }; },
+            () => { const h = [2,3,1.5,4][rndInt(0,3)]; const s = h*3600; return { text: `Eine Maschine läuft <span class="wert">${h} h</span>. Wie viele Sekunden sind das?`, loesung: s, einheit: 's', rw: [`${h} h × 3.600 = <strong>${s} s</strong>`], tipp: "1 h = 3.600 s → mit 3.600 multiplizieren" }; },
+            () => { const tage = [2,3,5,7,10][rndInt(0,4)]; return { text: `Ein Zeitraum beträgt <span class="wert">${tage} Tage</span>. Wie viele Stunden sind das?`, loesung: tage*24, einheit: 'h', rw: [`${tage} Tage × 24 = <strong>${tage*24} h</strong>`], tipp: "1 Tag = 24 h → mit 24 multiplizieren" }; },
+        ]
+    },
+    flaeche: {
+        name: "Fläche",
+        tabelle: ["1 km² = 1.000.000 m²", "1 m² = 10.000 cm²", "1 ha = 10.000 m²", "1 km² = 100 ha"],
+        aufgaben: [
+            () => { const m2 = [5,10,2.5,15,8][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${m2} m²</span> = ? cm²`, loesung: m2*10000, einheit: 'cm²', rw: [`${m2} m² × 10.000 = <strong>${m2*10000} cm²</strong>`], tipp: "1 m² = 10.000 cm² → mit 10.000 multiplizieren" }; },
+            () => { const ha = [1.5,2,5,3.2,10][rndInt(0,4)]; return { text: `Ein Grundstück hat <span class="wert">${ha} ha</span>. Wie viel m² sind das?`, loesung: ha*10000, einheit: 'm²', rw: [`${ha} ha × 10.000 = <strong>${ha*10000} m²</strong>`], tipp: "1 ha = 10.000 m² → mit 10.000 multiplizieren" }; },
+            () => { const m2 = [20000,50000,15000,30000][rndInt(0,3)]; return { text: `Ein Gewerbegebiet umfasst <span class="wert">${m2.toLocaleString('de-DE')} m²</span>. Wie viel ha sind das?`, loesung: m2/10000, einheit: 'ha', rw: [`${m2} m² ÷ 10.000 = <strong>${m2/10000} ha</strong>`], tipp: "1 ha = 10.000 m² → durch 10.000 teilen" }; },
+            () => { const km2 = [1,2,5,0.5,3][rndInt(0,4)]; return { text: `Rechne um: <span class="wert">${km2} km²</span> = ? ha`, loesung: km2*100, einheit: 'ha', rw: [`${km2} km² × 100 = <strong>${km2*100} ha</strong>`], tipp: "1 km² = 100 ha → mit 100 multiplizieren" }; },
+        ]
+    }
+};
+
+function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+/* ============================================
+   ZUSTAND
+   ============================================ */
+let modus = 'lern';
+let aktuelleKat = 'alle';
+let aufgabenQueue = [];
+let aktuelleAufgabe = null;
+let aktuellerIndex = 0;
+let maxAufgaben = 10;
+let scoreRichtig = 0;
+let scoreFalsch = 0;
+let beantwortet = false;
+
+/* ============================================
+   INITIALISIERUNG
+   ============================================ */
+function init() {
+    aufgabenQueue = [];
+    aktuellerIndex = 0;
+    scoreRichtig = 0;
+    scoreFalsch = 0;
+    beantwortet = false;
+
+    // Kategorie-Pool bestimmen
+    let pool = [];
+    if (aktuelleKat === 'alle') {
+        Object.values(kategorien).forEach(k => pool.push(...k.aufgaben));
+    } else {
+        pool = kategorien[aktuelleKat].aufgaben;
+    }
+
+    // 10 Aufgaben erzeugen
+    for (let i = 0; i < maxAufgaben; i++) {
+        const fn = pool[i % pool.length];
+        aufgabenQueue.push(fn());
+    }
+
+    document.getElementById('pruefungs-auswertung').style.display = 'none';
+    document.getElementById('aufgabe-text').style.display = 'block';
+    document.querySelector('.eingabe-zeile').style.display = 'flex';
+    aktualisiereScore();
+    zeigeAufgabe();
+}
+
+function zeigeAufgabe() {
+    if (aktuellerIndex >= maxAufgaben) { zeigeAuswertung(); return; }
+
+    aktuelleAufgabe = aufgabenQueue[aktuellerIndex];
+    beantwortet = false;
+
+    document.getElementById('aufgabe-nr').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('aufgabe-typ').textContent = 'Maßeinheiten – Umrechnung';
+    document.getElementById('aufgabe-text').innerHTML = aktuelleAufgabe.text;
+    document.getElementById('einheit-anzeige').textContent = aktuelleAufgabe.einheit;
+    document.getElementById('antwort-feld').value = '';
+    document.getElementById('antwort-feld').focus();
+
+    // Tabelle bestimmen
+    const hatKat = aktuelleKat !== 'alle';
+    if (modus === 'lern') {
+        // Finde passende Tabelle
+        let tab = [];
+        if (hatKat) {
+            tab = kategorien[aktuelleKat].tabelle;
+        } else {
+            // Anhand Einheit bestimmen
+            const einheit = aktuelleAufgabe.einheit;
+            const match = Object.values(kategorien).find(k =>
+                k.tabelle.some(t => t.includes(einheit))
+            );
+            tab = match ? match.tabelle : [];
+        }
+        document.getElementById('tabelle-inhalt').innerHTML = tab.map(t => `<div class="ur-zeile">${t}</div>`).join('');
+        document.getElementById('tabelle-box').style.display = 'block';
+    } else {
+        document.getElementById('tabelle-box').style.display = 'none';
+    }
+
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'block';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = modus === 'lern' ? 'block' : 'none';
+
+    aktualisiereProgress();
+}
+
+/* ============================================
+   PRÜFEN
+   ============================================ */
+function pruefen() {
+    if (beantwortet) return;
+    const val = parseFloat(document.getElementById('antwort-feld').value);
+    if (isNaN(val)) { zeigeInfo('⚠️ Bitte eine Zahl eingeben.'); return; }
+
+    const loes = aktuelleAufgabe.loesung;
+    const toleranz = Math.abs(loes) * 0.001 + 0.001;
+    const richtig = Math.abs(val - loes) <= toleranz;
+
+    beantwortet = true;
+    if (richtig) { scoreRichtig++; zeigeFeedback('richtig', `✅ Richtig! ${loes} ${aktuelleAufgabe.einheit}`); }
+    else { scoreFalsch++; zeigeFeedback('falsch', `❌ Falsch. Richtig: <strong>${loes} ${aktuelleAufgabe.einheit}</strong>`); }
+
+    if (modus === 'lern') zeigeRechenweg();
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+
+    if (aktuellerIndex < maxAufgaben - 1) document.getElementById('btn-naechste').style.display = 'block';
+    else setTimeout(zeigeAuswertung, 700);
+
+    aktualisiereScore();
+}
+
+function naechsteAufgabe() { aktuellerIndex++; zeigeAufgabe(); }
+
+function zeigeRechenweg() {
+    document.getElementById('rechenweg-inhalt').innerHTML =
+        aktuelleAufgabe.rw.map((s, i) =>
+            `<div class="rw-schritt"><div class="rw-nr">${i+1}</div><div>${s}</div></div>`
+        ).join('');
+    document.getElementById('rechenweg-box').style.display = 'block';
+}
+
+function zeigeTipp() {
+    zeigeInfo('💡 ' + aktuelleAufgabe.tipp);
+}
+
+function zeigeAuswertung() {
+    document.getElementById('aufgabe-text').style.display = 'none';
+    document.querySelector('.eingabe-zeile').style.display = 'none';
+    document.getElementById('tabelle-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+    document.getElementById('pruefungs-auswertung').style.display = 'block';
+}
+
+function getBewertung() {
+    const p = scoreRichtig / maxAufgaben;
+    if (p === 1) return '🏆 Alle Einheiten umgerechnet! Perfekt!';
+    if (p >= 0.8) return '🌟 Sehr gut! Die Umrechnung sitzt.';
+    if (p >= 0.6) return '👍 Gut! Ein paar Einheiten noch festigen.';
+    return '📚 Im Lernmodus kannst du dir die Tabelle und den Rechenweg ansehen.';
+}
+
+function neustart() {
+    document.getElementById('aufgabe-text').style.display = 'block';
+    document.querySelector('.eingabe-zeile').style.display = 'flex';
+    init();
+}
+
+function zeigeFeedback(typ, text) { const b = document.getElementById('feedback-box'); b.className = `feedback-box ${typ}`; b.innerHTML = text; b.style.display = 'block'; }
+function zeigeInfo(text) { const b = document.getElementById('feedback-box'); b.className = 'feedback-box info'; b.innerHTML = text; b.style.display = 'block'; }
+function aktualisiereScore() { document.getElementById('score-richtig').textContent = scoreRichtig; document.getElementById('score-falsch').textContent = scoreFalsch; document.getElementById('punkte-status').textContent = `⭐ ${scoreRichtig} Punkte`; }
+function aktualisiereProgress() { document.getElementById('aufgabe-status').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`; document.getElementById('progress-fill').style.width = (aktuellerIndex / maxAufgaben * 100) + '%'; }
+function setModus(m) { modus = m; document.getElementById('tab-lern').classList.toggle('active', m==='lern'); document.getElementById('tab-pruefung').classList.toggle('active', m==='pruefung'); neustart(); }
+function setKat(k) {
+    aktuelleKat = k;
+    ['alle','laenge','gewicht','volumen','zeit','flaeche'].forEach(x => document.getElementById('kat-'+x).classList.toggle('active', x===k));
+    neustart();
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { if (!beantwortet) pruefen(); else if (document.getElementById('btn-naechste').style.display !== 'none') naechsteAufgabe(); }
+});
+
+/* RECHNER */
+let rExpr = ""; let rNeu = true;
+function rUpdate() { document.getElementById('r-display').textContent = rExpr || "0"; }
+function rN(v) { if (rNeu && v !== '.') { rExpr = v; rNeu = false; } else { rExpr += v; } rUpdate(); }
+function rOp(op) { rNeu = false; rExpr += op; rUpdate(); }
+function rC() { rExpr = ""; rNeu = true; rUpdate(); }
+function rEq() { try { const e = eval(rExpr.replace(/÷/g,'/').replace(/×/g,'*')); rExpr = String(Math.round(e*10000)/10000); rNeu = true; rUpdate(); } catch { document.getElementById('r-display').textContent = 'Fehler'; rExpr = ''; rNeu = true; } }
+
+function toggleLehrkraft() { const p = document.getElementById('lehrkraft-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+
+window.onload = init;
+</script>
+</body>
+</html>

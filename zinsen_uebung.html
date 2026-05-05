@@ -2,52 +2,947 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Übung: Zinsrechnung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zinsrechnung – Interaktive Übung</title>
     <style>
-        :root { --bg: #ecf0f1; --main: #00b894; --dark: #00947a; --light: #55efc4; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
-        h1 { color: var(--dark); border-bottom: 4px solid var(--main); padding-bottom: 10px; }
-        .question-box { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 6px solid var(--main); }
-        input { padding: 10px; border: 2px solid #ddd; border-radius: 8px; width: 120px; font-size: 1rem; }
-        .btn-check { background: var(--main); color: white; padding: 15px 30px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 var(--dark); transition: 0.1s; }
-        .btn-check:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
-        .feedback { font-weight: bold; margin-top: 10px; }
+        /* ===== DESIGN-SYSTEM ===== */
+        :root {
+            --main: #2980b9;
+            --main-dark: #1a5276;
+            --main-light: #d6eaf8;
+            --accent: #e67e22;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg: #f0f4f8;
+            --white: #ffffff;
+            --text: #2c3e50;
+            --grey: #7f8c8d;
+            --border: #dde3ea;
+            --calc-bg: #1a1a2e;
+            --calc-btn: #16213e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-home {
+            text-decoration: none;
+            color: var(--grey);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: background 0.2s;
+        }
+        .btn-home:hover { background: var(--main-light); }
+        .nav-title { font-size: 0.85rem; color: var(--grey); }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: linear-gradient(135deg, var(--main-dark), var(--main));
+            color: white;
+            padding: 28px 30px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .app-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .app-header p { font-size: 0.9rem; opacity: 0.85; }
+
+        /* ===== MODUS-TABS ===== */
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            background: var(--white);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--grey);
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            border-color: var(--main);
+            background: var(--main-light);
+            color: var(--main-dark);
+        }
+
+        /* ===== FORTSCHRITT ===== */
+        .progress-section {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--grey);
+            margin-bottom: 6px;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--main), var(--accent));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        /* ===== HAUPT-LAYOUT ===== */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== KARTE ===== */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+
+        /* ===== AUFGABE ===== */
+        .aufgabe-nummer {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--main);
+            margin-bottom: 8px;
+        }
+        .aufgabe-typ-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: var(--main-light);
+            color: var(--main-dark);
+            margin-bottom: 14px;
+        }
+        .aufgabe-text {
+            background: #f7f9fc;
+            border-left: 5px solid var(--main);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+        .aufgabe-text .wert { font-weight: 700; color: var(--main-dark); }
+        .aufgabe-text .gesucht { font-weight: 700; color: var(--accent); }
+
+        /* ===== FORMEL-BOX (Lernmodus) ===== */
+        .formel-box {
+            background: #fff9f0;
+            border: 2px dashed var(--accent);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .formel-box h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; }
+        .formel-box code {
+            display: block;
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--main-dark);
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+
+        /* ===== EINGABE ===== */
+        .eingabe-zeile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .eingabe-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            min-width: 120px;
+        }
+        .eingabe-feld {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            width: 150px;
+            transition: border-color 0.2s;
+            -moz-appearance: textfield;
+        }
+        .eingabe-feld:focus { outline: none; border-color: var(--main); }
+        .eingabe-feld::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .eingabe-einheit { font-size: 0.9rem; color: var(--grey); font-weight: 600; }
+
+        /* ===== BUTTONS ===== */
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+        .btn-primary { background: var(--main); color: white; }
+        .btn-primary:hover { background: var(--main-dark); }
+        .btn-secondary { background: #eef2f7; color: var(--text); }
+        .btn-secondary:hover { background: #dde3ea; }
+        .btn-hint { background: #fff9f0; color: var(--accent); border: 2px solid var(--accent); }
+        .btn-hint:hover { background: #fef0d9; }
+
+        /* ===== FEEDBACK ===== */
+        .feedback-box {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .feedback-box.richtig { background: #d4edda; color: #155724; border-left: 5px solid var(--success); }
+        .feedback-box.falsch { background: #f8d7da; color: #721c24; border-left: 5px solid var(--error); }
+        .feedback-box.info { background: var(--main-light); color: var(--main-dark); border-left: 5px solid var(--main); }
+
+        /* ===== RECHENWEG ===== */
+        .rechenweg-box {
+            background: #f7f9fc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .rechenweg-box h4 { color: var(--main-dark); margin-bottom: 10px; font-size: 0.9rem; }
+        .rechenweg-schritt {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .schritt-nr {
+            background: var(--main);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .rechenweg-box .ergebnis-zeile {
+            border-top: 2px solid var(--main);
+            margin-top: 10px;
+            padding-top: 10px;
+            font-weight: 700;
+            color: var(--main-dark);
+        }
+
+        /* ===== PRÜFUNGSMODUS ERGEBNIS ===== */
+        .pruefungs-auswertung {
+            display: none;
+            text-align: center;
+        }
+        .auswertung-kreis {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--main), var(--main-dark));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        .auswertung-kreis small { font-size: 0.65rem; font-weight: 400; }
+
+        /* ===== RECHNER ===== */
+        .rechner-card {
+            background: var(--calc-bg);
+            border-radius: 16px;
+            padding: 20px;
+            position: sticky;
+            top: 16px;
+        }
+        .rechner-label {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .rechner-display {
+            background: #0d0d1a;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 1.6rem;
+            color: #4fc3f7;
+            text-align: right;
+            margin-bottom: 14px;
+            min-height: 56px;
+            word-break: break-all;
+            overflow: hidden;
+        }
+        .rechner-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .r-btn {
+            background: var(--calc-btn);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 6px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .r-btn:hover { background: #2d3561; }
+        .r-btn.op { color: #4fc3f7; }
+        .r-btn.clear { color: #ff6b6b; }
+        .r-btn.equals { background: var(--main); color: white; grid-column: span 1; }
+        .r-btn.equals:hover { background: var(--main-dark); }
+
+        /* ===== SCORE-ANZEIGE ===== */
+        .score-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .score-item {
+            flex: 1;
+            background: #f7f9fc;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .score-item .score-zahl { font-size: 1.6rem; font-weight: 800; }
+        .score-item .score-label { font-size: 0.7rem; color: var(--grey); text-transform: uppercase; }
+        .score-item.richtig .score-zahl { color: var(--success); }
+        .score-item.falsch .score-zahl { color: var(--error); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 720px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .rechner-card { position: static; }
+            .app-header h1 { font-size: 1.3rem; }
+            .mode-tabs { flex-direction: row; }
+        }
+
+        /* ===== LEHRKRAFT-MODUS ===== */
+        .lehrkraft-panel {
+            display: none;
+            background: #fffbf0;
+            border: 2px dashed #f39c12;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.9rem;
+        }
+        .lehrkraft-panel h3 { color: #9a7d0a; margin-bottom: 12px; }
+        .lehrkraft-panel ul { padding-left: 20px; }
+        .lehrkraft-panel li { margin-bottom: 6px; }
+
+        .toggle-lehrkraft {
+            display: block;
+            text-align: center;
+            max-width: 1100px;
+            margin: 16px auto 0;
+            color: var(--grey);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Übung: Zinsrechnung</h1>
-        <div id="quiz"></div>
-        <button class="btn-check" onclick="check()">Ergebnisse prüfen</button>
-        <a href="index.html" style="margin-left:20px; color: var(--dark);">Zurück</a>
+
+<!-- NAVIGATION -->
+<div class="nav-bar">
+    <a href="index-mathematik.html" class="btn-home">⬅ Mathematik-Portal</a>
+    <span class="nav-title">Zinsrechnung – Interaktive Übung</span>
+</div>
+
+<!-- HEADER -->
+<div class="app-header">
+    <h1>💰 Zinsrechnung üben</h1>
+    <p>Kapitalzins · Zinssatz · Laufzeit · Effektivzins · Skonto · Wirtschaftlichkeitsprüfung</p>
+</div>
+
+<!-- MODUS-TABS -->
+<div class="mode-tabs">
+    <button class="tab-btn active" onclick="setModus('lern')" id="tab-lern">📖 Lernmodus</button>
+    <button class="tab-btn" onclick="setModus('pruefung')" id="tab-pruefung">🎯 Prüfungsmodus</button>
+</div>
+
+<!-- FORTSCHRITT -->
+<div class="progress-section">
+    <div class="progress-info">
+        <span id="aufgabe-status">Aufgabe 1 von 10</span>
+        <span id="punkte-status">⭐ 0 Punkte</span>
+    </div>
+    <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+</div>
+
+<!-- HAUPT-LAYOUT -->
+<div class="main-layout">
+
+    <!-- ÜBUNGS-KARTE -->
+    <div class="card" id="uebungs-karte">
+
+        <!-- SCORE (Lernmodus) -->
+        <div class="score-box" id="score-box">
+            <div class="score-item richtig">
+                <div class="score-zahl" id="score-richtig">0</div>
+                <div class="score-label">Richtig</div>
+            </div>
+            <div class="score-item falsch">
+                <div class="score-zahl" id="score-falsch">0</div>
+                <div class="score-label">Falsch</div>
+            </div>
+        </div>
+
+        <!-- AUFGABE -->
+        <div class="aufgabe-nummer" id="aufgabe-nr">Aufgabe 1</div>
+        <div class="aufgabe-typ-badge" id="aufgabe-typ">Zinsberechnung</div>
+        <div class="aufgabe-text" id="aufgabe-text">Wird geladen...</div>
+
+        <!-- FORMEL-BOX (nur Lernmodus) -->
+        <div class="formel-box" id="formel-box">
+            <h4>📐 Passende Formel</h4>
+            <code id="formel-text">Z = (K × p × t) / 36.000</code>
+        </div>
+
+        <!-- EINGABE -->
+        <div class="eingabe-zeile">
+            <label class="eingabe-label" for="antwort-feld">Dein Ergebnis:</label>
+            <input type="number" id="antwort-feld" class="eingabe-feld" step="0.01" placeholder="0,00">
+            <span class="eingabe-einheit" id="einheit">€</span>
+        </div>
+
+        <!-- FEEDBACK -->
+        <div class="feedback-box" id="feedback-box"></div>
+
+        <!-- RECHENWEG (Lernmodus) -->
+        <div class="rechenweg-box" id="rechenweg-box">
+            <h4>🔢 Rechenweg</h4>
+            <div id="rechenweg-inhalt"></div>
+        </div>
+
+        <!-- BUTTONS -->
+        <button class="btn btn-primary" id="btn-pruefen" onclick="pruefen()">✔ Antwort prüfen</button>
+        <button class="btn btn-hint" id="btn-tipp" onclick="zeigeTipp()">💡 Tipp anzeigen</button>
+        <button class="btn btn-secondary" id="btn-naechste" onclick="naechsteAufgabe()" style="display:none">➡ Nächste Aufgabe</button>
+
+        <!-- PRÜFUNGSMODUS ABSCHLUSS -->
+        <div class="pruefungs-auswertung" id="pruefungs-auswertung">
+            <div class="auswertung-kreis" id="auswertung-kreis">
+                <span id="auswertung-zahl">0/10</span>
+                <small>Punkte</small>
+            </div>
+            <p id="auswertung-text" style="margin-bottom:16px; color: var(--grey);"></p>
+            <button class="btn btn-primary" onclick="neustart()">🔄 Nochmal üben</button>
+        </div>
+
     </div>
 
-    <script>
-        const questions = [];
-        for(let i=1; i<=30; i++) {
-            let kapital = i * 1000;
-            let zins = (i % 5) + 2;
-            let tage = 30 * (i % 12 + 1);
-            let erg = (kapital * zins * tage) / 36000;
-            questions.push({
-                q: `Berechne die Zinsen: Kapital ${kapital} €, Zinssatz ${zins} %, Laufzeit ${tage} Tage.`,
-                a: erg.toFixed(2)
-            });
+    <!-- RECHNER -->
+    <div class="rechner-card">
+        <div class="rechner-label">Taschenrechner</div>
+        <div class="rechner-display" id="r-display">0</div>
+        <div class="rechner-grid">
+            <button class="r-btn clear" onclick="rC()">C</button>
+            <button class="r-btn op" onclick="rOp('÷')">÷</button>
+            <button class="r-btn op" onclick="rOp('×')">×</button>
+            <button class="r-btn op" onclick="rOp('-')">−</button>
+
+            <button class="r-btn" onclick="rN('7')">7</button>
+            <button class="r-btn" onclick="rN('8')">8</button>
+            <button class="r-btn" onclick="rN('9')">9</button>
+            <button class="r-btn op" onclick="rOp('+')">+</button>
+
+            <button class="r-btn" onclick="rN('4')">4</button>
+            <button class="r-btn" onclick="rN('5')">5</button>
+            <button class="r-btn" onclick="rN('6')">6</button>
+            <button class="r-btn" onclick="rN('.')">.</button>
+
+            <button class="r-btn" onclick="rN('1')">1</button>
+            <button class="r-btn" onclick="rN('2')">2</button>
+            <button class="r-btn" onclick="rN('3')">3</button>
+            <button class="r-btn" onclick="rN('0')">0</button>
+
+            <button class="r-btn equals" onclick="rEq()" style="grid-column: span 4">=</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- LEHRKRAFT-TOGGLE -->
+<span class="toggle-lehrkraft" onclick="toggleLehrkraft()">👩‍🏫 Lehrkraft-Modus</span>
+
+<!-- LEHRKRAFT-PANEL -->
+<div class="lehrkraft-panel" id="lehrkraft-panel">
+    <h3>👩‍🏫 Lehrkraft-Modus</h3>
+    <ul>
+        <li><strong>App-Titel:</strong> Zinsrechnung – Interaktive Übung</li>
+        <li><strong>Version:</strong> 2.0.0 | <strong>Stand:</strong> Mai 2025</li>
+        <li><strong>Fach:</strong> Mathematik | <strong>Bildungsgang:</strong> BFS 1, BFS 2, AVB, Einzelhandel</li>
+        <li><strong>Aufgabentypen:</strong> Kapitalzins (Z), Zinssatz (p), Kapital (K), Laufzeit (t), Effektivzins, Skonto-Wirtschaftlichkeit</li>
+        <li><strong>Formel:</strong> Z = (K × p × t) / 36.000 | p = (Z × 36.000) / (K × t) | K = (Z × 36.000) / (p × t) | t = (Z × 36.000) / (K × p)</li>
+        <li><strong>Lernmodus:</strong> Formeln sichtbar, Tipp-Funktion, Rechenweg nach Prüfung</li>
+        <li><strong>Prüfungsmodus:</strong> Keine Hilfen, Auswertung am Ende</li>
+        <li><strong>Datenschutz:</strong> Keine personenbezogenen Daten. Kein localStorage. Kein Tracking.</li>
+        <li><strong>Lizenz:</strong> MIT (Code), CC BY-SA (Inhalte)</li>
+        <li><strong>Differenzierung:</strong> Lernmodus für schwächere SuS, Prüfungsmodus für Vorbereitung auf Klassenarbeiten</li>
+    </ul>
+    <button class="btn btn-secondary" style="margin-top:12px; width:auto; padding: 8px 16px;" onclick="neustart()">🔄 App zurücksetzen</button>
+</div>
+
+<script>
+/* ============================================
+   AUFGABEN-POOL: Alle fachlich geprüften Aufgaben
+   Formel: Z = (K × p × t) / 36.000
+   ============================================ */
+
+const aufgabenPool = [
+    // TYP 1: Zinsen berechnen (Z = ?)
+    {
+        typ: "Zinsberechnung",
+        formel: "Z = (K × p × t) / 36.000",
+        einheit: "€",
+        erstelle: () => {
+            const K = [2000,3500,5000,8000,12000,15000,20000][Math.floor(Math.random()*7)];
+            const p = [2,3,4,5,6,7,8][Math.floor(Math.random()*7)];
+            const t = [30,60,90,120,180,360][Math.floor(Math.random()*6)];
+            const Z = parseFloat(((K * p * t) / 36000).toFixed(2));
+            return {
+                text: `Ein Unternehmen legt <span class="wert">${K.toLocaleString('de-DE')} €</span> bei der Hausbank an. Der Zinssatz beträgt <span class="wert">${p} %</span> p. a. Die Laufzeit ist <span class="wert">${t} Tage</span>.<br><br><span class="gesucht">Gesucht: Welche Zinsen werden gutgeschrieben?</span>`,
+                loesung: Z,
+                rechenweg: [
+                    `Formel: Z = (K × p × t) / 36.000`,
+                    `Einsetzen: Z = (${K.toLocaleString('de-DE')} € × ${p} % × ${t} Tage) / 36.000`,
+                    `Zähler: ${K} × ${p} × ${t} = ${K*p*t}`,
+                    `Ergebnis: ${K*p*t} / 36.000 = <strong>${Z.toFixed(2)} €</strong>`
+                ]
+            };
         }
-        const selection = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
-        const container = document.getElementById('quiz');
-        selection.forEach((item, i) => {
-            container.innerHTML += `<div class="question-box"><p>${item.q}</p><input type="number" step="0.01" id="ans${i}"> €<div id="res${i}" class="feedback"></div></div>`;
-        });
-        function check() {
-            selection.forEach((item, i) => {
-                const val = document.getElementById(`ans${i}`).value;
-                const res = document.getElementById(`res${i}`);
-                if(Math.abs(val - item.a) < 0.1) { res.innerHTML = "✅ Richtig!"; res.style.color = "green"; }
-                else { res.innerHTML = "❌ Falsch. Lösung: " + item.a; res.style.color = "red"; }
-            });
+    },
+    // TYP 2: Zinssatz berechnen (p = ?)
+    {
+        typ: "Zinssatz berechnen",
+        formel: "p = (Z × 36.000) / (K × t)",
+        einheit: "%",
+        erstelle: () => {
+            const p = [2,3,4,5,6][Math.floor(Math.random()*5)];
+            const K = [4000,6000,8000,10000,12000][Math.floor(Math.random()*5)];
+            const t = [60,90,120,180,360][Math.floor(Math.random()*5)];
+            const Z = parseFloat(((K * p * t) / 36000).toFixed(2));
+            return {
+                text: `Ein Betrieb erhält für ein Guthaben von <span class="wert">${K.toLocaleString('de-DE')} €</span> nach <span class="wert">${t} Tagen</span> insgesamt <span class="wert">${Z.toFixed(2)} €</span> Zinsen.<br><br><span class="gesucht">Gesucht: Wie hoch ist der Zinssatz (p. a.)?</span>`,
+                loesung: p,
+                rechenweg: [
+                    `Formel: p = (Z × 36.000) / (K × t)`,
+                    `Einsetzen: p = (${Z.toFixed(2)} € × 36.000) / (${K.toLocaleString('de-DE')} € × ${t} Tage)`,
+                    `Zähler: ${Z.toFixed(2)} × 36.000 = ${(Z*36000).toFixed(0)}`,
+                    `Nenner: ${K} × ${t} = ${K*t}`,
+                    `Ergebnis: ${(Z*36000).toFixed(0)} / ${K*t} = <strong>${p} %</strong>`
+                ]
+            };
         }
-    </script>
+    },
+    // TYP 3: Kapital berechnen (K = ?)
+    {
+        typ: "Kapital berechnen",
+        formel: "K = (Z × 36.000) / (p × t)",
+        einheit: "€",
+        erstelle: () => {
+            const K = [5000, 8000, 10000, 12000, 15000][Math.floor(Math.random()*5)];
+            const p = [3,4,5,6][Math.floor(Math.random()*4)];
+            const t = [90,120,180,360][Math.floor(Math.random()*4)];
+            const Z = parseFloat(((K * p * t) / 36000).toFixed(2));
+            return {
+                text: `Bei einem Zinssatz von <span class="wert">${p} %</span> p. a. und einer Laufzeit von <span class="wert">${t} Tagen</span> erhält ein Anleger <span class="wert">${Z.toFixed(2)} €</span> Zinsen.<br><br><span class="gesucht">Gesucht: Wie hoch war das angelegte Kapital?</span>`,
+                loesung: K,
+                rechenweg: [
+                    `Formel: K = (Z × 36.000) / (p × t)`,
+                    `Einsetzen: K = (${Z.toFixed(2)} € × 36.000) / (${p} % × ${t} Tage)`,
+                    `Zähler: ${Z.toFixed(2)} × 36.000 = ${(Z*36000).toFixed(0)}`,
+                    `Nenner: ${p} × ${t} = ${p*t}`,
+                    `Ergebnis: ${(Z*36000).toFixed(0)} / ${p*t} = <strong>${K.toLocaleString('de-DE')} €</strong>`
+                ]
+            };
+        }
+    },
+    // TYP 4: Effektiver Zinssatz (Skonto-Vergleich)
+    {
+        typ: "Effektiver Zinssatz (Skonto)",
+        formel: "p_eff = (Skontosatz × 360) / (Zahlungsziel − Skontofrist)",
+        einheit: "%",
+        erstelle: () => {
+            const s = [2, 3][Math.floor(Math.random()*2)];
+            const netto = [30, 60][Math.floor(Math.random()*2)];
+            const skontofrist = [10, 14][Math.floor(Math.random()*2)];
+            const peff = parseFloat(((s * 360) / (netto - skontofrist)).toFixed(1));
+            return {
+                text: `Eine Rechnung lautet: <span class="wert">${s} % Skonto</span> bei Zahlung innerhalb von <span class="wert">${skontofrist} Tagen</span>, zahlbar netto innerhalb von <span class="wert">${netto} Tagen</span>.<br><br><span class="gesucht">Gesucht: Wie hoch ist der effektive Jahreszinssatz des Lieferantenkredits?</span>`,
+                loesung: peff,
+                rechenweg: [
+                    `Formel: p_eff = (Skontosatz × 360) / (Zahlungsziel − Skontofrist)`,
+                    `Einsetzen: p_eff = (${s} % × 360) / (${netto} − ${skontofrist})`,
+                    `Zähler: ${s} × 360 = ${s*360}`,
+                    `Nenner: ${netto} − ${skontofrist} = ${netto - skontofrist} Tage`,
+                    `Ergebnis: ${s*360} / ${netto - skontofrist} = <strong>${peff} %</strong>`
+                ]
+            };
+        }
+    }
+];
+
+/* ============================================
+   ZUSTAND
+   ============================================ */
+let modus = 'lern';
+let aufgabenQueue = [];
+let aktuelleAufgabe = null;
+let aktuellerIndex = 0;
+let maxAufgaben = 10;
+let scoreRichtig = 0;
+let scoreFalsch = 0;
+let pruefungAntworten = [];
+let beantwortet = false;
+
+/* ============================================
+   INITIALISIERUNG
+   ============================================ */
+function init() {
+    aufgabenQueue = [];
+    aktuellerIndex = 0;
+    scoreRichtig = 0;
+    scoreFalsch = 0;
+    pruefungAntworten = [];
+    beantwortet = false;
+
+    // 10 Aufgaben aus dem Pool erzeugen (gleichmäßig verteilt)
+    for (let i = 0; i < maxAufgaben; i++) {
+        const typ = aufgabenPool[i % aufgabenPool.length];
+        aufgabenQueue.push({ ...typ, ...typ.erstelle() });
+    }
+
+    document.getElementById('pruefungs-auswertung').style.display = 'none';
+    document.getElementById('score-box').style.display = 'flex';
+    document.getElementById('btn-pruefen').style.display = 'block';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = modus === 'lern' ? 'block' : 'none';
+    document.getElementById('formel-box').style.display = modus === 'lern' ? 'block' : 'none';
+
+    aktualisiereScore();
+    zeigeAufgabe();
+}
+
+function zeigeAufgabe() {
+    if (aktuellerIndex >= maxAufgaben) {
+        if (modus === 'pruefung') zeigePruefungsAuswertung();
+        return;
+    }
+
+    aktuelleAufgabe = aufgabenQueue[aktuellerIndex];
+    beantwortet = false;
+
+    document.getElementById('aufgabe-nr').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    document.getElementById('aufgabe-typ').textContent = aktuelleAufgabe.typ;
+    document.getElementById('aufgabe-text').innerHTML = aktuelleAufgabe.text;
+    document.getElementById('formel-text').textContent = aktuelleAufgabe.formel;
+    document.getElementById('einheit').textContent = aktuelleAufgabe.einheit;
+    document.getElementById('antwort-feld').value = '';
+    document.getElementById('antwort-feld').focus();
+
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'block';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = modus === 'lern' ? 'block' : 'none';
+    document.getElementById('formel-box').style.display = modus === 'lern' ? 'block' : 'none';
+
+    aktualisiereProgress();
+}
+
+/* ============================================
+   AUSWERTUNG
+   ============================================ */
+function pruefen() {
+    if (beantwortet) return;
+
+    const eingabe = parseFloat(document.getElementById('antwort-feld').value);
+    if (isNaN(eingabe)) {
+        zeigeInfo('⚠️ Bitte gib eine Zahl ein.');
+        return;
+    }
+
+    const loesung = aktuelleAufgabe.loesung;
+    const toleranz = loesung * 0.005 + 0.02; // 0,5 % Toleranz + 2 Cent Rundung
+    const richtig = Math.abs(eingabe - loesung) <= toleranz;
+
+    beantwortet = true;
+
+    if (richtig) {
+        scoreRichtig++;
+        zeigeFeedback('richtig', `✅ Richtig! ${loesung.toFixed(2)} ${aktuelleAufgabe.einheit}`);
+    } else {
+        scoreFalsch++;
+        zeigeFeedback('falsch', `❌ Leider falsch. Die richtige Antwort lautet: <strong>${loesung.toFixed(2)} ${aktuelleAufgabe.einheit}</strong>`);
+    }
+
+    pruefungAntworten.push({ richtig });
+
+    if (modus === 'lern') zeigeRechenweg();
+
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+
+    if (aktuellerIndex < maxAufgaben - 1) {
+        document.getElementById('btn-naechste').style.display = 'block';
+    } else {
+        if (modus === 'pruefung') {
+            setTimeout(zeigePruefungsAuswertung, 800);
+        } else {
+            document.getElementById('btn-naechste').textContent = '🏁 Auswertung';
+            document.getElementById('btn-naechste').style.display = 'block';
+        }
+    }
+
+    aktualisiereScore();
+}
+
+function naechsteAufgabe() {
+    aktuellerIndex++;
+    if (aktuellerIndex >= maxAufgaben) {
+        if (modus === 'lern') zeigeLernAuswertung();
+        else zeigePruefungsAuswertung();
+        return;
+    }
+    zeigeAufgabe();
+}
+
+/* ============================================
+   TIPP
+   ============================================ */
+function zeigeTipp() {
+    zeigeInfo(`💡 Tipp: Verwende die Formel <strong>${aktuelleAufgabe.formel}</strong> und setze die gegebenen Werte ein.`);
+}
+
+/* ============================================
+   RECHENWEG (nur Lernmodus)
+   ============================================ */
+function zeigeRechenweg() {
+    const box = document.getElementById('rechenweg-box');
+    const inhalt = document.getElementById('rechenweg-inhalt');
+    inhalt.innerHTML = aktuelleAufgabe.rechenweg.map((s, i) =>
+        `<div class="rechenweg-schritt">
+            <div class="schritt-nr">${i + 1}</div>
+            <div>${s}</div>
+        </div>`
+    ).join('') + `<div class="rechenweg-schritt ergebnis-zeile">✔ Lösung: ${aktuelleAufgabe.loesung.toFixed(2)} ${aktuelleAufgabe.einheit}</div>`;
+    box.style.display = 'block';
+}
+
+/* ============================================
+   AUSWERTUNGEN
+   ============================================ */
+function zeigeLernAuswertung() {
+    const auswertung = document.getElementById('pruefungs-auswertung');
+    document.getElementById('aufgabe-nr').textContent = '🏁 Fertig!';
+    document.getElementById('aufgabe-typ').textContent = 'Auswertung';
+    document.getElementById('aufgabe-text').style.display = 'none';
+    document.getElementById('formel-box').style.display = 'none';
+    document.getElementById('eingabe-zeile') && (document.querySelector('.eingabe-zeile').style.display = 'none');
+    document.querySelector('.eingabe-zeile').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('btn-tipp').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+    auswertung.style.display = 'block';
+}
+
+function zeigePruefungsAuswertung() {
+    document.getElementById('pruefungs-auswertung').style.display = 'block';
+    document.querySelector('.eingabe-zeile').style.display = 'none';
+    document.getElementById('btn-pruefen').style.display = 'none';
+    document.getElementById('btn-naechste').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('rechenweg-box').style.display = 'none';
+    document.getElementById('aufgabe-text').style.display = 'none';
+
+    document.getElementById('auswertung-zahl').textContent = `${scoreRichtig}/${maxAufgaben}`;
+    document.getElementById('auswertung-text').textContent = getBewertung();
+}
+
+function getBewertung() {
+    const pct = scoreRichtig / maxAufgaben;
+    if (pct === 1) return '🏆 Perfekt! Du hast alle Aufgaben richtig gelöst!';
+    if (pct >= 0.8) return '🌟 Sehr gut! Du beherrschst die Zinsrechnung sicher.';
+    if (pct >= 0.6) return '👍 Gut! Noch etwas üben, dann klappt es perfekt.';
+    if (pct >= 0.4) return '📚 Weiter üben! Schau dir den Erklär-Guide nochmal an.';
+    return '💪 Nicht aufgeben! Geh die Formeln im Lernmodus Schritt für Schritt durch.';
+}
+
+function neustart() {
+    document.getElementById('aufgabe-text').style.display = 'block';
+    document.querySelector('.eingabe-zeile').style.display = 'flex';
+    init();
+}
+
+/* ============================================
+   HILFSFUNKTIONEN
+   ============================================ */
+function zeigeFeedback(typ, text) {
+    const box = document.getElementById('feedback-box');
+    box.className = `feedback-box ${typ}`;
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+
+function zeigeInfo(text) {
+    const box = document.getElementById('feedback-box');
+    box.className = 'feedback-box info';
+    box.innerHTML = text;
+    box.style.display = 'block';
+}
+
+function aktualisiereScore() {
+    document.getElementById('score-richtig').textContent = scoreRichtig;
+    document.getElementById('score-falsch').textContent = scoreFalsch;
+    document.getElementById('punkte-status').textContent = `⭐ ${scoreRichtig} Punkte`;
+}
+
+function aktualisiereProgress() {
+    document.getElementById('aufgabe-status').textContent = `Aufgabe ${aktuellerIndex + 1} von ${maxAufgaben}`;
+    const pct = (aktuellerIndex / maxAufgaben) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+/* ============================================
+   MODUS WECHSELN
+   ============================================ */
+function setModus(m) {
+    modus = m;
+    document.getElementById('tab-lern').classList.toggle('active', m === 'lern');
+    document.getElementById('tab-pruefung').classList.toggle('active', m === 'pruefung');
+    neustart();
+}
+
+/* ============================================
+   ENTER-TASTE
+   ============================================ */
+document.getElementById('antwort-feld').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        if (!beantwortet) pruefen();
+        else naechsteAufgabe();
+    }
+});
+
+/* ============================================
+   TASCHENRECHNER
+   ============================================ */
+let rExpr = "";
+let rNeu = true;
+
+function rUpdate() {
+    const d = document.getElementById('r-display');
+    d.textContent = rExpr || "0";
+}
+
+function rN(v) {
+    if (rNeu && v !== '.') { rExpr = v; rNeu = false; }
+    else { if (v === '.' && rExpr.includes('.') && !/[÷×+\-]/.test(rExpr.slice(-5))) return; rExpr += v; }
+    rUpdate();
+}
+
+function rOp(op) { rNeu = false; rExpr += op; rUpdate(); }
+
+function rC() { rExpr = ""; rNeu = true; rUpdate(); }
+
+function rEq() {
+    try {
+        const ausdruck = rExpr.replace(/÷/g, '/').replace(/×/g, '*');
+        let ergebnis = eval(ausdruck);
+        if (typeof ergebnis !== 'number' || !isFinite(ergebnis)) throw new Error();
+        ergebnis = Math.round(ergebnis * 10000) / 10000;
+        rExpr = String(ergebnis);
+        rNeu = true;
+        rUpdate();
+    } catch(e) {
+        rExpr = "";
+        document.getElementById('r-display').textContent = "Fehler";
+        rNeu = true;
+    }
+}
+
+/* ============================================
+   LEHRKRAFT-MODUS
+   ============================================ */
+function toggleLehrkraft() {
+    const panel = document.getElementById('lehrkraft-panel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+/* ============================================
+   START
+   ============================================ */
+window.onload = init;
+</script>
 </body>
 </html>
