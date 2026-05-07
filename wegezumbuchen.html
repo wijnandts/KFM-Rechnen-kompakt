@@ -1,206 +1,337 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wege zum Buchen | BFS 2 XXL</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <style>
-        :root { --nrw-blue: #0056b3; --secondary: #5856d6; --success: #28a745; --error: #dc3545; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
-        
-        .app-container { background: white; max-width: 950px; width: 100%; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
-        
-        .header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
-        .btn-round { background: var(--nrw-blue); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        .nav-header { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; padding-right: 120px; }
-        .btn-home { text-decoration: none; color: #555; font-weight: bold; background: #e0e0e0; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; }
-
-        .level-selector { display: flex; gap: 5px; }
-        .level-btn { padding: 8px 12px; border: 2px solid var(--nrw-blue); background: white; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--nrw-blue); font-size: 0.8rem; }
-        .level-btn.active { background: var(--nrw-blue); color: white; }
-        .level-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        h1 { color: var(--nrw-blue); text-align: center; font-size: 1.4rem; text-transform: uppercase; margin: 10px 0; }
-        
-        .task-box { background: #eef2f7; border-left: 5px solid var(--nrw-blue); padding: 20px; margin-bottom: 25px; border-radius: 4px; font-size: 1.1rem; min-height: 80px; display: flex; align-items: center; font-weight: 500; }
-
-        .analysis-grid {
-            display: grid; grid-template-columns: 160px 1fr 1fr; gap: 12px; 
-            background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #ddd;
-        }
-
-        .label-cell { color: var(--nrw-blue); font-weight: bold; font-size: 0.75rem; text-transform: uppercase; align-self: center; }
-        .col-head { text-align: center; font-weight: bold; padding-bottom: 15px; border-bottom: 2px solid #ddd; font-size: 1rem; color: #333; }
-
-        select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem; background: white; font-weight: bold; appearance: none; }
-        select.correct { border-color: var(--success); background-color: #d4edda; }
-        select.incorrect { border-color: var(--error); background-color: #f8d7da; }
-
-        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
-        .btn-check { background-color: var(--nrw-blue); color: white; }
-        .btn-next { background-color: var(--success); color: white; display: none; }
-
-        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin-top: 25px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--nrw-blue); width: 0%; transition: 0.4s; }
-        .status-text { text-align: center; color: #666; font-size: 0.8rem; margin-top: 8px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wege zum Buchen | BFS 2 XXL</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<style>
+:root { --nrw-blue:#0056b3; --secondary:#5856d6; --success:#28a745; --error:#dc3545; --bg:#f4f7f6; }
+body { font-family:'Segoe UI', Tahoma, sans-serif; background-color:var(--bg); margin:0; padding:10px; display:flex; justify-content:center; }
+.app-container { background:white; max-width:950px; width:100%; padding:25px; border-radius:15px; box-shadow:0 8px 24px rgba(0,0,0,0.1); position:relative; box-sizing:border-box; }
+.header-actions { position:absolute; top:15px; right:15px; display:flex; gap:8px; }
+.btn-round { background:var(--nrw-blue); color:white; border:none; width:42px; height:42px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1.2rem; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+.nav-header { border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; padding-right:120px; }
+.btn-home { text-decoration:none; color:#555; font-weight:bold; background:#e0e0e0; padding:8px 15px; border-radius:8px; font-size:.9rem; }
+.level-selector { display:flex; gap:5px; flex-wrap:wrap; }
+.level-btn { padding:8px 12px; border:2px solid var(--nrw-blue); background:white; border-radius:20px; cursor:pointer; font-weight:bold; color:var(--nrw-blue); font-size:.8rem; }
+.level-btn.active { background:var(--nrw-blue); color:white; }
+.level-btn:disabled { opacity:.4; cursor:not-allowed; }
+h1 { color:var(--nrw-blue); text-align:center; font-size:1.4rem; text-transform:uppercase; margin:10px 0; }
+.task-box { background:#eef2f7; border-left:5px solid var(--nrw-blue); padding:20px; margin-bottom:25px; border-radius:4px; font-size:1.1rem; min-height:80px; display:flex; align-items:center; font-weight:500; }
+.analysis-grid { display:grid; grid-template-columns:160px 1fr 1fr; gap:12px; background:#fafafa; padding:15px; border-radius:12px; border:1px solid #ddd; }
+.label-cell { color:var(--nrw-blue); font-weight:bold; font-size:.75rem; text-transform:uppercase; align-self:center; }
+.col-head { text-align:center; font-weight:bold; padding-bottom:15px; border-bottom:2px solid #ddd; font-size:1rem; color:#333; }
+select { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; font-size:.95rem; background:white; font-weight:bold; appearance:auto; }
+select.correct { border-color:var(--success); background-color:#d4edda; }
+select.incorrect { border-color:var(--error); background-color:#f8d7da; }
+.booking-box { margin-top:15px; background:#fafafa; padding:15px; border-radius:12px; border:1px solid #ddd; }
+.booking-title { color:var(--nrw-blue); font-weight:bold; font-size:.8rem; text-transform:uppercase; margin-bottom:8px; }
+.booking-layout { display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; }
+.booking-side-head { font-size:.8rem; font-weight:bold; color:var(--nrw-blue); text-transform:uppercase; margin-bottom:8px; }
+.booking-selects { display:flex; flex-direction:column; gap:10px; }
+.booking-select { width:100%; }
+.booking-sep { font-size:1.35rem; font-weight:800; color:var(--nrw-blue); background:#eef2f7; border-radius:999px; padding:10px 16px; text-transform:lowercase; }
+.booking-box.locked { opacity:.9; }
+.booking-box.locked .booking-sep { opacity:.5; }
+.hint { font-size:.8rem; color:#666; margin-top:8px; }
+.feedback { margin-top:15px; padding:12px; border-radius:10px; display:none; font-weight:bold; text-align:center; }
+.btn-action { width:100%; padding:18px; border:none; border-radius:12px; font-weight:bold; cursor:pointer; font-size:1.1rem; margin-top:15px; }
+.btn-check { background-color:var(--nrw-blue); color:white; }
+.btn-next { background-color:var(--success); color:white; display:none; }
+.progress-bar { height:8px; background:#eee; border-radius:4px; margin-top:25px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--nrw-blue); width:0%; transition:.4s; }
+.status-text { text-align:center; color:#666; font-size:.8rem; margin-top:8px; }
+.nojs { margin:10px 0; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:8px; color:#856404; font-weight:bold; }
+@media (max-width:720px) {
+ .app-container { padding:18px; } .nav-header { padding-right:0; align-items:flex-start; gap:10px; flex-direction:column; } .header-actions { position:static; justify-content:flex-end; margin-bottom:10px; }
+ .analysis-grid { grid-template-columns:1fr 1fr; } .analysis-grid>.label-cell { grid-column:1 / -1; margin-top:8px; } .analysis-grid>div:first-child { display:none; }
+ .booking-layout { grid-template-columns:1fr; } .booking-sep { justify-self:center; }
+}
+</style>
 </head>
 <body>
-
 <div class="app-container">
-    <div class="header-actions">
-        <a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round">✉</a>
-    </div>
-
-    <div class="nav-header">
-        <a href="index-rw.html" class="btn-home">🏠 Übersicht</a>
-        <div class="level-selector">
-            <button id="lvl1" class="level-btn active" onclick="setLevel(1)">Stufe 1</button>
-            <button id="lvl2" class="level-btn" onclick="setLevel(2)" disabled>Stufe 2</button>
-            <button id="lvl3" class="level-btn" onclick="setLevel(3)" disabled>Stufe 3</button>
-        </div>
-    </div>
-
-    <h1>Analyse: Wege zum Buchen</h1>
-    <div class="task-box" id="task-desc">Lade Analyse-Modul...</div>
-
-    <div class="analysis-grid">
-        <div></div><div class="col-head">Konto A</div><div class="col-head">Konto B</div>
-
-        <div class="label-cell">1. Welches Konto?</div>
-        <select id="k1"></select><select id="k2"></select>
-
-        <div class="label-cell">2. Welcher Typ?</div>
-        <select id="k1_ap"></select><select id="k2_ap"></select>
-
-        <div class="label-cell">3. Veränderung?</div>
-        <select id="k1_mm"></select><select id="k2_mm"></select>
-
-        <div class="label-cell">4. Buchungsseite?</div>
-        <select id="k1_sh"></select><select id="k2_sh"></select>
-    </div>
-
-    <button class="btn-action btn-check" id="checkBtn" onclick="check()">Analyse prüfen</button>
-    <button class="btn-action btn-next" id="nextBtn" onclick="next()">Nächster Fall</button>
-    
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-    <div class="status-text" id="status">Fortschritt: 0/30 Aufgaben</div>
+  <div class="header-actions"><a href="mailto:wijnandts@bk-erkelenz.de" class="btn-round">✉</a></div>
+  <div class="nav-header"><a href="index.html" class="btn-home">🏠 Übersicht</a><div class="level-selector"><button id="lvl1" class="level-btn active" onclick="setLevel(1)">Stufe 1</button><button id="lvl2" class="level-btn" onclick="setLevel(2)" disabled>Stufe 2</button><button id="lvl3" class="level-btn" onclick="setLevel(3)" disabled>Stufe 3</button></div></div>
+  <h1>Analyse: Wege zum Buchen</h1>
+  <noscript><div class="nojs">JavaScript ist in dieser Vorschau deaktiviert. Bitte die Datei in Safari/Chrome öffnen, damit Prüfung und neue Fälle funktionieren.</div></noscript>
+  <div class="task-box" id="task-desc">Kauf eines neuen Scanners gegen Barzahlung: 450,00 €,</div>
+  <div class="analysis-grid">
+    <div></div><div class="col-head">Konto A</div><div class="col-head">Konto B</div>
+    <div class="label-cell">1. Welches Konto?</div><select id="k1"><option value="">-- ? --</option><option value="BGA">BGA</option><option value="Bank">Bank</option><option value="Büromaterial">Büromaterial</option><option value="Darlehen">Darlehen</option><option value="Energieaufwand">Energieaufwand</option><option value="Forderungen aLL">Forderungen aLL</option><option value="Fuhrpark">Fuhrpark</option><option value="Instandhaltungsaufwand">Instandhaltungsaufwand</option><option value="Kasse">Kasse</option><option value="Mietaufwand">Mietaufwand</option><option value="Personalaufwand">Personalaufwand</option><option value="Umsatzerlöse">Umsatzerlöse</option><option value="Umsatzsteuer">Umsatzsteuer</option><option value="Verbindlichkeiten aLL">Verbindlichkeiten aLL</option><option value="Vorsteuer">Vorsteuer</option><option value="Warenvorrat">Warenvorrat</option><option value="Werbeaufwand">Werbeaufwand</option><option value="Zinsaufwand">Zinsaufwand</option><option value="Zinserträge">Zinserträge</option></select><select id="k2"><option value="">-- ? --</option><option value="BGA">BGA</option><option value="Bank">Bank</option><option value="Büromaterial">Büromaterial</option><option value="Darlehen">Darlehen</option><option value="Energieaufwand">Energieaufwand</option><option value="Forderungen aLL">Forderungen aLL</option><option value="Fuhrpark">Fuhrpark</option><option value="Instandhaltungsaufwand">Instandhaltungsaufwand</option><option value="Kasse">Kasse</option><option value="Mietaufwand">Mietaufwand</option><option value="Personalaufwand">Personalaufwand</option><option value="Umsatzerlöse">Umsatzerlöse</option><option value="Umsatzsteuer">Umsatzsteuer</option><option value="Verbindlichkeiten aLL">Verbindlichkeiten aLL</option><option value="Vorsteuer">Vorsteuer</option><option value="Warenvorrat">Warenvorrat</option><option value="Werbeaufwand">Werbeaufwand</option><option value="Zinsaufwand">Zinsaufwand</option><option value="Zinserträge">Zinserträge</option></select>
+    <div class="label-cell">2. Welcher Typ?</div><select id="k1_ap"><option value="">-- ? --</option><option value="Aktiv">Aktiv</option><option value="Aufwand">Aufwand</option><option value="Ertrag">Ertrag</option><option value="Passiv">Passiv</option></select><select id="k2_ap"><option value="">-- ? --</option><option value="Aktiv">Aktiv</option><option value="Aufwand">Aufwand</option><option value="Ertrag">Ertrag</option><option value="Passiv">Passiv</option></select>
+    <div class="label-cell">3. Veränderung?</div><select id="k1_mm"><option value="">-- ? --</option><option value="Mehrung (+)">Mehrung (+)</option><option value="Minderung (-)">Minderung (-)</option></select><select id="k2_mm"><option value="">-- ? --</option><option value="Mehrung (+)">Mehrung (+)</option><option value="Minderung (-)">Minderung (-)</option></select>
+    <div class="label-cell">4. Buchungsseite?</div><select id="k1_sh"><option value="">-- ? --</option><option value="Haben">Haben</option><option value="Soll">Soll</option></select><select id="k2_sh"><option value="">-- ? --</option><option value="Haben">Haben</option><option value="Soll">Soll</option></select>
+  </div>
+  <div class="booking-box locked" id="bookingBox"><div class="booking-title">5. Buchungssatz</div><div id="bookingFields"></div><div class="hint" id="bookingHint">Bitte zuerst die Schritte 1 bis 4 für beide Konten ausfüllen. Danach wird der Buchungssatz freigeschaltet.</div></div>
+  <div id="feedback" class="feedback"></div>
+  <button class="btn-action btn-check" id="checkBtn" onclick="check()">Analyse prüfen</button>
+  <button class="btn-action btn-next" id="nextBtn" onclick="next()">Nächster Fall</button>
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div><div class="status-text" id="status">Fortschritt: 0/30 für Level-Up</div>
 </div>
-
 <script>
-    let stats = { solvedL1: 0, solvedL2: 0 };
-    let currentLvl = 1;
-    let currentIdx = 0;
+(function() {
+var DATA = {"pools": {"1": [{"q": "Kauf eines neuen Scanners gegen Barzahlung: 450,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Aktenvernichters gegen Barzahlung: 380,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Verkaufsthekes gegen Barzahlung: 2.600,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Regalsystems gegen Barzahlung: 1.800,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Bürostuhl-Sets per Banküberweisung: 720,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Laptop für Verwaltungs per Banküberweisung: 1.100,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Kassensystems per Banküberweisung: 2.400,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines neuen Schreibtischs per Banküberweisung: 650,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines Lagerregals auf Ziel: 3.500,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Lieferwagens auf Ziel: 22.000,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Firmenfahrrads auf Ziel: 1.250,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Gabelhubwagens auf Ziel: 980,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Transporters auf Ziel: 31.000,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Warenpostens auf Ziel: 4.200,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Sortiments an Handelswaren auf Ziel: 7.600,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Bürocontainers auf Ziel: 9.000,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Ein Kunde überweist: 1.200,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde zahlt bar: 300,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde begleicht per Banküberweisung: 2.450,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde zahlt in die Kasse: 560,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde überweist die offene Rechnung: 3.890,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde zahlt eine Teilforderung bar: 175,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde leistet eine Bankzahlung: 1.420,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Ein Kunde begleicht bar: 890,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Forderungen aLL", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barabhebung vom Bankkonto für die Ladenkasse: 200,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Einzahlung von Bargeld auf das Bankkonto: 750,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Umbuchung vom Bankkonto in die Kasse: 1.000,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Bareinzahlung der Tageskasse auf das Bankkonto: 1.850,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Abhebung für Wechselgeld: 300,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Rückzahlung von Bargeld auf das Geschäftskonto: 640,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Auffüllen der Portokasse vom Bankkonto: 150,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Einzahlung überschüssiger Kassenbestände auf Bank: 980,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Aufnahme eines Bankdarlehens. Gutschrift auf dem Bankkonto: 10.000,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Darlehen", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Aufnahme eines langfristigen Darlehens. Auszahlung auf Bank: 35.000,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Darlehen", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Banküberweisung zur Tilgung eines Darlehens: 5.000,00 €,", "k1": "Darlehen", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Tilgung eines Darlehens per Bank: 12.500,00 €,", "k1": "Darlehen", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Begleichung einer Lieferantenrechnung per Bank: 2.100,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Zahlung an einen Lieferanten in bar: 430,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Überweisung an einen Lieferer zum Ausgleich einer Schuld: 3.650,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung einer kleinen Lieferantenschuld: 95,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Umwandlung einer Lieferantenverbindlichkeit in ein Darlehen: 8.000,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Darlehen", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Ein Lieferant gewährt für offene Rechnungen ein Darlehen: 12.000,00 €,", "k1": "Verbindlichkeiten aLL", "k1_ap": "Passiv", "k1_mm": "Minderung (-)", "k1_sh": "Soll", "k2": "Darlehen", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf von Handelswaren gegen Banküberweisung: 5.300,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barkauf von Handelswaren für das Lager: 780,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines Kopierers gegen Banküberweisung: 3.200,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines gebrauchten PKW gegen Barzahlung: 4.500,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Anschaffung einer Werkbank per Bank: 1.600,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf von Waren gegen Barzahlung: 610,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf von Verpackungsregalen per Bank: 890,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Anschaffung eines Anhängers gegen Banküberweisung: 2.900,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines Warenpostens gegen Banküberweisung: 9.300,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines Tresens gegen Barzahlung: 1.250,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines Lieferrollers per Bank: 3.800,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf von Lagerware gegen Barzahlung: 440,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf eines PCs auf Ziel: 1.350,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Firmenwagens auf Ziel: 18.500,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Warenpakets auf Ziel: 2.400,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf einer Kasse auf Ziel: 2.100,00 €,", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Transportwagens auf Ziel: 6.400,00 €,", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kauf eines Ersatzwarenbestands auf Ziel: 3.700,00 €,", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}], "2": [{"q": "Zahlung der Ladenmiete per Banküberweisung: 1.500,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung der Monatsmiete für einen Lagerraum: 450,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Überweisung der Gehälter an das Personal: 6.000,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Auszahlung von Aushilfslöhnen bar: 320,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barkauf von Büromaterial: 45,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Kauf von Büromaterial per Bankkarte: 180,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Überweisung einer Werbeanzeige: 700,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung für Flyerwerbung: 95,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Zahlung von Stromkosten per Bank: 400,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung kleiner Energiekosten: 60,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Banküberweisung für Reparaturarbeiten: 850,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung für eine Reparatur: 120,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Bankbelastung für Darlehenszinsen: 210,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Barzahlung von Verzugszinsen: 35,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Rechnung für Schaufensterwerbung auf Ziel: 560,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Reparaturrechnung auf Ziel: 980,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Mietrechnung für Lagerfläche auf Ziel: 1.250,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Rechnung für Büromaterial auf Ziel: 230,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Stromrechnung auf Ziel: 610,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Rechnung für Personalvermittlung auf Ziel: 1.400,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsrechnung der Bank wird später bezahlt: 160,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Rechnung für eine Wartung auf Ziel: 720,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Barverkauf von Handelswaren: 350,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Warenverkauf gegen Banküberweisung: 2.200,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Warenverkauf auf Ziel: 3.100,00 €,", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Kunde zahlt für einen Warenverkauf sofort bar: 780,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Bankgutschrift aus Warenverkauf: 1.450,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Warenverkauf mit späterer Zahlung: 4.700,00 €,", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Bankgutschrift für erhaltene Zinsen: 25,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Bar erhaltene Zinsen: 12,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsertrag wird dem Bankkonto gutgeschrieben: 86,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsen werden einem Kunden in Rechnung gestellt: 44,00 €,", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Miete für den Verkaufsraum für Januar wird per Bank gebucht: 100,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Miete für den Verkaufsraum für Februar wird bar gebucht: 145,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Miete für den Verkaufsraum für März wird auf Ziel gebucht: 190,00 €,", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Aushilfslohn für Februar wird per Bank gebucht: 237,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Aushilfslohn für März wird bar gebucht: 282,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Aushilfslohn für April wird auf Ziel gebucht: 327,00 €,", "k1": "Personalaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Büromaterialbedarf für März wird per Bank gebucht: 374,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Büromaterialbedarf für April wird bar gebucht: 419,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Büromaterialbedarf für Mai wird auf Ziel gebucht: 464,00 €,", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Online-Werbung für April wird per Bank gebucht: 511,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Online-Werbung für Mai wird bar gebucht: 556,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Online-Werbung für Juni wird auf Ziel gebucht: 601,00 €,", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Gas- und Stromkosten für Mai wird per Bank gebucht: 648,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Gas- und Stromkosten für Juni wird bar gebucht: 693,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Gas- und Stromkosten für Juli wird auf Ziel gebucht: 738,00 €,", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Wartung der Ladentür für Juni wird per Bank gebucht: 785,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Wartung der Ladentür für Juli wird bar gebucht: 830,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Wartung der Ladentür für August wird auf Ziel gebucht: 875,00 €,", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Darlehenszinsen für Juli wird per Bank gebucht: 922,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Darlehenszinsen für August wird bar gebucht: 967,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben"}, {"q": "Darlehenszinsen für September wird auf Ziel gebucht: 1.012,00 €,", "k1": "Zinsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Erlös aus Warenverkauf wird über Bank erfasst: 500,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsertrag wird über Kasse erfasst: 617,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Erlös aus Warenverkauf wird über Forderungen aLL erfasst: 734,00 €,", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsertrag wird über Bank erfasst: 851,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Erlös aus Warenverkauf wird über Kasse erfasst: 968,00 €,", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Zinsertrag wird über Forderungen aLL erfasst: 1.085,00 €,", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Zinserträge", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}, {"q": "Erlös aus Warenverkauf wird über Bank erfasst: 1.202,00 €,", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben"}], "3": [{"q": "Wareneinkauf auf Ziel: 1.000,00 € netto + 190,00 € Vorsteuer.", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Warenvorrat + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Wareneinkauf per Banküberweisung: 297,50 € brutto (inkl. 19% Vorsteuer).", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Warenvorrat + Vorsteuer an Bank"}, {"q": "Wareneinkauf bar: 714,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Warenvorrat + Vorsteuer an Kasse"}, {"q": "Büromaterialeinkauf auf Ziel: 850,00 € netto + 161,50 € Vorsteuer.", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Büromaterial + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Büromaterialeinkauf per Banküberweisung: 476,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Büromaterial + Vorsteuer an Bank"}, {"q": "Büromaterialeinkauf bar: 1.428,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Büromaterial + Vorsteuer an Kasse"}, {"q": "Reparaturrechnung auf Ziel: 3.200,00 € netto + 608,00 € Vorsteuer.", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Instandhaltungsaufwand + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Reparaturrechnung per Banküberweisung: 892,50 € brutto (inkl. 19% Vorsteuer).", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Instandhaltungsaufwand + Vorsteuer an Bank"}, {"q": "Reparaturrechnung bar: 2.142,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Instandhaltungsaufwand + Vorsteuer an Kasse"}, {"q": "Werberechnung auf Ziel: 95,00 € netto + 18,05 € Vorsteuer.", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Werbeaufwand + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Werberechnung per Banküberweisung: 2.737,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Werbeaufwand + Vorsteuer an Bank"}, {"q": "Werberechnung bar: 666,40 € brutto (inkl. 19% Vorsteuer).", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Werbeaufwand + Vorsteuer an Kasse"}, {"q": "Stromrechnung auf Ziel: 1.450,00 € netto + 275,50 € Vorsteuer.", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Energieaufwand + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Stromrechnung per Banküberweisung: 368,90 € brutto (inkl. 19% Vorsteuer).", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Energieaufwand + Vorsteuer an Bank"}, {"q": "Stromrechnung bar: 3.213,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Energieaufwand + Vorsteuer an Kasse"}, {"q": "Kauf eines Scanners auf Ziel: 690,00 € netto + 131,10 € Vorsteuer.", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "BGA + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Kauf eines Scanners per Banküberweisung: 4.641,00 € brutto (inkl. 19% Vorsteuer).", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "BGA + Vorsteuer an Bank"}, {"q": "Kauf eines Scanners bar: 148,75 € brutto (inkl. 19% Vorsteuer).", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "BGA + Vorsteuer an Kasse"}, {"q": "Kauf eines Lieferrollers auf Ziel: 1.600,00 € netto + 304,00 € Vorsteuer.", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Fuhrpark + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Kauf eines Lieferrollers per Banküberweisung: 571,20 € brutto (inkl. 19% Vorsteuer).", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Fuhrpark + Vorsteuer an Bank"}, {"q": "Kauf eines Lieferrollers bar: 2.499,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Fuhrpark + Vorsteuer an Kasse"}, {"q": "Mietnebenkostenrechnung auf Ziel: 530,00 € netto + 100,70 € Vorsteuer.", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Mietaufwand + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Mietnebenkostenrechnung per Banküberweisung: 1.047,20 € brutto (inkl. 19% Vorsteuer).", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Mietaufwand + Vorsteuer an Bank"}, {"q": "Mietnebenkostenrechnung bar: 404,60 € brutto (inkl. 19% Vorsteuer).", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Mietaufwand + Vorsteuer an Kasse"}, {"q": "Warenverkauf bar: 1.130,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf bar: 2.082,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf bar: 1.428,00 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf per Banküberweisung: 595,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf per Banküberweisung: 2.975,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf per Banküberweisung: 928,20 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf auf Ziel: 3.808,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf auf Ziel: 5.117,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Warenverkauf auf Ziel: 7.259,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren bar: 1.130,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren bar: 2.082,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren bar: 1.428,00 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren per Banküberweisung: 595,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren per Banküberweisung: 2.975,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren per Banküberweisung: 928,20 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren auf Ziel: 3.808,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren auf Ziel: 5.117,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf von Handelswaren auf Ziel: 7.259,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment bar: 1.130,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment bar: 2.082,50 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment bar: 1.428,00 € brutto (inkl. 19% USt).", "k1": "Kasse", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Kasse an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment per Banküberweisung: 595,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment per Banküberweisung: 2.975,00 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment per Banküberweisung: 928,20 € brutto (inkl. 19% USt).", "k1": "Bank", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Bank an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment auf Ziel: 3.808,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment auf Ziel: 5.117,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Verkauf aus dem Sortiment auf Ziel: 7.259,00 € brutto (inkl. 19% USt).", "k1": "Forderungen aLL", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Umsatzerlöse", "k2_ap": "Ertrag", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Forderungen aLL an Umsatzerlöse + Umsatzsteuer"}, {"q": "Druckerpapier per Bank: 357,00 € brutto (inkl. 19% Vorsteuer).", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Büromaterial + Vorsteuer an Bank"}, {"q": "Social-Media-Anzeige bar: 443,87 € brutto (inkl. 19% Vorsteuer).", "k1": "Werbeaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Werbeaufwand + Vorsteuer an Kasse"}, {"q": "Wartung der Eingangstür auf Ziel: 530,74 € brutto (inkl. 19% Vorsteuer).", "k1": "Instandhaltungsaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Instandhaltungsaufwand + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Stromabschlag per Bank: 617,61 € brutto (inkl. 19% Vorsteuer).", "k1": "Energieaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Energieaufwand + Vorsteuer an Bank"}, {"q": "Tablet für Verkauf bar: 704,48 € brutto (inkl. 19% Vorsteuer).", "k1": "BGA", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "BGA + Vorsteuer an Kasse"}, {"q": "E-Bike für Lieferdienst auf Ziel: 791,35 € brutto (inkl. 19% Vorsteuer).", "k1": "Fuhrpark", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Fuhrpark + Vorsteuer an Verbindlichkeiten aLL"}, {"q": "Sonderposten Waren per Bank: 878,22 € brutto (inkl. 19% Vorsteuer).", "k1": "Warenvorrat", "k1_ap": "Aktiv", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Bank", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Warenvorrat + Vorsteuer an Bank"}, {"q": "Lagerraummiete bar: 965,09 € brutto (inkl. 19% Vorsteuer).", "k1": "Mietaufwand", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Kasse", "k2_ap": "Aktiv", "k2_mm": "Minderung (-)", "k2_sh": "Haben", "bs": "Mietaufwand + Vorsteuer an Kasse"}, {"q": "Druckerpapier auf Ziel: 1.051,96 € brutto (inkl. 19% Vorsteuer).", "k1": "Büromaterial", "k1_ap": "Aufwand", "k1_mm": "Mehrung (+)", "k1_sh": "Soll", "k2": "Verbindlichkeiten aLL", "k2_ap": "Passiv", "k2_mm": "Mehrung (+)", "k2_sh": "Haben", "bs": "Büromaterial + Vorsteuer an Verbindlichkeiten aLL"}]}, "opt": {"konten": ["BGA", "Bank", "Kasse", "Forderungen aLL", "Fuhrpark", "Verbindlichkeiten aLL", "Darlehen", "Warenvorrat", "Umsatzerlöse", "Mietaufwand", "Personalaufwand", "Vorsteuer", "Umsatzsteuer", "Werbeaufwand", "Büromaterial", "Zinsaufwand", "Zinserträge", "Instandhaltungsaufwand", "Energieaufwand"], "typen": ["Aktiv", "Passiv", "Aufwand", "Ertrag"], "buchung": ["Mehrung (+)", "Minderung (-)"], "sh": ["Soll", "Haben"]}};
+var pools = DATA.pools;
+var opt = DATA.opt;
+var stats = { solvedL1:0, solvedL2:0 };
+var currentLvl = 1;
+var currentIdx = 0;
+var initialized = false;
+var taskQueues = {};
+var recentBookingSentences = { '1':[], '2':[], '3':[] };
 
-    const opt = {
-        konten: ["BGA", "Bank", "Kasse", "Forderungen aLL", "Fuhrpark", "Verbindlichkeiten aLL", "Darlehen", "Warenvorrat", "Umsatzerlöse", "Mietaufwand", "Personalaufwand", "Vorsteuer", "Umsatzsteuer", "Werbeaufwand", "Büromaterial", "Zinsaufwand", "Zinserträge", "Instandhaltungsaufwand", "Energieaufwand"],
-        typen: ["Aktiv", "Passiv", "Aufwand", "Ertrag"],
-        buchung: ["Mehrung (+)", "Minderung (-)"],
-        sh: ["Soll", "Haben"]
-    };
+function byId(id) { return document.getElementById(id); }
+function getTask() {
+  var lvl = String(currentLvl);
+  if(!taskQueues[lvl] || taskQueues[lvl].length === 0) buildLevelQueue(currentLvl, null);
+  return taskQueues[lvl][currentIdx % taskQueues[lvl].length];
+}
+function getBookingSentence(task) {
+  if(task.bs) return task.bs;
+  return task.k1_sh === 'Soll' ? task.k1 + ' an ' + task.k2 : task.k2 + ' an ' + task.k1;
+}
+function shuffleCopy(arr) {
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function buildLevelQueue(level, avoidFirstSentence) {
+  var lvl = String(level);
+  var remaining = shuffleCopy(pools[lvl] || []);
+  var queue = [];
+  var recent = avoidFirstSentence ? [avoidFirstSentence] : [];
+  var windowSize = 5;
 
-    const pools = {
-        1: [
-            {q: "Barkauf eines neuen Scanners für 450,00 €.", k1: "BGA", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Ein Kunde überweist 1.200,00 € auf unser Bankkonto.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Forderungen aLL", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Kauf von Verkaufsregalen auf Ziel: 4.500,00 €.", k1: "BGA", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Wir überweisen 3.000,00 € vom Bankkonto an die Kasse.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Aufnahme eines Bankdarlehens: Gutschrift 10.000,00 €.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Darlehen", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Wir begleichen eine Lieferantenrechnung per Bank: 2.100,00 €.", k1: "Verbindlichkeiten aLL", k1_ap: "Passiv", k1_mm: "Minderung (-)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Kauf eines Lieferwagens auf Ziel: 25.000,00 €.", k1: "Fuhrpark", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Barabhebung vom Bankkonto für die Portokasse: 200,00 €.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
-        ],
-        2: [
-            {q: "Zahlung der Ladenmiete per Banküberweisung: 1.500,00 €.", k1: "Mietaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Barverkauf von Handelswaren: 350,00 €.", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Umsatzerlöse", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Überweisung der Gehälter an das Personal: 6.000,00 €.", k1: "Personalaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Barkauf von Büromaterial: 45,00 €.", k1: "Büromaterial", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"},
-            {q: "Bankgutschrift für erhaltene Zinsen: 25,00 €.", k1: "Bank", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Zinserträge", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Wir bezahlen Stromkosten per Banküberweisung: 400,00 €.", k1: "Energieaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Bank", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
-        ],
-        3: [
-            {q: "Wareneinkauf auf Ziel: 1.000 € netto + 190 € Vorsteuer.", k1: "Warenvorrat", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Verbindlichkeiten aLL", k2_ap: "Passiv", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Warenverkauf bar: 1.190 € brutto (inkl. 19% USt).", k1: "Kasse", k1_ap: "Aktiv", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Umsatzerlöse", k2_ap: "Ertrag", k2_mm: "Mehrung (+)", k2_sh: "Haben"},
-            {q: "Zahlung einer Reparaturrechnung bar: 119 € (inkl. USt).", k1: "Instandhaltungsaufwand", k1_ap: "Aufwand", k1_mm: "Mehrung (+)", k1_sh: "Soll", k2: "Kasse", k2_ap: "Aktiv", k2_mm: "Minderung (-)", k2_sh: "Haben"}
-        ]
-    };
-
-    // Auto-Maximierung
-    for(let i=1; i<=3; i++) {
-        let baseLen = pools[i].length;
-        while(pools[i].length < 60) {
-            let original = pools[i][pools[i].length % baseLen];
-            pools[i].push({...original, q: original.q + " [Variante]"});
-        }
+  while(remaining.length > 0) {
+    var chosenIndex = -1;
+    for(var i=0;i<remaining.length;i++) {
+      if(recent.indexOf(getBookingSentence(remaining[i])) === -1) { chosenIndex = i; break; }
     }
-
-    function init() {
-        const fill = (ids, list) => ids.forEach(id => {
-            const el = document.getElementById(id);
-            el.innerHTML = '<option value="">-- ? --</option>' + list.sort().map(o => `<option value="${o}">${o}</option>`).join('');
-        });
-        fill(['k1', 'k2'], opt.konten);
-        fill(['k1_ap', 'k2_ap'], opt.typen);
-        fill(['k1_mm', 'k2_mm'], opt.buchung);
-        fill(['k1_sh', 'k2_sh'], opt.sh);
-        render();
+    if(chosenIndex === -1) {
+      var last = recent.length ? recent[recent.length - 1] : null;
+      for(var j=0;j<remaining.length;j++) {
+        if(getBookingSentence(remaining[j]) !== last) { chosenIndex = j; break; }
+      }
     }
+    if(chosenIndex === -1) chosenIndex = 0;
 
-    function setLevel(l) {
-        currentLvl = l; currentIdx = 0;
-        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('lvl' + l).classList.add('active');
-        render();
+    var task = remaining.splice(chosenIndex, 1)[0];
+    queue.push(task);
+    recent.push(getBookingSentence(task));
+    if(recent.length > windowSize) recent.shift();
+  }
+  taskQueues[lvl] = queue;
+}
+function rememberCurrentBooking() {
+  var lvl = String(currentLvl);
+  var arr = recentBookingSentences[lvl] || [];
+  arr.push(getBookingSentence(getTask()));
+  while(arr.length > 5) arr.shift();
+  recentBookingSentences[lvl] = arr;
+}
+function parseBookingSentence(sentence) {
+  var parts = sentence.split(' an ');
+  return {
+    soll: parts[0] ? parts[0].split(' + ') : [],
+    haben: parts[1] ? parts[1].split(' + ') : []
+  };
+}
+function setOptions(ids, list, placeholder) {
+  var sorted = list.slice().sort();
+  var html = '<option value="">' + placeholder + '</option>';
+  for(var i=0;i<sorted.length;i++) html += '<option value="' + escapeHtml(sorted[i]) + '">' + escapeHtml(sorted[i]) + '</option>';
+  for(var j=0;j<ids.length;j++) if(byId(ids[j])) byId(ids[j]).innerHTML = html;
+}
+function getSelectOptionsHtml(list, placeholder) {
+  var sorted = list.slice().sort();
+  var html = '<option value="">' + placeholder + '</option>';
+  for(var i=0;i<sorted.length;i++) html += '<option value="' + escapeHtml(sorted[i]) + '">' + escapeHtml(sorted[i]) + '</option>';
+  return html;
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function getAnalysisIds() {
+  return ['k1','k2','k1_ap','k2_ap','k1_mm','k2_mm','k1_sh','k2_sh'];
+}
+function attachAnalysisListeners() {
+  var ids = getAnalysisIds();
+  for(var i=0;i<ids.length;i++) {
+    if(byId(ids[i])) byId(ids[i]).addEventListener('change', updateBookingUnlock);
+  }
+}
+function renderBookingFields() {
+  var sentence = getBookingSentence(getTask());
+  var parsed = parseBookingSentence(sentence);
+  var html = '<div class="booking-layout">';
+  html += '<div class="booking-side"><div class="booking-side-head">Soll</div><div class="booking-selects">';
+  for(var i=0;i<parsed.soll.length;i++) {
+    html += '<select class="booking-select" id="bs-s-' + i + '">' + getSelectOptionsHtml(opt.konten, '-- Sollkonto wählen --') + '</select>';
+  }
+  html += '</div></div>';
+  html += '<div class="booking-sep">an</div>';
+  html += '<div class="booking-side"><div class="booking-side-head">Haben</div><div class="booking-selects">';
+  for(var j=0;j<parsed.haben.length;j++) {
+    html += '<select class="booking-select" id="bs-h-' + j + '">' + getSelectOptionsHtml(opt.konten, '-- Habenkonto wählen --') + '</select>';
+  }
+  html += '</div></div></div>';
+  byId('bookingFields').innerHTML = html;
+}
+function updateBookingUnlock() {
+  var ids = getAnalysisIds();
+  var ready = true;
+  for(var i=0;i<ids.length;i++) {
+    if(!byId(ids[i]).value) { ready = false; break; }
+  }
+  var box = byId('bookingBox');
+  var hint = byId('bookingHint');
+  var sels = byId('bookingFields').querySelectorAll('select');
+  box.className = ready ? 'booking-box' : 'booking-box locked';
+  for(var j=0;j<sels.length;j++) {
+    sels[j].disabled = !ready;
+    if(!ready) {
+      sels[j].value = '';
+      sels[j].className = 'booking-select';
     }
-
-    function render() {
-        const task = pools[currentLvl][currentIdx % 60];
-        document.getElementById('task-desc').innerText = task.q;
-        document.querySelectorAll('select').forEach(s => { s.value = ""; s.className = ""; });
-        document.getElementById('checkBtn').style.display = "block";
-        document.getElementById('nextBtn').style.display = "none";
-        updateProgress();
+  }
+  hint.innerHTML = ready
+    ? 'Hier gilt die Reihenfolge streng: <b>Soll an Haben</b>. Innerhalb von Soll bzw. Haben ist die Reihenfolge egal.'
+    : 'Bitte zuerst die Schritte 1 bis 4 für beide Konten ausfüllen. Danach wird der Buchungssatz freigeschaltet.';
+}
+function getBookingEntries(prefix) {
+  var nodeList = byId('bookingFields').querySelectorAll('select[id^="' + prefix + '"]');
+  var arr = [];
+  for(var i=0;i<nodeList.length;i++) arr.push(nodeList[i].value);
+  return arr;
+}
+function compareSelections(user, solution) {
+  if(user.length !== solution.length) return false;
+  var rest = solution.slice();
+  for(var i=0;i<user.length;i++) {
+    if(!user[i]) return false;
+    var idx = rest.indexOf(user[i]);
+    if(idx === -1) return false;
+    rest.splice(idx, 1);
+  }
+  return rest.length === 0;
+}
+function markBooking(prefix, ok) {
+  var nodeList = byId('bookingFields').querySelectorAll('select[id^="' + prefix + '"]');
+  for(var i=0;i<nodeList.length;i++) nodeList[i].className = 'booking-select ' + (ok ? 'correct' : 'incorrect');
+}
+function init() {
+  if(initialized) return;
+  initialized = true;
+  setOptions(['k1','k2'], opt.konten, '-- ? --');
+  setOptions(['k1_ap','k2_ap'], opt.typen, '-- ? --');
+  setOptions(['k1_mm','k2_mm'], opt.buchung, '-- ? --');
+  setOptions(['k1_sh','k2_sh'], opt.sh, '-- ? --');
+  attachAnalysisListeners();
+  buildLevelQueue(currentLvl, null);
+  render();
+}
+window.setLevel = function(l) {
+  var oldTask = taskQueues[String(currentLvl)] ? getTask() : null;
+  var avoid = oldTask ? getBookingSentence(oldTask) : null;
+  currentLvl = l; currentIdx = 0;
+  buildLevelQueue(currentLvl, avoid);
+  var buttons = document.querySelectorAll('.level-btn');
+  for(var i=0;i<buttons.length;i++) buttons[i].className = buttons[i].className.replace(/\s*active/g, '');
+  byId('lvl' + l).className += ' active';
+  render();
+};
+function clearClasses() {
+  var sels = document.querySelectorAll('select');
+  for(var i=0;i<sels.length;i++) { sels[i].value = ''; sels[i].className = ''; }
+}
+function render() {
+  var task = getTask();
+  byId('task-desc').innerText = task.q;
+  clearClasses();
+  renderBookingFields();
+  updateBookingUnlock();
+  byId('feedback').style.display = 'none';
+  byId('checkBtn').style.display = 'block';
+  byId('nextBtn').style.display = 'none';
+  updateProgress();
+}
+function makeBundle(prefix) {
+  return { k:byId(prefix).value, ap:byId(prefix + '_ap').value, mm:byId(prefix + '_mm').value, sh:byId(prefix + '_sh').value };
+}
+function sameBundle(a,b) { return a.k===b.k && a.ap===b.ap && a.mm===b.mm && a.sh===b.sh; }
+function markColumn(prefix, ok) {
+  var ids = [prefix, prefix+'_ap', prefix+'_mm', prefix+'_sh'];
+  for(var i=0;i<ids.length;i++) byId(ids[i]).className = ok ? 'correct' : 'incorrect';
+}
+window.check = function() {
+  var task = getTask();
+  var remaining = [{k:task.k1, ap:task.k1_ap, mm:task.k1_mm, sh:task.k1_sh}, {k:task.k2, ap:task.k2_ap, mm:task.k2_mm, sh:task.k2_sh}];
+  var user = [makeBundle('k1'), makeBundle('k2')];
+  var colOk = [false, false];
+  for(var i=0;i<user.length;i++) {
+    for(var r=0;r<remaining.length;r++) {
+      if(sameBundle(user[i], remaining[r])) { colOk[i]=true; remaining.splice(r,1); break; }
     }
+  }
+  markColumn('k1', colOk[0]); markColumn('k2', colOk[1]);
 
-    function check() {
-        const task = pools[currentLvl][currentIdx % 60];
-        const fields = ['k1', 'k2', 'k1_ap', 'k2_ap', 'k1_mm', 'k2_mm', 'k1_sh', 'k2_sh'];
-        let correct = true;
+  var parsed = parseBookingSentence(getBookingSentence(task));
+  var bsSollOk = compareSelections(getBookingEntries('bs-s-'), parsed.soll);
+  var bsHabenOk = compareSelections(getBookingEntries('bs-h-'), parsed.haben);
+  markBooking('bs-s-', bsSollOk);
+  markBooking('bs-h-', bsHabenOk);
 
-        fields.forEach(f => {
-            const el = document.getElementById(f);
-            if(el.value === task[f]) el.className = "correct";
-            else { el.className = "incorrect"; correct = false; }
-        });
-
-        if(correct) {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            if(currentLvl === 1) stats.solvedL1++;
-            if(currentLvl === 2) stats.solvedL2++;
-            document.getElementById('checkBtn').style.display = "none";
-            document.getElementById('nextBtn').style.display = "block";
-            checkLocks();
-        }
-    }
-
-    function checkLocks() {
-        if(stats.solvedL1 >= 30) document.getElementById('lvl2').disabled = false;
-        if(stats.solvedL2 >= 20) document.getElementById('lvl3').disabled = false;
-    }
-
-    function next() { currentIdx++; render(); }
-
-    function updateProgress() {
-        const target = currentLvl === 1 ? 30 : 20;
-        const current = currentLvl === 1 ? stats.solvedL1 : stats.solvedL2;
-        const p = Math.min((current / target) * 100, 100);
-        document.getElementById('progress').style.width = p + "%";
-        document.getElementById('status').innerText = currentLvl < 3 ? `Fortschritt: ${current}/${target} für Level-Up` : "Profi-Modus aktiv";
-    }
-
-    window.onload = init;
+  var ok = colOk[0] && colOk[1] && bsSollOk && bsHabenOk;
+  var fb = byId('feedback');
+  fb.style.display = 'block';
+  if(ok) {
+    fb.innerHTML = '✅ Richtig! Die Reihenfolge von Konto A/B war egal. Der Buchungssatz ist korrekt mit getrennter Erfassung in <b>Soll an Haben</b>.';
+    fb.style.backgroundColor = '#d4edda'; fb.style.color = '#155724';
+    if(typeof window.confetti === 'function') window.confetti({ particleCount:100, spread:70, origin:{ y:0.6 } });
+    if(currentLvl===1) stats.solvedL1++;
+    if(currentLvl===2) stats.solvedL2++;
+    byId('checkBtn').style.display = 'none'; byId('nextBtn').style.display = 'block';
+    checkLocks(); updateProgress();
+  } else {
+    fb.innerHTML = '❌ Noch nicht korrekt. Prüfe, ob die vier Schritte pro Konto zusammenpassen und ob der Buchungssatz korrekt in getrennten Feldern als <b>Soll an Haben</b> eingetragen wurde.';
+    fb.style.backgroundColor = '#f8d7da'; fb.style.color = '#721c24';
+  }
+};
+function checkLocks() {
+  if(stats.solvedL1 >= 30) byId('lvl2').disabled = false;
+  if(stats.solvedL2 >= 20) byId('lvl3').disabled = false;
+}
+window.next = function() {
+  var currentSentence = getBookingSentence(getTask());
+  rememberCurrentBooking();
+  currentIdx++;
+  var lvl = String(currentLvl);
+  if(taskQueues[lvl] && currentIdx >= taskQueues[lvl].length) {
+    buildLevelQueue(currentLvl, currentSentence);
+    currentIdx = 0;
+  }
+  var guard = 0;
+  while(taskQueues[lvl].length > 1 && getBookingSentence(getTask()) === currentSentence && guard < taskQueues[lvl].length) {
+    currentIdx = (currentIdx + 1) % taskQueues[lvl].length;
+    guard++;
+  }
+  render();
+};
+function updateProgress() {
+  var target = currentLvl === 1 ? 30 : 20;
+  var current = currentLvl === 1 ? stats.solvedL1 : stats.solvedL2;
+  byId('progress').style.width = Math.min((current / target) * 100, 100) + '%';
+  byId('status').innerText = currentLvl < 3 ? 'Fortschritt: ' + current + '/' + target + ' für Level-Up' : 'Profi-Modus aktiv';
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+setTimeout(init, 0);
+})();
 </script>
 </body>
 </html>
