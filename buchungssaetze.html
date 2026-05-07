@@ -85,7 +85,7 @@
     </div>
 
     <div class="nav-header">
-        <a href="index-rw.html" class="btn-home">🏠 Übersicht</a>
+        <a href="index.html" class="btn-home">🏠 Übersicht</a>
     </div>
 
     <h1 id="dynamicTitle">Accounting Trainer Pro</h1>
@@ -105,7 +105,7 @@
 
         <button class="menu-btn pro" id="btn-pro" onclick="startGame('pro')" disabled>
             3. Profi 🔒
-            <span class="lock-info" id="info-pro">Sperre: 20 Mittel-Fragen</span>
+            <span class="lock-info" id="info-pro">Sperre: 20 Fortgeschrittenen-Fragen</span>
         </button>
         <span class="desc">Erfolgskonten mit MwSt.</span>
         
@@ -150,45 +150,1273 @@
     const kontenListe = ["-- bitte wählen --", ...[...new Set(kontenListeUnsortiert)].sort()];
 
     const poolLight = [
-        { t: "Barabhebung vom Bankkonto für die Ladenkasse.", s1: "Kasse", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Einzahlung von Bargeld aus der Kasse auf das Bankkonto.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Ein Kunde begleicht eine offene Rechnung per Banküberweisung.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Forderungen a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Wir begleichen eine Lieferantenrechnung per Banküberweisung.", s1: "Verbindlichkeiten a. L. L.", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Kauf von Ladentisch und Regalen auf Ziel.", s1: "BGA", s2: "- kein zweites Konto -", h1: "Verbindlichkeiten a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Anschaffung eines neuen Lieferwagens gegen Überweisung.", s1: "Fuhrpark", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Kauf von Handelswaren auf Ziel (Bestandserhöhung).", s1: "Waren (Vorrat)", s2: "- kein zweites Konto -", h1: "Verbindlichkeiten a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Aufnahme eines langfristigen Bankdarlehens, Gutschrift.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Darlehen", h2: "- kein zweites Konto -" },
-        { t: "Tilgung einer Darlehensrate durch Banküberweisung.", s1: "Darlehen", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Kauf eines gebrauchten PCs gegen Barzahlung.", s1: "BGA", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Einzahlung auf das Sparkonto der Bank vom Barbestand.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Kunde zahlt Rechnung bar in die Kasse ein.", s1: "Kasse", s2: "- kein zweites Konto -", h1: "Forderungen a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Wir kaufen einen Aktenvernichter gegen Rechnung.", s1: "BGA", s2: "- kein zweites Konto -", h1: "Verbindlichkeiten a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Barkauf von Briefmarken für die Portokasse.", s1: "Kasse", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Anschaffung eines Fahrrads für den Botendienst bar.", s1: "Fuhrpark", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Umwandlung einer Lieferantenrechnung in ein Darlehen.", s1: "Verbindlichkeiten a. L. L.", s2: "- kein zweites Konto -", h1: "Darlehen", h2: "- kein zweites Konto -" },
-        { t: "Wir kaufen neue Lagerregale per Banküberweisung.", s1: "BGA", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Bareinzahlung von Tageseinnahmen auf das Geschäftskonto.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" }
-    ];
+        {
+                "t": "Barabhebung vom Bankkonto für die Ladenkasse.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Bareinzahlung aus der Ladenkasse auf das Bankkonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Einzahlung der Tageseinnahmen aus der Kasse auf das Geschäftskonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Abhebung vom Bankkonto für Wechselgeld.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Bargeld wird aus der Kasse auf das Bankkonto eingezahlt.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Auszahlung vom Bankkonto für die Portokasse.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Müller begleicht eine offene Rechnung per Banküberweisung.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Schmitz begleicht eine offene Rechnung bar in die Kasse.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Yilmaz begleicht eine offene Rechnung per Überweisung.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Becker begleicht eine offene Rechnung bar.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Hoffmann begleicht eine offene Rechnung auf unser Bankkonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Kaya begleicht eine offene Rechnung in bar.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Neumann begleicht eine offene Rechnung per Onlineüberweisung.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kunde Wagner begleicht eine offene Rechnung an der Kasse.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Forderungen a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung von Lieferant A per Banküberweisung.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung von Lieferant B bar.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung des Großhändlers per Banküberweisung.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung der Werkstatt bar aus der Kasse.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung des Möbellieferanten durch Überweisung.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung der Spedition per Banküberweisung.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung des EDV-Händlers bar.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wir begleichen die Rechnung des Regalherstellers per Banküberweisung.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Ladentisches auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Ladentisches per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Ladentisches gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf neuer Regale auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf neuer Regale per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf neuer Regale gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Scanners auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Scanners per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Scanners gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Laptops auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Laptops per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Laptops gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Kopierers auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Kopierers per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Kopierers gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Aktenvernichters auf Ziel.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Aktenvernichters per Banküberweisung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Aktenvernichters gegen Barzahlung.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Lieferwagens auf Ziel.",
+                "s1": "Fuhrpark",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Lieferwagens per Banküberweisung.",
+                "s1": "Fuhrpark",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Lieferwagens gegen Barzahlung.",
+                "s1": "Fuhrpark",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Handelswaren auf Ziel (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Handelswaren per Banküberweisung (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Handelswaren bar (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf neuer Waren für das Lager auf Ziel (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Saisonware per Banküberweisung (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barkauf von Restposten für den Verkauf (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Ersatzware für den Vorrat auf Ziel (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Warenbestand durch Banküberweisung (Bestandserhöhung).",
+                "s1": "Waren (Vorrat)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Aufnahme eines langfristigen Bankdarlehens, Gutschrift auf dem Bankkonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Darlehen",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Aufnahme eines Darlehens; der Betrag wird dem Bankkonto gutgeschrieben.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Darlehen",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Tilgung einer Darlehensrate durch Banküberweisung.",
+                "s1": "Darlehen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Tilgung eines Darlehens in bar.",
+                "s1": "Darlehen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Umwandlung einer Lieferantenrechnung in ein Darlehen.",
+                "s1": "Verbindlichkeiten a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Darlehen",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Ein Gesellschafter zahlt Eigenkapital auf das Bankkonto ein.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Eigenkapital",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Einlage des Inhabers in die Kasse.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Eigenkapital",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Privateinlage eines Lieferwagens in das Unternehmen.",
+                "s1": "Fuhrpark",
+                "s2": "- kein zweites Konto -",
+                "h1": "Eigenkapital",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Privateinlage eines Computers in das Unternehmen.",
+                "s1": "BGA",
+                "s2": "- kein zweites Konto -",
+                "h1": "Eigenkapital",
+                "h2": "- kein zweites Konto -"
+        }
+];
 
     const poolMedium = [
-        { t: "Zahlung der monatlichen Ladenmiete per Banküberweisung.", s1: "Mietaufwendungen", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Verkauf von Handelswaren gegen Barzahlung.", s1: "Kasse", s2: "- kein zweites Konto -", h1: "Umsatzerlöse für Waren", h2: "- kein zweites Konto -" },
-        { t: "Überweisung der Gehälter für diesen Monat per Bank.", s1: "Personalaufwand", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Bankgutschrift für erhaltene Zinserträge.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Zinserträge", h2: "- kein zweites Konto -" },
-        { t: "Gutschrift der Bank für erhaltene Provisionen.", s1: "Bank", s2: "- kein zweites Konto -", h1: "Provisionserträge", h2: "- kein zweites Konto -" },
-        { t: "Zahlung der Gasrechnung für die Heizung per Banküberweisung.", s1: "Aufwendungen für Energie", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Zahlung von Stromkosten für den Laden per Bank.", s1: "Aufwendungen für Energie", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" },
-        { t: "Barkauf von Büromaterial für die Verwaltung.", s1: "Büromaterial", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Reinigungskosten für das Treppenhaus werden bar gezahlt.", s1: "Mietaufwendungen", s2: "- kein zweites Konto -", h1: "Kasse", h2: "- kein zweites Konto -" },
-        { t: "Wir bezahlen Radiowerbung per Banküberweisung.", s1: "Werbung", s2: "- kein zweites Konto -", h1: "Bank", h2: "- kein zweites Konto -" }
-    ];
+        {
+                "t": "Zahlung der monatlichen Ladenmiete per Banküberweisung.",
+                "s1": "Mietaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Ladenmiete wird bar gezahlt.",
+                "s1": "Mietaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Die Rechnung für die Lagerraummiete geht ein.",
+                "s1": "Mietaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Überweisung der Gehälter für diesen Monat.",
+                "s1": "Personalaufwand",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Löhne werden bar ausgezahlt.",
+                "s1": "Personalaufwand",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Die Personalabrechnung wird später bezahlt.",
+                "s1": "Personalaufwand",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Zahlung der Stromrechnung per Banküberweisung.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Gasrechnung für die Heizung wird überwiesen.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Energierechnung liegt vor und wird später bezahlt.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barkauf von Büromaterial.",
+                "s1": "Büromaterial",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Büromaterial wird per Bankkarte bezahlt.",
+                "s1": "Büromaterial",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Büromaterial wird auf Ziel gekauft.",
+                "s1": "Büromaterial",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Radiowerbung wird per Banküberweisung bezahlt.",
+                "s1": "Werbung",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Anzeigenwerbung wird bar bezahlt.",
+                "s1": "Werbung",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Werberechnung geht ein.",
+                "s1": "Werbung",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Reparatur der Ladentür wird per Banküberweisung bezahlt.",
+                "s1": "Fremdinstandsetzung",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Instandhaltung der Kasse wird bar bezahlt.",
+                "s1": "Instandhaltungsaufwand",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Reparaturrechnung geht ein.",
+                "s1": "Fremdinstandsetzung",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Die Bank bucht Sollzinsen ab.",
+                "s1": "Zinsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Zinsen für Darlehen werden bar gezahlt.",
+                "s1": "Zinsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Darlehenszinsen sind fällig, Zahlung später.",
+                "s1": "Zinsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Portogebühren werden bar bezahlt.",
+                "s1": "Postgebühren",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Die Portorechnung wird überwiesen.",
+                "s1": "Postgebühren",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Eine Postdienstleistung wird auf Ziel bezogen.",
+                "s1": "Postgebühren",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provisionsrechnung eines Vermittlers wird per Banküberweisung bezahlt.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Vermittlungsprovision wird bar gezahlt.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provisionsrechnung liegt vor, Zahlung später.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Wareneinkauf wird als Aufwand gebucht und per Banküberweisung bezahlt.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Wareneinkauf wird bar bezahlt.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wareneinkauf auf Ziel wird als Aufwand gebucht.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "- kein zweites Konto -",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Verkauf von Handelswaren gegen Barzahlung.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Warenverkauf auf Ziel.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Kunde überweist den Erlös aus dem Warenverkauf sofort.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Tagesumsatz wird bar eingenommen.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Warenverkauf gegen Banküberweisung.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Warenverkauf gegen Rechnung an Kunden.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Bankgutschrift für erhaltene Zinserträge.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Zinserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Zinserträge werden bar vereinnahmt.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Zinserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Ein Zinsanspruch gegenüber einem Kunden entsteht.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Zinserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Gutschrift der Bank für erhaltene Provisionen.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Provisionserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provision wird bar vereinnahmt.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Provisionserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Ein Provisionsanspruch gegenüber einem Kunden entsteht.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Provisionserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Mietertrag wird auf dem Bankkonto gutgeschrieben.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Mieterträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Mietertrag wird bar gezahlt.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Mieterträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Mietforderung gegen einen Mieter entsteht.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Mieterträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Warenverkauf per Kartenzahlung; die Gutschrift erfolgt auf dem Bankkonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barverkauf von Restposten.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Verkauf von Ware auf Rechnung.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Zinsgutschrift laut Kontoauszug.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Zinserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Bar erhaltene Vermittlungsprovision wird gebucht.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Provisionserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Banküberweisung für eine vermietete Stellfläche geht ein.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Mieterträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Kunde erhält Ware und zahlt später.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Sofortüberweisung aus einem Warenverkauf geht ein.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barverkauf an Laufkundschaft.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provisionsertrag wird dem Bankkonto gutgeschrieben.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Provisionserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Mieter bezahlt bar.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Mieterträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Zinsertrag wird als Forderung gebucht.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Zinserträge",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Der Kunde kauft Waren gegen Rechnung.",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Erlöse aus Warenverkauf fließen auf das Bankkonto.",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Die Kasse erhält Einnahmen aus einem Warenverkauf.",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "- kein zweites Konto -"
+        }
+];
 
     const poolPro = [
-        { t: "Wareneinkauf auf Ziel: 2.000 € netto + 380 € Vorsteuer.", s1: "Aufwendungen für Waren (Wareneinkauf)", s2: "Vorsteuer", h1: "Verbindlichkeiten a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Warenverkauf bar: 595 € brutto (inkl. 19% USt).", s1: "Kasse", s2: "- kein zweites Konto -", h1: "Umsatzerlöse für Waren", h2: "Umsatzsteuer" },
-        { t: "Kauf eines Laptops auf Ziel: 500 € netto + 95 € Vorsteuer.", s1: "BGA", s2: "Vorsteuer", h1: "Verbindlichkeiten a. L. L.", h2: "- kein zweites Konto -" },
-        { t: "Telefonrechnung per Lastschrift: 100 € netto + 19 € Vorsteuer.", s1: "Postgebühren", s2: "Vorsteuer", h1: "Bank", h2: "- kein zweites Konto -" }
-    ];
+        {
+                "t": "Wareneinkauf auf Ziel: 100,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wareneinkauf per Banküberweisung: 120,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barer Wareneinkauf: 150,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Büromaterial auf Ziel: 200,00 € netto + 19 % Vorsteuer.",
+                "s1": "Büromaterial",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Büromaterial wird per Bankkarte gekauft: 250,00 € netto + 19 % Vorsteuer.",
+                "s1": "Büromaterial",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barkauf von Büromaterial: 300,00 € netto + 19 % Vorsteuer.",
+                "s1": "Büromaterial",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Reparaturrechnung auf Ziel: 400,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fremdinstandsetzung",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Reparatur wird per Banküberweisung bezahlt: 500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Instandhaltungsaufwand",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barkauf einer Reparaturleistung: 600,00 € netto + 19 % Vorsteuer.",
+                "s1": "Instandhaltungsaufwand",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Stromrechnung per Banküberweisung: 750,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Gasrechnung auf Ziel: 800,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Werberechnung auf Ziel: 1.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Werbung",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Radiowerbung per Banküberweisung: 1.200,00 € netto + 19 % Vorsteuer.",
+                "s1": "Werbung",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Portorechnung per Lastschrift: 1.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Postgebühren",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Telefon- und Postdienstleistung auf Ziel: 2.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Postgebühren",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Laptops auf Ziel: 2.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Druckers per Banküberweisung: 3.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Barkauf eines Tablets: 4.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Anschaffung eines Lieferwagens auf Ziel: 6.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fuhrpark",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Firmenfahrrads per Banküberweisung: 8.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fuhrpark",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provisionsrechnung eines Vermittlers per Banküberweisung: 12.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Provisionsrechnung auf Ziel: 18.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Warenverkauf bar: 119,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Warenverkauf auf Ziel: 238,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Warenverkauf per Banküberweisung: 297,50 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Tagesumsatz in bar: 357,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Kunde erhält Rechnung über Waren: 476,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Sofortüberweisung aus Warenverkauf: 595,00 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Kartenzahlung aus Warenverkauf; Bankgutschrift: 892,50 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Barverkauf von Restposten: 1.190,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Warenverkauf gegen Rechnung: 1.428,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Warenverkauf mit Bankgutschrift: 1.785,00 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Großkunde kauft auf Ziel: 2.380,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Laufkundschaft zahlt Waren bar: 2.975,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Onlineverkauf; Zahlung auf das Bankkonto: 3.570,00 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Warenverkauf an Stammkunden auf Ziel: 4.165,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Barverkauf im Laden: 4.760,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Bankeingang aus Warenverkauf: 5.355,00 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Verkauf von Handelswaren auf Ziel: 5.950,00 € brutto (inkl. 19 % USt).",
+                "s1": "Forderungen a. L. L.",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Verkauf von Handelswaren gegen Barzahlung: 7.140,00 € brutto (inkl. 19 % USt).",
+                "s1": "Kasse",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Verkauf von Handelswaren per Banküberweisung: 9.520,00 € brutto (inkl. 19 % USt).",
+                "s1": "Bank",
+                "s2": "- kein zweites Konto -",
+                "h1": "Umsatzerlöse für Waren",
+                "h2": "Umsatzsteuer"
+        },
+        {
+                "t": "Mietnebenkostenrechnung per Banküberweisung: 500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Mietaufwendungen",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Mietnebenkosten auf Ziel: 600,00 € netto + 19 % Vorsteuer.",
+                "s1": "Mietaufwendungen",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Ersatzteile für den Fuhrpark bar gekauft: 750,00 € netto + 19 % Vorsteuer.",
+                "s1": "Instandhaltungsaufwand",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Wartung des Lieferwagens per Banküberweisung: 800,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fremdinstandsetzung",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Neue Bürostühle auf Ziel: 1.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf von Lagerregalen per Banküberweisung: 1.200,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Werbeflyer bar bezahlt: 1.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Werbung",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Onlinewerbung per Banküberweisung bezahlt: 2.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Werbung",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Speditionskosten auf Ziel: 2.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Handelsware bar gekauft: 3.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Handelsware per Banküberweisung gekauft: 4.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Waren (Wareneinkauf)",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Dienstleistung eines Monteurs auf Ziel: 6.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fremdinstandsetzung",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Aktenschranks bar: 8.500,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Firmenrollers per Banküberweisung: 12.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fuhrpark",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Rechnung für Energieversorgung auf Ziel: 18.000,00 € netto + 19 % Vorsteuer.",
+                "s1": "Aufwendungen für Energie",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Porto- und Versandkosten bar: 100,00 € netto + 19 % Vorsteuer.",
+                "s1": "Postgebühren",
+                "s2": "Vorsteuer",
+                "h1": "Kasse",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Vermittlungsprovision auf Ziel: 120,00 € netto + 19 % Vorsteuer.",
+                "s1": "Provisionsaufwendungen",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Scanners per Banküberweisung: 150,00 € netto + 19 % Vorsteuer.",
+                "s1": "BGA",
+                "s2": "Vorsteuer",
+                "h1": "Bank",
+                "h2": "- kein zweites Konto -"
+        },
+        {
+                "t": "Kauf eines Transporters auf Ziel: 200,00 € netto + 19 % Vorsteuer.",
+                "s1": "Fuhrpark",
+                "s2": "Vorsteuer",
+                "h1": "Verbindlichkeiten a. L. L.",
+                "h2": "- kein zweites Konto -"
+        }
+];
 
     let mode = ''; let currentPool = []; let taskCount = 0; let correctCount = 0; const maxTasks = 10;
 
@@ -210,8 +1438,41 @@
         document.getElementById('soll2-box').style.display = (mode === 'pro') ? 'block' : 'none';
         document.getElementById('haben2-box').style.display = (mode === 'pro') ? 'block' : 'none';
         let basePool = mode === 'light' ? poolLight : (mode === 'medium' ? poolMedium : poolPro);
-        currentPool = [...basePool].sort(() => Math.random() - 0.5).slice(0, 10);
+        currentPool = buildTrainingRound(basePool, 10);
         generateTask();
+    }
+
+    function shufflePool(pool) {
+        const arr = [...pool];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function taskContainsBank(task) {
+        return [task.s1, task.s2, task.h1, task.h2].includes("Bank");
+    }
+
+    function buildTrainingRound(pool, size) {
+        const remaining = shufflePool(pool);
+        const round = [];
+        let bankInFirstFive = 0;
+
+        while (round.length < Math.min(5, size) && remaining.length > 0) {
+            const bankLimitReached = bankInFirstFive >= 2;
+            let idx = remaining.findIndex(task => !bankLimitReached || !taskContainsBank(task));
+            if (idx === -1) idx = 0;
+            const [task] = remaining.splice(idx, 1);
+            if (taskContainsBank(task)) bankInFirstFive++;
+            round.push(task);
+        }
+
+        while (round.length < size && remaining.length > 0) {
+            round.push(remaining.shift());
+        }
+        return round;
     }
 
     function setupDropdowns() {
