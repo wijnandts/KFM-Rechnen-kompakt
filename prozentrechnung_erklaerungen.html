@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prozentrechnung – Erklärungen</title>
+  <style>
+    :root{
+      --primary:#e17055;
+      --primary-dark:#c85c42;
+      --blue:#006d9c;
+      --bg:#f4f7f9;
+      --card:#ffffff;
+      --text:#2d3436;
+      --muted:#636e72;
+      --soft:#fff1e6;
+      --soft2:#f7fbff;
+      --line:#dfe6e9;
+      --success:#27ae60;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:18px;}
+    .page{max-width:1100px;margin:0 auto;background:var(--card);border-radius:20px;box-shadow:0 10px 28px rgba(0,0,0,.08);overflow:hidden;}
+    header{background:linear-gradient(135deg,var(--primary),#f6a56f);color:#fff;padding:28px 30px;position:relative;}
+    .back{display:inline-block;background:rgba(255,255,255,.22);color:#fff;text-decoration:none;border-radius:999px;padding:8px 14px;font-weight:700;margin-bottom:16px;}
+    h1{margin:0;font-size:2rem;line-height:1.15}.subtitle{margin:8px 0 0;font-size:1rem;opacity:.95}
+    main{padding:28px 30px 36px}.toc{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}.toc a{background:#f1f2f6;color:var(--text);text-decoration:none;border-radius:999px;padding:9px 14px;font-weight:700;font-size:.9rem}.toc a:hover{background:#e6e9ef}
+    section{border:1px solid var(--line);border-radius:16px;padding:22px;margin:0 0 22px;background:#fff}.section-title{display:flex;gap:12px;align-items:center;margin:0 0 16px}.num{background:var(--primary);color:white;border-radius:12px;min-width:38px;height:38px;display:grid;place-items:center;font-weight:900}.section-title h2{font-size:1.35rem;margin:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.definition{background:var(--soft2);border-left:5px solid var(--blue);border-radius:12px;padding:16px}.definition b{color:#111}.example{background:var(--soft);border-radius:12px;padding:16px;border-left:5px solid var(--primary)}
+    .formula{margin:14px 0;background:linear-gradient(#fff,#f7f7f7);border:1px solid #cfd8dc;border-radius:12px;padding:14px;text-align:center;font-size:1.15rem;font-weight:800;box-shadow:0 3px 8px rgba(0,0,0,.08)}
+    .solution{background:#fde4ce;border-radius:14px;padding:16px;margin-top:14px}.solution h3{margin:0 0 10px;font-size:1rem;background:#f4a261;color:#222;padding:8px;border-radius:8px;text-align:center}.row{display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px solid rgba(0,0,0,.08);padding:5px 0}.row:last-child{border-bottom:0}.calc{font-family:Consolas,monospace;background:white;border-radius:8px;padding:10px;margin-top:10px;text-align:center}.result{font-weight:900;text-decoration:underline;text-decoration-style:double}.note{background:#fff9db;border-left:5px solid #f1c40f;border-radius:12px;padding:14px;margin:14px 0;color:#5d4700}.table{width:100%;border-collapse:collapse;margin-top:10px}.table th,.table td{padding:9px;border-bottom:1px solid var(--line);text-align:left}.table th{background:#f6f6f6}.tasks-ref{background:#eaf4fb;border-left:5px solid var(--blue)}
+    @media(max-width:780px){body{padding:8px}header,main{padding:22px 16px}.grid{grid-template-columns:1fr}h1{font-size:1.55rem}.section-title{align-items:flex-start}.toc{display:block}.toc a{display:block;margin-bottom:8px}.row{grid-template-columns:1fr}}
+    @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.back,.toc{display:none}section{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Prozentrechnung – Erklärungen</h1>
+    <p class="subtitle">Grundlagen, Formeln und kaufmännische Beispiele</p>
+  </header>
+  <main>
+    <nav class="toc">
+      <a href="#groessen">Größen</a><a href="#prozentwert">Prozentwert</a><a href="#prozentsatz">Prozentsatz</a><a href="#grundwert">Grundwert</a><a href="#vermehrt">Vermehrter Grundwert</a><a href="#vermindert">Verminderter Grundwert</a>
+    </nav>
+
+    <section id="groessen">
+      <div class="section-title"><span class="num">1</span><h2>Die Größen der Prozentrechnung</h2></div>
+      <div class="grid">
+        <div class="definition"><b>Grundwert (G)</b><br>Der Grundwert ist immer 100&nbsp;%. Er ist die Grundlage für die Ermittlung des Prozentwertes.</div>
+        <div class="example"><b>Beispiele:</b><br>170,00&nbsp;€ / 30,00&nbsp;€</div>
+        <div class="definition"><b>Prozentwert (W)</b><br>Er ist ein Zahlenwert, der einen Teil oder ein Vielfaches des Grundwertes ausmacht.</div>
+        <div class="example"><b>Beispiele:</b><br>22,10&nbsp;€ / 4,05&nbsp;€</div>
+        <div class="definition"><b>Prozentsatz (p)</b><br>Er drückt den Prozentwert in Prozent aus, also als Bruch mit dem Nenner 100.</div>
+        <div class="example"><b>Beispiele:</b><br>13&nbsp;% / 13,5&nbsp;%</div>
+      </div>
+      <p class="note">Von diesen drei Größen sind immer zwei bekannt, während die dritte gesucht wird.</p>
+    </section>
+
+    <section id="prozentwert">
+      <div class="section-title"><span class="num">2</span><h2>Berechnung des Prozentwertes</h2></div>
+      <p><b>Situation:</b> Aufgrund einer Reklamation an einem Sakko, Neupreis 99,00&nbsp;€, gewährt man in der Textilabteilung einen Preisnachlass von 10&nbsp;%. Wie viel Euro Rabatt wurden dem Kunden eingeräumt?</p>
+      <div class="formula">Prozentwert (W) = Grundwert (G) · Prozentsatz (p) / 100</div>
+      <div class="solution"><h3>Lösung</h3>
+        <div class="row"><span>Grundwert (100&nbsp;%)</span><b>99,00&nbsp;€</b></div>
+        <div class="row"><span>Prozentsatz</span><b>10&nbsp;%</b></div>
+        <div class="row"><span>gesucht: Prozentwert</span><b>?</b></div>
+        <div class="calc">x = 99,00 · 10 / 100 = <span class="result">9,90&nbsp;€</span></div>
+      </div>
+    </section>
+
+    <section id="prozentsatz">
+      <div class="section-title"><span class="num">3</span><h2>Berechnung des Prozentsatzes</h2></div>
+      <p><b>Situation:</b> Anja Maibaum bediente insgesamt 175 Kunden. Von diesen haben 7 Kunden den gerade zuvor gekauften Artikel zurückgegeben. Wie viel Prozent beträgt diese „Rücklaufquote“?</p>
+      <div class="formula">Prozentsatz (p) = Prozentwert (W) · 100 / Grundwert (G)</div>
+      <div class="solution"><h3>Lösung</h3>
+        <div class="row"><span>Grundwert (100&nbsp;%)</span><b>175 Kunden</b></div>
+        <div class="row"><span>Prozentwert</span><b>7 Kunden</b></div>
+        <div class="row"><span>gesucht: Prozentsatz</span><b>?</b></div>
+        <div class="calc">x = 100 · 7 / 175 = <span class="result">4&nbsp;%</span></div>
+      </div>
+    </section>
+
+    <section id="grundwert">
+      <div class="section-title"><span class="num">4</span><h2>Berechnung des Grundwertes</h2></div>
+      <p><b>Situation:</b> Im Rahmen des üblichen Personalverkaufs gewährt Anja Maibaum ihrer Kollegin einen Preisnachlass von 20&nbsp;%, was einem Betrag von 4,20&nbsp;€ ausmacht. Wie teuer war die Bluse ursprünglich und nach der Preisreduzierung?</p>
+      <div class="formula">Grundwert (G) = Prozentwert (W) · 100 / Prozentsatz (p)</div>
+      <div class="solution"><h3>Lösung</h3>
+        <div class="row"><span>Prozentwert</span><b>4,20&nbsp;€</b></div>
+        <div class="row"><span>Prozentsatz</span><b>20&nbsp;%</b></div>
+        <div class="row"><span>gesucht: Grundwert</span><b>?</b></div>
+        <div class="calc">x = 4,20 · 100 / 20 = <span class="result">21,00&nbsp;€</span></div>
+        <table class="table"><tr><td>ursprünglicher Verkaufspreis</td><td>21,00&nbsp;€</td></tr><tr><td>./. Personalrabatt 20&nbsp;%</td><td>4,20&nbsp;€</td></tr><tr><th>zu zahlender Betrag</th><th>16,80&nbsp;€</th></tr></table>
+      </div>
+    </section>
+
+    <section id="vermehrt">
+      <div class="section-title"><span class="num">5</span><h2>Rechnen mit dem vermehrten Grundwert</h2></div>
+      <p><b>Situation:</b> Anja Maibaum möchte ermitteln, wie hoch der reine Warenwert (= netto, ohne Umsatzsteuer) in den von ihr ermittelten Barverkäufen von 2.259,70&nbsp;€ ist und wie viel Euro die darin enthaltene Umsatzsteuer bei 19&nbsp;% beträgt.</p>
+      <p>Man bezeichnet die Tageslosung rechnerisch auch als <b>vermehrten Grundwert</b>. Der vermehrte Grundwert ist mehr als 100&nbsp;%. Im Beispiel ist der Betrag um 19&nbsp;% höher als der Grundwert, also 119&nbsp;%.</p>
+      <div class="formula">Grundwert (G) = vermehrter Grundwert · 100 / (100 + Prozentsatz)</div>
+      <div class="solution"><h3>Lösung</h3>
+        <div class="calc">x = 2.259,70 · 100 / 119 = <span class="result">1.898,91&nbsp;€</span></div>
+        <table class="table"><tr><td>Warenwert, netto</td><td>1.898,91&nbsp;€</td><td>100&nbsp;%</td></tr><tr><td>+ Umsatzsteuer</td><td>360,79&nbsp;€</td><td>19&nbsp;%</td></tr><tr><th>Warenwert, brutto</th><th>2.259,70&nbsp;€</th><th>119&nbsp;%</th></tr></table>
+      </div>
+    </section>
+
+    <section id="vermindert">
+      <div class="section-title"><span class="num">6</span><h2>Rechnen mit dem verminderten Grundwert</h2></div>
+      <p><b>Situation:</b> Anja Maibaum verkauft einen Anorak wegen eines geringen Materialfehlers mit 5&nbsp;% Rabatt für 118,75&nbsp;€. Berechnen Sie den Preis vor der Preisreduzierung und den gewährten Nachlass in Euro.</p>
+      <p>Der um den Preisnachlass reduzierte Preis von 118,75&nbsp;€ ist weniger als 100&nbsp;%. Er entspricht 95&nbsp;%.</p>
+      <div class="formula">Grundwert (G) = verminderter Grundwert · 100 / (100 − Prozentsatz)</div>
+      <div class="solution"><h3>Lösung</h3>
+        <div class="calc">x = 118,75 · 100 / 95 = <span class="result">125,00&nbsp;€</span></div>
+        <table class="table"><tr><td>Warenwert vor Preisreduzierung</td><td>125,00&nbsp;€</td><td>100&nbsp;%</td></tr><tr><td>./. Rabatt</td><td>6,25&nbsp;€</td><td>5&nbsp;%</td></tr><tr><th>reduzierter Verkaufspreis</th><th>118,75&nbsp;€</th><th>95&nbsp;%</th></tr></table>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>
